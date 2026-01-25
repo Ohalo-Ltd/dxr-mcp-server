@@ -1,0 +1,39 @@
+{
+  "name": "dxr-mcp-server",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for Data X-Ray API",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "dxr-mcp-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "dev": "npm run build && node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "dxr",
+    "data-xray"
+  ],
+  "author": "Ohalo",
+  "license": "Proprietary",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

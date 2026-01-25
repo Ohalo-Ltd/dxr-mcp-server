@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dxr": {
+      "command": "node",
+      "args": [
+        "/ABSOLUTE/PATH/TO/dxr-mcp-server/dist/index.js"
+      ],
+      "env": {
+        "DXR_API_URL": "https://dxr.yourcompany.com",
+        "DXR_API_TOKEN": "your-api-token-here"
+      }
+    }
+  }
+}
