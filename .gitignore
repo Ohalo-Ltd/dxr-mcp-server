@@ -1,5 +1,9 @@
 node_modules/
 dist/
+coverage/
 *.log
 .env
 .DS_Store
+
+# Claude Code scratch/helper files (not for repository)
+.claude/

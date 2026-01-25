@@ -172,10 +172,10 @@ function validateNumber(value: unknown, paramName: string): number {
 function validateKQLQuery(query: string): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
-  // Valid field names based on DXR API
+  // Valid field names based on DXR API (including those usable with _exists_)
   const validFields = [
     "id", "fileName", "filePath", "size", "createdAt", "updatedAt",
-    "mimeType", "datasourceId", "classifications.type", "classifications.name"
+    "mimeType", "datasourceId", "classifications", "classifications.type", "classifications.name"
   ];
 
   // Check for common syntax issues
@@ -198,11 +198,27 @@ function validateKQLQuery(query: string): { valid: boolean; errors: string[] } {
     errors.push("Use ':' for field matching or '>=' for comparisons, not '='");
   }
 
-  // 4. Check for field names (extract field:value patterns)
+  // 4. Check for _exists_: patterns
+  const existsMatches = query.matchAll(/_exists_:(\w+(?:\.\w+)?)/g);
+  for (const match of existsMatches) {
+    const fieldName = match[1];
+
+    // Validate field name
+    if (!validFields.includes(fieldName)) {
+      errors.push(`Unknown field in _exists_: '${fieldName}'. Valid fields: ${validFields.join(", ")}`);
+    }
+  }
+
+  // 5. Check for regular field names (extract field:value patterns)
   const fieldMatches = query.matchAll(/(\w+(?:\.\w+)?)\s*([:<>]=?)/g);
   for (const match of fieldMatches) {
     const fieldName = match[1];
     const operator = match[2];
+
+    // Skip if this is NOT or AND or OR or _exists_
+    if (["NOT", "AND", "OR", "_exists_"].includes(fieldName)) {
+      continue;
+    }
 
     // Validate field name
     if (!validFields.includes(fieldName)) {
@@ -220,17 +236,17 @@ function validateKQLQuery(query: string): { valid: boolean; errors: string[] } {
     }
   }
 
-  // 5. Check for logical operators (case-insensitive)
+  // 6. Check for logical operators (case-insensitive)
   const hasInvalidLogical = query.match(/\b(and|or|not)\b/);
   if (hasInvalidLogical) {
     errors.push("Logical operators must be uppercase: AND, OR, NOT");
   }
 
-  // 6. Warn if query is too broad
+  // 7. Warn if query is too broad
   const isTooBoard =
     query.trim() === "*" ||
-    query.includes("_exists_:id") ||
-    query.includes("_exists_:fileName") ||
+    query.trim() === "_exists_:id" ||
+    query.trim() === "_exists_:fileName" ||
     (query.length < 5 && !query.includes(":"));
 
   if (isTooBoard) {
@@ -243,50 +259,61 @@ function validateKQLQuery(query: string): { valid: boolean; errors: string[] } {
   };
 }
 
-// Define MCP tools
+// Define MCP tools with improved descriptions for better discovery and usage
 const tools: Tool[] = [
   {
     name: "list_file_metadata",
-    description: `List file metadata from Data X-Ray with KQL filtering. IMPORTANT: Always use specific KQL queries to limit results - enterprise deployments may contain 100M+ files.
+    description: `Search and list files indexed in Data X-Ray. Use this tool when the user asks about files, documents, or wants to find specific content.
 
-KQL SYNTAX GUIDE:
-- Field matching: fileName:"Invoice" OR fileName:Invoice* (wildcard)
-- Numeric ranges: size > 100000 OR size >= 1000 AND size < 1000000
-- Date ranges: createdAt >= "2024-01-01" AND createdAt < "2024-02-01"
-- Logical operators: AND, OR, NOT
-- Existence: _exists_:classifications OR NOT _exists_:datasourceId
-- Nested fields: classifications.type:ANNOTATOR
+WHEN TO USE:
+- User asks "what files do you have?" or "find documents about X"
+- User wants to search for files by name, type, size, or date
+- User asks about sensitive documents or classified files
+- Starting point for any file-related workflow
 
-COMMON QUERY PATTERNS:
-- Find by name: fileName:"Invoice*"
-- Large files: size > 10000000
-- Recent files: createdAt >= "2024-01-01"
+TYPICAL WORKFLOW:
+1. First call list_file_metadata to find files matching criteria
+2. Then use get_file_content or get_file_redacted_text to view specific files
+
+KQL QUERY SYNTAX:
+- By name: fileName:"Invoice*" (wildcards supported)
+- By type: mimeType:"application/pdf"
+- By size: size > 1000000 (bytes)
+- By date: createdAt >= "2024-01-01"
 - Sensitive files: _exists_:classifications
-- By file type: mimeType:"application/pdf"
-- Combined: fileName:"*2024*" AND size > 1000000 AND _exists_:classifications
+- Combined: fileName:"*report*" AND mimeType:"application/pdf" AND _exists_:classifications
 
-AVAILABLE FIELDS: id, fileName, filePath, size, createdAt, updatedAt, mimeType, datasourceId, classifications.type, classifications.name
+FIELDS: id, fileName, filePath, size, createdAt, updatedAt, mimeType, datasourceId, classifications.type, classifications.name
 
-PERFORMANCE TIP: Always include at least one filter to avoid streaming millions of files.`,
+Returns: List of file metadata with IDs you can use with other tools.`,
     inputSchema: {
       type: "object",
       properties: {
         q: {
           type: "string",
-          description: "KQL query string to filter file metadata. REQUIRED for large deployments. Example: 'fileName:\"Invoice\" AND size > 100000'",
+          description: "KQL query to filter files. Examples: 'fileName:\"report*\"', 'mimeType:\"application/pdf\"', 'size > 1000000', '_exists_:classifications'",
         },
       },
     },
   },
   {
     name: "get_file_content",
-    description: "Get the original content of a file from Data X-Ray by its ID. Returns the file in its original format (PDF, text, image, etc.) as base64-encoded content.",
+    description: `Retrieve the original content of a specific file by ID. Use this when the user wants to see, read, or analyze a file's actual content.
+
+WHEN TO USE:
+- User says "show me that file" or "what's in this document?"
+- User wants to read or analyze file contents
+- After finding files with list_file_metadata
+
+PREREQUISITE: You need a file ID from list_file_metadata first.
+
+Returns: Base64-encoded file content with MIME type. For text files, decode to read. For PDFs/images, describe the content type.`,
     inputSchema: {
       type: "object",
       properties: {
         id: {
           type: "string",
-          description: "The unique identifier of the file (obtained from list_file_metadata)",
+          description: "File ID from list_file_metadata results",
         },
       },
       required: ["id"],
@@ -294,17 +321,29 @@ PERFORMANCE TIP: Always include at least one filter to avoid streaming millions 
   },
   {
     name: "get_file_redacted_text",
-    description: "Get redacted text content of a file from Data X-Ray. Uses a specified redactor to replace sensitive information with [REDACTED] placeholders. Useful for safely viewing documents that contain PII, PHI, or other sensitive data.",
+    description: `Get a privacy-safe version of a file with sensitive information replaced by [REDACTED]. Use this when handling documents that may contain PII, PHI, SSNs, credit cards, or other sensitive data.
+
+WHEN TO USE:
+- User wants to see a document but it might contain sensitive info
+- User asks about a file that has classifications (sensitive data detected)
+- User explicitly asks for a redacted or sanitized version
+- When you need to share file content but protect privacy
+
+PREREQUISITE:
+1. Get file ID from list_file_metadata
+2. Get redactor_id from get_redactors (call it first if you don't have one)
+
+Returns: Text content with sensitive data replaced by [REDACTED] markers.`,
     inputSchema: {
       type: "object",
       properties: {
         id: {
           type: "string",
-          description: "The unique identifier of the file",
+          description: "File ID from list_file_metadata",
         },
         redactor_id: {
           type: "number",
-          description: "The ID of the redactor to use (obtain from get_redactors)",
+          description: "Redactor ID from get_redactors (typically 1 for default redactor)",
         },
       },
       required: ["id", "redactor_id"],
@@ -312,7 +351,15 @@ PERFORMANCE TIP: Always include at least one filter to avoid streaming millions 
   },
   {
     name: "get_classifications",
-    description: "Get the catalog of all available classifications in Data X-Ray. Classifications include annotators (regex, dictionary, named entity), labels (smart tags), and extractors used to identify sensitive information in documents.",
+    description: `List all sensitivity classifications that Data X-Ray can detect. Use this to understand what types of sensitive data the system identifies.
+
+WHEN TO USE:
+- User asks "what sensitive data can you detect?"
+- User wants to know what classifications/labels are available
+- User asks about PII, PHI, or data privacy detection capabilities
+- When explaining what makes a file "sensitive"
+
+Returns: List of annotators (SSN, credit card, email, etc.), labels, and extractors with descriptions.`,
     inputSchema: {
       type: "object",
       properties: {},
@@ -320,7 +367,14 @@ PERFORMANCE TIP: Always include at least one filter to avoid streaming millions 
   },
   {
     name: "get_redactors",
-    description: "Get the catalog of all available redactors in Data X-Ray. Redactors are used to remove or mask sensitive information from documents based on classification rules.",
+    description: `List available redaction profiles. Redactors define which sensitive data types to mask when viewing files safely.
+
+WHEN TO USE:
+- Before calling get_file_redacted_text (to get a redactor_id)
+- User asks "how can you redact files?" or about redaction options
+- User wants to know what privacy protection is available
+
+Returns: List of redactors with IDs and names. Use the ID with get_file_redacted_text.`,
     inputSchema: {
       type: "object",
       properties: {},

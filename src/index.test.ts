@@ -496,3 +496,254 @@ describe("Type Safety", () => {
     expect(redactorCatalog.data[0].id).toBe(1);
   });
 });
+
+describe("KQL Validation", () => {
+  // Replicate the validation function for testing
+  const validateKQLQuery = (query: string): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    const validFields = [
+      "id", "fileName", "filePath", "size", "createdAt", "updatedAt",
+      "mimeType", "datasourceId", "classifications", "classifications.type", "classifications.name"
+    ];
+
+    // Check for unmatched quotes
+    const quoteCount = (query.match(/"/g) || []).length;
+    if (quoteCount % 2 !== 0) {
+      errors.push("Unmatched quotes in query");
+    }
+
+    // Check for unmatched parentheses
+    const openParens = (query.match(/\(/g) || []).length;
+    const closeParens = (query.match(/\)/g) || []).length;
+    if (openParens !== closeParens) {
+      errors.push("Unmatched parentheses in query");
+    }
+
+    // Check for invalid operators
+    if (query.match(/[^><=!]\s*={1}\s*[^=]/)) {
+      errors.push("Use ':' for field matching or '>=' for comparisons, not '='");
+    }
+
+    // Check for _exists_: patterns
+    const existsMatches = query.matchAll(/_exists_:(\w+(?:\.\w+)?)/g);
+    for (const match of existsMatches) {
+      const fieldName = match[1];
+
+      if (!validFields.includes(fieldName)) {
+        errors.push(`Unknown field in _exists_: '${fieldName}'. Valid fields: ${validFields.join(", ")}`);
+      }
+    }
+
+    // Check field names
+    const fieldMatches = query.matchAll(/(\w+(?:\.\w+)?)\s*([:<>]=?)/g);
+    for (const match of fieldMatches) {
+      const fieldName = match[1];
+      const operator = match[2];
+
+      // Skip logical operators and _exists_
+      if (["NOT", "AND", "OR", "_exists_"].includes(fieldName)) {
+        continue;
+      }
+
+      if (!validFields.includes(fieldName)) {
+        errors.push(`Unknown field: '${fieldName}'. Valid fields: ${validFields.join(", ")}`);
+      }
+
+      const numericFields = ["size"];
+      const dateFields = ["createdAt", "updatedAt"];
+
+      if (["<", ">", "<=", ">="].includes(operator)) {
+        if (!numericFields.includes(fieldName) && !dateFields.includes(fieldName)) {
+          errors.push(`Comparison operators (<, >, <=, >=) should only be used with numeric fields (size) or date fields (createdAt, updatedAt), not '${fieldName}'`);
+        }
+      }
+    }
+
+    // Check for lowercase logical operators
+    const hasInvalidLogical = query.match(/\b(and|or|not)\b/);
+    if (hasInvalidLogical) {
+      errors.push("Logical operators must be uppercase: AND, OR, NOT");
+    }
+
+    // Check if query is too broad
+    const isTooBoard =
+      query.trim() === "*" ||
+      query.trim() === "_exists_:id" ||
+      query.trim() === "_exists_:fileName" ||
+      (query.length < 5 && !query.includes(":"));
+
+    if (isTooBoard) {
+      errors.push("Query is too broad and may return millions of files. Add specific filters.");
+    }
+
+    return { valid: errors.length === 0, errors };
+  };
+
+  describe("Valid Queries", () => {
+    it("should accept simple field matching", () => {
+      const result = validateKQLQuery('fileName:"Invoice"');
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("should accept wildcard patterns", () => {
+      const result = validateKQLQuery('fileName:"Invoice*"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept numeric comparisons", () => {
+      const result = validateKQLQuery("size > 1000000");
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept date comparisons", () => {
+      const result = validateKQLQuery('createdAt >= "2024-01-01"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept existence checks", () => {
+      const result = validateKQLQuery("_exists_:classifications");
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept AND operator", () => {
+      const result = validateKQLQuery('fileName:"Invoice" AND size > 1000000');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept OR operator", () => {
+      const result = validateKQLQuery('fileName:"Invoice" OR fileName:"Receipt"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept NOT operator", () => {
+      const result = validateKQLQuery('NOT mimeType:"text/plain"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept complex nested queries", () => {
+      const result = validateKQLQuery(
+        'fileName:"*Invoice*" AND mimeType:"application/pdf" AND size > 1000000 AND createdAt >= "2024-01-01" AND _exists_:classifications'
+      );
+      expect(result.valid).toBe(true);
+    });
+
+    it("should accept nested field names", () => {
+      const result = validateKQLQuery('classifications.type:"ANNOTATOR"');
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  describe("Invalid Queries - Syntax Errors", () => {
+    it("should reject unmatched quotes", () => {
+      const result = validateKQLQuery('fileName:"Invoice');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("Unmatched quotes in query");
+    });
+
+    it("should reject unmatched parentheses", () => {
+      const result = validateKQLQuery('(fileName:"Invoice" AND size > 1000');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("Unmatched parentheses in query");
+    });
+
+    it("should reject single equals operator", () => {
+      const result = validateKQLQuery('fileName = "Invoice"');
+      expect(result.valid).toBe(false);
+      expect(result.errors.some(e => e.includes("Use ':' for field matching"))).toBe(true);
+    });
+
+    it("should reject lowercase logical operators", () => {
+      const result = validateKQLQuery('fileName:"Invoice" and size > 1000');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("Logical operators must be uppercase: AND, OR, NOT");
+    });
+  });
+
+  describe("Invalid Queries - Semantic Errors", () => {
+    it("should reject unknown field names", () => {
+      const result = validateKQLQuery('unknownField:"value"');
+      expect(result.valid).toBe(false);
+      expect(result.errors.some(e => e.includes("Unknown field"))).toBe(true);
+    });
+
+    it("should reject comparison operators on string fields", () => {
+      const result = validateKQLQuery("fileName > 1000");
+      expect(result.valid).toBe(false);
+      expect(result.errors.some(e => e.includes("should only be used with numeric"))).toBe(true);
+    });
+
+    it("should reject overly broad wildcard-only query", () => {
+      const result = validateKQLQuery("*");
+      expect(result.valid).toBe(false);
+      expect(result.errors.some(e => e.includes("too broad"))).toBe(true);
+    });
+
+    it("should reject _exists_:id (too broad)", () => {
+      const result = validateKQLQuery("_exists_:id");
+      expect(result.valid).toBe(false);
+      expect(result.errors.some(e => e.includes("too broad"))).toBe(true);
+    });
+  });
+
+  describe("Edge Cases", () => {
+    it("should handle queries with spaces", () => {
+      const result = validateKQLQuery('fileName : "Invoice"  AND  size  >  1000');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should handle empty string", () => {
+      const result = validateKQLQuery("");
+      expect(result.valid).toBe(false);
+      expect(result.errors.some(e => e.includes("too broad"))).toBe(true);
+    });
+
+    it("should handle queries with special characters in values", () => {
+      const result = validateKQLQuery('fileName:"Invoice_2024-01-15_FINAL.pdf"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should handle multiple AND/OR operators", () => {
+      const result = validateKQLQuery(
+        'fileName:"Invoice" AND size > 1000 OR fileName:"Receipt" AND size > 2000'
+      );
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  describe("Real-World Query Examples", () => {
+    it("should validate: Find invoices from 2024", () => {
+      const result = validateKQLQuery('fileName:"*Invoice*" AND fileName:"*2024*"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should validate: Find large PDFs", () => {
+      const result = validateKQLQuery('mimeType:"application/pdf" AND size > 50000000');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should validate: Find recent files", () => {
+      const result = validateKQLQuery('createdAt >= "2024-12-01"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should validate: Find classified files", () => {
+      const result = validateKQLQuery('_exists_:classifications');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should validate: Find files by path", () => {
+      const result = validateKQLQuery('filePath:"*/finance/*"');
+      expect(result.valid).toBe(true);
+    });
+
+    it("should validate: Complex enterprise query", () => {
+      const result = validateKQLQuery(
+        'fileName:"*2024*" AND mimeType:"application/pdf" AND size > 1000000 AND ' +
+        'createdAt >= "2024-01-01" AND createdAt < "2025-01-01" AND ' +
+        '_exists_:classifications AND classifications.type:"ANNOTATOR"'
+      );
+      expect(result.valid).toBe(true);
+    });
+  });
+});
