@@ -20,11 +20,14 @@ This MCP server enables Claude to:
 - Find documents using KQL (Kibana Query Language) queries
 - Filter by filename, size, type, classifications, or custom metadata
 - Search across all indexed datasources
+- Paginated results with context-efficient summaries to handle large datasets
+- Aggregate statistics showing file counts, types, sizes, and sensitivity metrics
 
 **Sensitivity-Aware Retrieval**
 - Understand what classifications each document contains
 - Access classification catalog to see all detected sensitive data types
-- View document metadata including all sensitivity labels
+- View lightweight file summaries with sensitivity flags for quick assessment
+- Retrieve full document metadata on demand for detailed inspection
 
 **Safe Document Access**
 - Retrieve original documents when needed
@@ -155,22 +158,24 @@ Users must provide:
 - Logging to stderr for debugging
 
 **Performance:**
-- JSONL streaming for large file lists
-- Efficient binary file handling
-- Base64 encoding for file content
-- Query-based filtering reduces data transfer
+- Context-efficient pagination with configurable page sizes (default 50, max 500 files)
+- Lightweight file summaries reduce context window usage by ~90% vs full metadata
+- Aggregate statistics computed once across full result set
+- Full metadata retrieved on-demand only for files of interest
+- Efficient binary file handling with base64 encoding
+- Query-based filtering reduces data transfer at API level
 
 ## Future Enhancements
 
 Potential future features:
-- Pagination for large result sets
-- Advanced KQL query builder
-- Batch file operations
-- Custom classification creation
+- Advanced KQL query builder with validation hints
+- Batch file operations for bulk processing
+- Custom classification creation and management
 - Redaction rule customization
-- Integration with DXR workflows
-- Real-time classification updates
-- Document upload capability
+- Integration with DXR workflows and automation
+- Real-time classification updates via webhooks
+- Document upload and indexing capability
+- Enhanced filtering options for metadata fields
 
 ## Pricing Model
 

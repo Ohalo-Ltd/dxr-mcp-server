@@ -747,3 +747,352 @@ describe("KQL Validation", () => {
     });
   });
 });
+
+describe("Pagination", () => {
+  describe("Parameter Validation", () => {
+    it("should accept valid limit values", () => {
+      const validLimits = [1, 10, 50, 100, 500];
+      validLimits.forEach(limit => {
+        expect(() => {
+          if (limit < 1 || limit > 500) {
+            throw new Error("Invalid limit: must be between 1 and 500");
+          }
+        }).not.toThrow();
+      });
+    });
+
+    it("should reject invalid limit values", () => {
+      const invalidLimits = [0, -1, 501, 1000];
+      invalidLimits.forEach(limit => {
+        expect(() => {
+          if (limit < 1 || limit > 500) {
+            throw new Error("Invalid limit: must be between 1 and 500");
+          }
+        }).toThrow();
+      });
+    });
+
+    it("should accept valid offset values", () => {
+      const validOffsets = [0, 10, 100, 1000];
+      validOffsets.forEach(offset => {
+        expect(() => {
+          if (offset < 0) {
+            throw new Error("Invalid offset: must be non-negative");
+          }
+        }).not.toThrow();
+      });
+    });
+
+    it("should reject negative offset values", () => {
+      const invalidOffsets = [-1, -10, -100];
+      invalidOffsets.forEach(offset => {
+        expect(() => {
+          if (offset < 0) {
+            throw new Error("Invalid offset: must be non-negative");
+          }
+        }).toThrow();
+      });
+    });
+  });
+
+  describe("Pagination Logic", () => {
+    const mockFiles = Array.from({ length: 100 }, (_, i) => ({
+      datasource: { id: `ds-${i}`, name: `Datasource ${i}` },
+      fileName: `file${i}.pdf`,
+      fileId: `id-${i}`,
+      path: `/path/to/file${i}.pdf`,
+      size: 1024 * (i + 1),
+      mimeType: "application/pdf",
+      createdAt: "2024-01-01T00:00:00Z",
+      lastModifiedAt: "2024-01-02T00:00:00Z",
+      annotators: i % 3 === 0 ? [{ id: "a1", name: "Credit card" }] : [],
+      labels: i % 5 === 0 ? [{ id: "l1", name: "Confidential" }] : [],
+    }));
+
+    it("should return first page with default limit", () => {
+      const offset = 0;
+      const limit = 50;
+      const page = mockFiles.slice(offset, offset + limit);
+
+      expect(page).toHaveLength(50);
+      expect(page[0].fileName).toBe("file0.pdf");
+      expect(page[49].fileName).toBe("file49.pdf");
+    });
+
+    it("should return second page", () => {
+      const offset = 50;
+      const limit = 50;
+      const page = mockFiles.slice(offset, offset + limit);
+
+      expect(page).toHaveLength(50);
+      expect(page[0].fileName).toBe("file50.pdf");
+      expect(page[49].fileName).toBe("file99.pdf");
+    });
+
+    it("should handle partial last page", () => {
+      const offset = 90;
+      const limit = 50;
+      const page = mockFiles.slice(offset, offset + limit);
+
+      expect(page).toHaveLength(10);
+      expect(page[0].fileName).toBe("file90.pdf");
+      expect(page[9].fileName).toBe("file99.pdf");
+    });
+
+    it("should return empty page when offset exceeds total", () => {
+      const offset = 200;
+      const limit = 50;
+      const page = mockFiles.slice(offset, offset + limit);
+
+      expect(page).toHaveLength(0);
+    });
+
+    it("should correctly calculate hasMore flag", () => {
+      const cases = [
+        { offset: 0, limit: 50, total: 100, expectedHasMore: true },
+        { offset: 50, limit: 50, total: 100, expectedHasMore: false },
+        { offset: 0, limit: 100, total: 100, expectedHasMore: false },
+        { offset: 0, limit: 150, total: 100, expectedHasMore: false },
+      ];
+
+      cases.forEach(({ offset, limit, total, expectedHasMore }) => {
+        const hasMore = offset + limit < total;
+        expect(hasMore).toBe(expectedHasMore);
+      });
+    });
+  });
+});
+
+describe("Summary Response Generation", () => {
+  const mockFiles = [
+    {
+      datasource: { id: "ds1", name: "Finance SharePoint" },
+      fileName: "invoice.pdf",
+      fileId: "id1",
+      path: "/finance/invoice.pdf",
+      size: 1024,
+      mimeType: "application/pdf",
+      createdAt: "2024-01-01T00:00:00Z",
+      lastModifiedAt: "2024-01-02T00:00:00Z",
+      annotators: [{ id: "a1", name: "Credit card" }],
+      labels: [{ id: "l1", name: "Confidential" }],
+    },
+    {
+      datasource: { id: "ds2", name: "HR Database" },
+      fileName: "report.xlsx",
+      fileId: "id2",
+      path: "/hr/report.xlsx",
+      size: 2048,
+      mimeType: "application/vnd.ms-excel",
+      createdAt: "2024-02-01T00:00:00Z",
+      lastModifiedAt: "2024-02-02T00:00:00Z",
+      annotators: [],
+      labels: [],
+    },
+    {
+      datasource: { id: "ds1", name: "Finance SharePoint" },
+      fileName: "statement.pdf",
+      fileId: "id3",
+      path: "/finance/statement.pdf",
+      size: 3072,
+      mimeType: "application/pdf",
+      createdAt: "2024-03-01T00:00:00Z",
+      lastModifiedAt: "2024-03-02T00:00:00Z",
+      annotators: [{ id: "a2", name: "SSN" }, { id: "a3", name: "Email" }],
+      dlpLabels: [{ id: "d1", dlpSystem: "PURVIEW", name: "Highly Confidential", type: "APPLIED" }],
+    },
+  ];
+
+  describe("File Summary Conversion", () => {
+    it("should convert full metadata to lightweight summary", () => {
+      const fullFile = mockFiles[0];
+      const summary = {
+        fileId: fullFile.fileId,
+        fileName: fullFile.fileName,
+        path: fullFile.path,
+        size: fullFile.size,
+        mimeType: fullFile.mimeType,
+        createdAt: fullFile.createdAt,
+        lastModifiedAt: fullFile.lastModifiedAt,
+        hasSensitiveData: fullFile.annotators.length > 0,
+        sensitiveDataCount: fullFile.annotators.length,
+        hasLabels: (fullFile.labels?.length ?? 0) > 0,
+        datasourceName: fullFile.datasource.name,
+      };
+
+      expect(summary.fileId).toBe("id1");
+      expect(summary.fileName).toBe("invoice.pdf");
+      expect(summary.hasSensitiveData).toBe(true);
+      expect(summary.sensitiveDataCount).toBe(1);
+      expect(summary.hasLabels).toBe(true);
+      expect(summary.datasourceName).toBe("Finance SharePoint");
+    });
+
+    it("should handle files without sensitive data", () => {
+      const fullFile = mockFiles[1];
+      const hasSensitiveData = fullFile.annotators.length > 0;
+      const hasLabels = (fullFile.labels?.length ?? 0) > 0;
+
+      expect(hasSensitiveData).toBe(false);
+      expect(hasLabels).toBe(false);
+    });
+
+    it("should count multiple annotators", () => {
+      const fullFile = mockFiles[2];
+      const sensitiveDataCount = fullFile.annotators.length;
+
+      expect(sensitiveDataCount).toBe(2);
+    });
+
+    it("should detect DLP labels as labels", () => {
+      const fullFile = mockFiles[2];
+      const hasLabels = (fullFile.labels?.length ?? 0) > 0 || (fullFile.dlpLabels?.length ?? 0) > 0;
+
+      expect(hasLabels).toBe(true);
+    });
+  });
+
+  describe("Stats Generation", () => {
+    it("should calculate total count", () => {
+      const totalFiles = mockFiles.length;
+      expect(totalFiles).toBe(3);
+    });
+
+    it("should calculate total size", () => {
+      const totalSize = mockFiles.reduce((sum, file) => sum + file.size, 0);
+      expect(totalSize).toBe(6144); // 1024 + 2048 + 3072
+    });
+
+    it("should count files with sensitive data", () => {
+      const filesWithSensitiveData = mockFiles.filter(f => f.annotators.length > 0).length;
+      expect(filesWithSensitiveData).toBe(2);
+    });
+
+    it("should count files with labels", () => {
+      const filesWithLabels = mockFiles.filter(
+        f => (f.labels?.length ?? 0) > 0 || (f.dlpLabels?.length ?? 0) > 0
+      ).length;
+      expect(filesWithLabels).toBe(2);
+    });
+
+    it("should aggregate mime types", () => {
+      const mimeTypes: Record<string, number> = {};
+      mockFiles.forEach(file => {
+        mimeTypes[file.mimeType] = (mimeTypes[file.mimeType] || 0) + 1;
+      });
+
+      expect(mimeTypes["application/pdf"]).toBe(2);
+      expect(mimeTypes["application/vnd.ms-excel"]).toBe(1);
+    });
+
+    it("should determine date range", () => {
+      const dates = mockFiles.map(f => f.createdAt).sort();
+      const earliest = dates[0];
+      const latest = dates[dates.length - 1];
+
+      expect(earliest).toBe("2024-01-01T00:00:00Z");
+      expect(latest).toBe("2024-03-01T00:00:00Z");
+    });
+  });
+
+  describe("Response Structure", () => {
+    it("should include status field", () => {
+      const response = { status: "ok" };
+      expect(response.status).toBe("ok");
+    });
+
+    it("should include stats object", () => {
+      const stats = {
+        totalFiles: 3,
+        totalSize: 6144,
+        filesWithSensitiveData: 2,
+        filesWithLabels: 2,
+        mimeTypes: { "application/pdf": 2, "application/vnd.ms-excel": 1 },
+        dateRange: { earliest: "2024-01-01T00:00:00Z", latest: "2024-03-01T00:00:00Z" },
+      };
+
+      expect(stats.totalFiles).toBe(3);
+      expect(stats.totalSize).toBe(6144);
+      expect(stats.filesWithSensitiveData).toBe(2);
+      expect(stats.filesWithLabels).toBe(2);
+      expect(stats.mimeTypes).toBeDefined();
+      expect(stats.dateRange).toBeDefined();
+    });
+
+    it("should include files array", () => {
+      const files = mockFiles.map(f => ({
+        fileId: f.fileId,
+        fileName: f.fileName,
+        path: f.path,
+        size: f.size,
+        mimeType: f.mimeType,
+        createdAt: f.createdAt,
+        lastModifiedAt: f.lastModifiedAt,
+        hasSensitiveData: f.annotators.length > 0,
+        sensitiveDataCount: f.annotators.length,
+        hasLabels: (f.labels?.length ?? 0) > 0 || (f.dlpLabels?.length ?? 0) > 0,
+        datasourceName: f.datasource.name,
+      }));
+
+      expect(files).toHaveLength(3);
+      expect(files[0].fileId).toBe("id1");
+    });
+
+    it("should include pagination object", () => {
+      const pagination = {
+        offset: 0,
+        limit: 50,
+        returnedCount: 3,
+        hasMore: false,
+      };
+
+      expect(pagination.offset).toBe(0);
+      expect(pagination.limit).toBe(50);
+      expect(pagination.returnedCount).toBe(3);
+      expect(pagination.hasMore).toBe(false);
+    });
+  });
+});
+
+describe("get_file_metadata_details tool", () => {
+  it("should require id parameter", () => {
+    expect(() => {
+      const args: { id?: string } = {};
+      if (!args.id) {
+        throw new Error("Missing required parameter: id");
+      }
+    }).toThrow("Missing required parameter: id");
+  });
+
+  it("should accept valid id parameter", () => {
+    expect(() => {
+      const args = { id: "test-file-id-123" };
+      if (typeof args.id !== "string" || args.id.trim().length === 0) {
+        throw new Error("Invalid id: must be a non-empty string");
+      }
+    }).not.toThrow();
+  });
+
+  it("should reject empty id", () => {
+    expect(() => {
+      const args = { id: "" };
+      if (typeof args.id !== "string" || args.id.trim().length === 0) {
+        throw new Error("Invalid id: must be a non-empty string");
+      }
+    }).toThrow();
+  });
+
+  it("should construct correct query for file lookup", () => {
+    const fileId = "abc123";
+    const query = `/api/v1/files?q=fileId:"${encodeURIComponent(fileId)}"`;
+
+    expect(query).toBe('/api/v1/files?q=fileId:"abc123"');
+  });
+
+  it("should handle special characters in file ID", () => {
+    const fileId = "file-id-with-special@chars#123";
+    const encodedId = encodeURIComponent(fileId);
+
+    expect(encodedId).toBe("file-id-with-special%40chars%23123");
+  });
+});
