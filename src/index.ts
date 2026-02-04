@@ -42,10 +42,18 @@ const VERSION = packageJson.version;
 // Configuration from environment variables
 const DXR_API_URL = process.env.DXR_API_URL;
 const DXR_API_TOKEN = process.env.DXR_API_TOKEN;
+const DXR_SKIP_SSL_VERIFY = process.env.DXR_SKIP_SSL_VERIFY === "true";
 
 if (!DXR_API_URL || !DXR_API_TOKEN) {
   console.error("Error: DXR_API_URL and DXR_API_TOKEN environment variables are required");
   process.exit(1);
+}
+
+// Warn if SSL verification is disabled (dev/test environments only)
+if (DXR_SKIP_SSL_VERIFY) {
+  console.error("WARNING: SSL certificate verification is disabled. This should only be used in development environments with self-signed certificates.");
+  // Set Node.js environment variable to skip SSL verification
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
 
 // Security constants
@@ -84,7 +92,9 @@ async function makeApiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${DXR_API_URL}${endpoint}`;
+  // Normalize URL to avoid double slashes - remove trailing slash from base URL
+  const baseUrl = DXR_API_URL?.endsWith('/') ? DXR_API_URL.slice(0, -1) : DXR_API_URL;
+  const url = `${baseUrl}${endpoint}`;
 
   // SSRF prevention: validate the constructed URL points to the allowed host
   const parsedUrl = new URL(url);
@@ -97,14 +107,22 @@ async function makeApiRequest<T>(
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
+    // Build headers - don't send Content-Type on GET requests
+    const headers: Record<string, string> = {
+      "Authorization": `Bearer ${DXR_API_TOKEN}`,
+      ...options.headers as Record<string, string>,
+    };
+
+    // Only add Content-Type for requests with a body (POST, PUT, PATCH)
+    const method = (options.method || 'GET').toUpperCase();
+    if (method !== 'GET' && method !== 'HEAD') {
+      headers["Content-Type"] = "application/json";
+    }
+
     const response = await fetch(url, {
       ...options,
       signal: controller.signal,
-      headers: {
-        "Authorization": `Bearer ${DXR_API_TOKEN}`,
-        "Content-Type": "application/json",
-        ...options.headers,
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -184,6 +202,38 @@ function convertToFileSummary(file: FullFileMetadata): FileSummary {
   const sensitiveDataCount = file.annotators?.length ?? 0;
   const hasLabels = (file.labels?.length ?? 0) > 0 || (file.dlpLabels?.length ?? 0) > 0;
 
+  // Generate DXR link (view file in DXR interface)
+  const baseUrl = DXR_API_URL?.endsWith('/') ? DXR_API_URL.slice(0, -1) : DXR_API_URL;
+  const dxrLink = `${baseUrl}/files/${encodeURIComponent(file.fileId)}`;
+
+  // Generate native storage link based on connector type
+  let nativeLink: string | undefined;
+  const connectorType = file.datasource?.connector?.type;
+  const siteUrl = file.datasource?.connector?.siteUrl;
+
+  if (connectorType && file.fileName) {
+    // Google Drive - create search link to find the file
+    if (connectorType.includes('GOOGLE_DRIVE') || connectorType.includes('GOOGLE_WORKSPACE')) {
+      // Use Google Drive search to find the file by exact name
+      const searchQuery = encodeURIComponent(`"${file.fileName}"`);
+      nativeLink = `https://drive.google.com/drive/search?q=${searchQuery}`;
+    }
+    // SharePoint/OneDrive - construct web URL if we have siteUrl
+    else if (siteUrl && file.path && (connectorType.includes('SHAREPOINT') || connectorType.includes('ONEDRIVE'))) {
+      // SharePoint URLs typically follow the pattern: siteUrl + /Shared Documents/ + path
+      // Remove leading slash from path
+      const cleanPath = file.path.startsWith('/') ? file.path.substring(1) : file.path;
+      // Encode each path segment separately for proper URL construction
+      const encodedPath = cleanPath.split('/').map(segment => encodeURIComponent(segment)).join('/');
+      nativeLink = `${siteUrl}/Shared%20Documents/${encodedPath}`;
+    }
+    // Box - create search link
+    else if (connectorType.includes('BOX')) {
+      const searchQuery = encodeURIComponent(file.fileName);
+      nativeLink = `https://app.box.com/search?query=${searchQuery}`;
+    }
+  }
+
   return {
     fileId: file.fileId,
     fileName: file.fileName,
@@ -196,6 +246,8 @@ function convertToFileSummary(file: FullFileMetadata): FileSummary {
     sensitiveDataCount,
     hasLabels,
     datasourceName: file.datasource?.name,
+    dxrLink,
+    nativeLink,
   };
 }
 
@@ -443,15 +495,23 @@ const tools: Tool[] = [
     name: "list_file_metadata",
     description: `Search and list files indexed in Data X-Ray with lightweight summaries to minimize context usage.
 
+🚨 PREREQUISITE: If this conversation involves sensitive data, PII, or data classification, you MUST call get_classifications FIRST before using this tool. You cannot search for sensitive data types without knowing what annotators exist.
+
 WHEN TO USE:
-- User asks "what files do you have?" or "find documents about X"
+- User asks "what files do you have?" or "find documents about X" (call get_classifications FIRST)
 - User wants to search for files by name, type, size, or date
-- User asks about sensitive documents or classified files
+- User asks about sensitive documents or classified files (call get_classifications FIRST)
 - Starting point for any file-related workflow
+
+CRITICAL: Before searching for files with sensitive data:
+1. FIRST: Call get_classifications to get the catalog of annotators
+2. THEN: Use this tool with annotators.name:"exact name from catalog"
+3. Without step 1, you don't know what annotators exist or their exact names
 
 WHAT IT RETURNS:
 - Aggregate statistics (total count, size, file types, sensitive data counts)
 - Lightweight file summaries with essential fields only (fileId, fileName, path, size, mimeType, dates, sensitivity flags)
+- Clickable links: dxrLink (view in DXR) and nativeLink (open in SharePoint/Google Drive/etc. if available)
 - Pagination info to retrieve more results
 
 PAGINATION:
@@ -562,12 +622,15 @@ Returns: Full file metadata object with all available fields.`,
   },
   {
     name: "get_file_content",
-    description: `Retrieve the original content of a specific file by ID. Use this when the user wants to see, read, or analyze a file's actual content.
+    description: `Retrieve the ORIGINAL, UNREDACTED content of a file. This is the DEFAULT tool for viewing file contents.
 
-WHEN TO USE:
-- User says "show me that file" or "what's in this document?"
-- User wants to read or analyze file contents
-- After finding files with list_file_metadata
+WHEN TO USE (most common):
+- User says "show me that file" or "what's in this document?" - USE THIS (not redacted version)
+- User wants to read or analyze file contents - USE THIS
+- User asks about a specific file - USE THIS (default choice)
+- After finding files with list_file_metadata and user wants to view them - USE THIS
+
+DO NOT use get_file_redacted_text unless the user explicitly asks for redaction or there's a specific privacy concern.
 
 PREREQUISITE: You need a file ID from list_file_metadata first.
 
@@ -585,13 +648,19 @@ Returns: Base64-encoded file content with MIME type. For text files, decode to r
   },
   {
     name: "get_file_redacted_text",
-    description: `Get a privacy-safe version of a file with sensitive information replaced by [REDACTED]. Use this when handling documents that may contain PII, PHI, SSNs, credit cards, or other sensitive data.
+    description: `Get a privacy-safe version of a file with sensitive information replaced by [REDACTED].
 
-WHEN TO USE:
-- User wants to see a document but it might contain sensitive info
-- User asks about a file that has classifications (sensitive data detected)
-- User explicitly asks for a redacted or sanitized version
-- When you need to share file content but protect privacy
+IMPORTANT: Only use this tool in specific situations - get_file_content is the default choice for viewing files.
+
+WHEN TO USE (rare cases):
+- User EXPLICITLY asks for "redacted", "sanitized", or "privacy-safe" version
+- User specifically says "hide sensitive data" or "mask PII"
+- Legal/compliance requirement to protect sensitive information
+
+DO NOT USE for:
+- Normal file viewing (use get_file_content instead)
+- Just because a file has sensitive data detected (user may need to see it)
+- General "show me the file" requests (use get_file_content)
 
 PREREQUISITE:
 1. Get file ID from list_file_metadata
@@ -615,15 +684,33 @@ Returns: Text content with sensitive data replaced by [REDACTED] markers.`,
   },
   {
     name: "get_classifications",
-    description: `List all sensitivity classifications that Data X-Ray can detect. Use this to understand what types of sensitive data the system identifies.
+    description: `List all sensitivity classifications that Data X-Ray can detect. This provides the catalog of available annotators, labels, and extractors.
 
-WHEN TO USE:
-- User asks "what sensitive data can you detect?"
-- User wants to know what classifications/labels are available
-- User asks about PII, PHI, or data privacy detection capabilities
-- When explaining what makes a file "sensitive"
+🚨 CRITICAL REQUIREMENT: You MUST call this tool FIRST at the start of ANY conversation about files or sensitive data. Without this context, you cannot know what types of sensitive data exist in the system or how to search for them.
 
-Returns: List of annotators (SSN, credit card, email, etc.), labels, and extractors with descriptions.`,
+MANDATORY - Call this IMMEDIATELY when:
+- Starting a conversation about files (call this FIRST, before list_file_metadata)
+- User asks ANY question about sensitive data, PII, PHI, financial data, etc.
+- User asks "what files do you have" or "find documents" (call this FIRST to understand context)
+- User mentions any data type (credit cards, SSN, emails, etc.) - you need to know exact names
+
+PROVIDES ESSENTIAL CONTEXT:
+Without calling this first, you cannot:
+- Know what annotators exist (Credit Card, SSN, Email, etc.)
+- Know exact annotator names to use in queries
+- Understand what domains are available (PII, Financially Sensitive, etc.)
+- Search for files with specific sensitive data types
+- Explain what sensitive data was detected in files
+
+WORKFLOW:
+1. FIRST: Call get_classifications (get the catalog)
+2. THEN: Use list_file_metadata with annotators.name:"..." queries based on what you learned
+
+Returns: Complete catalog of all classification items:
+- Annotators (regex, dictionary, NER) with names, types, subtypes, and domains
+- Labels (manual and smart tags)
+- Extractors (metadata extraction rules)
+Each includes: id, name, type, subtype, description, createdAt, updatedAt, link`,
     inputSchema: {
       type: "object",
       properties: {},
@@ -701,9 +788,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         // Fetch JSONL data from API
-        const query = queryParam ? `?q=${encodeURIComponent(queryParam as string)}` : "";
+        // API requires a 'q' parameter - use wildcard as default to match all files
+        const kqlQuery = queryParam ? (queryParam as string) : "fileName:\"*\"";
         const result = await makeApiRequest<FileMetadataListResponse>(
-          `/api/v1/files${query}`
+          `/api/v1/files?q=${encodeURIComponent(kqlQuery)}`
         );
 
         // Convert to summary response with pagination
@@ -843,16 +931,91 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
+// Graceful shutdown handling
+let isShuttingDown = false;
+
+async function gracefulShutdown(signal: string) {
+  if (isShuttingDown) {
+    console.error(`[DXR] Already shutting down, ignoring ${signal}`);
+    return;
+  }
+  isShuttingDown = true;
+  console.error(`[DXR] Received ${signal}, shutting down gracefully...`);
+
+  try {
+    await server.close();
+    console.error(`[DXR] Server closed successfully`);
+  } catch (error) {
+    console.error(`[DXR] Error during shutdown:`, error);
+  }
+
+  process.exit(0);
+}
+
+// Handle process signals for graceful shutdown
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGHUP', () => gracefulShutdown('SIGHUP'));
+
+// Handle uncaught errors to prevent silent crashes
+process.on('uncaughtException', (error) => {
+  console.error(`[DXR] Uncaught exception:`, error);
+  // Don't exit - try to keep running if possible
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error(`[DXR] Unhandled promise rejection:`, reason);
+  // Don't exit - try to keep running if possible
+});
+
 // Start the server
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
+  console.error(`[DXR] Starting Data X-Ray MCP Server v${VERSION}...`);
+  console.error(`[DXR] Node.js version: ${process.version}`);
+  console.error(`[DXR] MCP SDK version: 1.25.3`);
 
-  // Log to stderr so it doesn't interfere with MCP communication
-  console.error(`Data X-Ray MCP Server v${VERSION} running on stdio`);
+  // Monitor stdin for connection issues
+  process.stdin.on('end', () => {
+    console.error(`[DXR] stdin ended - client disconnected`);
+    if (!isShuttingDown) {
+      gracefulShutdown('stdin-end');
+    }
+  });
+
+  process.stdin.on('close', () => {
+    console.error(`[DXR] stdin closed`);
+  });
+
+  process.stdin.on('error', (err) => {
+    console.error(`[DXR] stdin error:`, err);
+  });
+
+  const transport = new StdioServerTransport();
+
+  // Log connection lifecycle events
+  transport.onclose = () => {
+    console.error(`[DXR] Transport closed`);
+    if (!isShuttingDown) {
+      console.error(`[DXR] Unexpected transport close, initiating shutdown...`);
+      gracefulShutdown('transport-close');
+    }
+  };
+
+  transport.onerror = (error) => {
+    console.error(`[DXR] Transport error:`, error);
+  };
+
+  try {
+    await server.connect(transport);
+    console.error(`[DXR] Server connected and ready on stdio`);
+    console.error(`[DXR] Waiting for MCP client messages...`);
+  } catch (error) {
+    console.error(`[DXR] Failed to connect server:`, error);
+    throw error;
+  }
 }
 
 main().catch((error) => {
-  console.error("Fatal error:", error);
+  console.error("[DXR] Fatal error during startup:", error);
   process.exit(1);
 });

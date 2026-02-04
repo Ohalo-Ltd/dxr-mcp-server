@@ -39,6 +39,8 @@ export interface FileSummary {
   sensitiveDataCount: number;
   hasLabels: boolean;
   datasourceName?: string;
+  dxrLink?: string; // Link to view file in DXR interface
+  nativeLink?: string; // Link to file in native storage (SharePoint, Google Drive, etc.)
 }
 
 // Aggregate statistics for file list responses
@@ -75,6 +77,7 @@ export interface FullFileMetadata {
     connector?: {
       type: string;
       userId?: string;
+      siteUrl?: string; // SharePoint/OneDrive site URL
     };
   };
   fileName: string;

@@ -67,17 +67,30 @@ function parseLogFile(path: string): LogEntry[] {
   const lines = content.split("\n").filter(line => line.trim());
 
   return lines.map(line => {
-    // Parse format: 2026-01-25T17:45:25.106Z [info] [dxr] Message...
-    const match = line.match(/^(\d{4}-\d{2}-\d{2}T[\d:.]+Z)\s+\[(\w+)\]\s+\[(\w+)\]\s+(.*)$/);
-    if (match) {
+    // Try new format first: 2026-02-03T09:55:07.479Z [dxr] [info] Message... { metadata: ... }
+    const newMatch = line.match(/^(\d{4}-\d{2}-\d{2}T[\d:.]+Z)\s+\[(\w+)\]\s+\[(\w+)\]\s+(.*?)(?:\s+\{\s*metadata:.*\})?$/);
+    if (newMatch) {
       return {
-        timestamp: new Date(match[1]),
-        level: match[2],
-        server: match[3],
-        message: match[4],
+        timestamp: new Date(newMatch[1]),
+        level: newMatch[3],  // level is third in new format
+        server: newMatch[2], // server is second in new format
+        message: newMatch[4],
         raw: line
       };
     }
+
+    // Try old format: 2026-01-25T17:45:25.106Z [info] [dxr] Message...
+    const oldMatch = line.match(/^(\d{4}-\d{2}-\d{2}T[\d:.]+Z)\s+\[(\w+)\]\s+\[(\w+)\]\s+(.*)$/);
+    if (oldMatch) {
+      return {
+        timestamp: new Date(oldMatch[1]),
+        level: oldMatch[2],
+        server: oldMatch[3],
+        message: oldMatch[4],
+        raw: line
+      };
+    }
+
     return {
       timestamp: new Date(),
       level: "unknown",
@@ -86,6 +99,54 @@ function parseLogFile(path: string): LogEntry[] {
       raw: line
     };
   });
+}
+
+function extractJsonFromMessage(message: string, prefix: string): unknown | null {
+  const prefixIndex = message.indexOf(prefix);
+  if (prefixIndex === -1) return null;
+
+  const jsonStart = message.indexOf("{", prefixIndex);
+  if (jsonStart === -1) return null;
+
+  // Find matching closing brace by counting braces
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+
+  for (let i = jsonStart; i < message.length; i++) {
+    const char = message[i];
+
+    if (escape) {
+      escape = false;
+      continue;
+    }
+
+    if (char === "\\") {
+      escape = true;
+      continue;
+    }
+
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (inString) continue;
+
+    if (char === "{") depth++;
+    if (char === "}") {
+      depth--;
+      if (depth === 0) {
+        try {
+          return JSON.parse(message.substring(jsonStart, i + 1));
+        } catch {
+          return null;
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
 function extractToolCalls(entries: LogEntry[]): ToolCall[] {
@@ -97,46 +158,61 @@ function extractToolCalls(entries: LogEntry[]): ToolCall[] {
     // Look for tool call requests
     if (entry.message.includes("Message from client:") && entry.message.includes("tools/call")) {
       try {
-        const jsonMatch = entry.message.match(/Message from client:\s*(\{.*\})$/);
-        if (jsonMatch) {
-          const request = JSON.parse(jsonMatch[1]);
-          if (request.method === "tools/call" && request.params) {
-            const toolCall: ToolCall = {
-              tool: request.params.name,
-              params: request.params.arguments || {},
-              timestamp: entry.timestamp,
-              success: false
-            };
+        const request = extractJsonFromMessage(entry.message, "Message from client:") as {
+          method?: string;
+          params?: { name?: string; arguments?: Record<string, unknown> };
+          id?: number;
+        } | null;
 
-            // Look for the response in subsequent entries
-            for (let j = i + 1; j < Math.min(i + 10, entries.length); j++) {
-              const responseEntry = entries[j];
-              if (responseEntry.message.includes("Message from server:") &&
-                  responseEntry.message.includes(`"id":${request.id}`)) {
-                const responseMatch = responseEntry.message.match(/Message from server:\s*(\{.*\})$/);
-                if (responseMatch) {
-                  const response = JSON.parse(responseMatch[1]);
-                  if (response.error) {
+        if (request && request.method === "tools/call" && request.params) {
+          const toolCall: ToolCall = {
+            tool: request.params.name || "unknown",
+            params: request.params.arguments || {},
+            timestamp: entry.timestamp,
+            success: false
+          };
+
+          // Look for the response in subsequent entries
+          for (let j = i + 1; j < Math.min(i + 20, entries.length); j++) {
+            const responseEntry = entries[j];
+            if (responseEntry.message.includes("Message from server:") &&
+                responseEntry.message.includes(`"id":${request.id}`)) {
+              const response = extractJsonFromMessage(responseEntry.message, "Message from server:") as {
+                error?: { message?: string };
+                result?: { content?: Array<{ text?: string }>; isError?: boolean };
+              } | null;
+
+              if (response) {
+                if (response.error) {
+                  toolCall.success = false;
+                  toolCall.error = response.error.message || JSON.stringify(response.error);
+                } else if (response.result) {
+                  toolCall.success = true;
+                  toolCall.response = response.result;
+
+                  // Check if the response itself indicates an error
+                  if (response.result.isError) {
                     toolCall.success = false;
-                    toolCall.error = response.error.message || JSON.stringify(response.error);
-                  } else if (response.result) {
-                    toolCall.success = true;
-                    toolCall.response = response.result;
-
-                    // Check if the response itself indicates an error
-                    const resultStr = JSON.stringify(response.result);
-                    if (resultStr.includes('"isError":true') || resultStr.includes('"error":')) {
-                      toolCall.success = false;
+                    // Extract error message from content
+                    const content = response.result.content?.[0]?.text;
+                    if (content) {
+                      try {
+                        const parsed = JSON.parse(content);
+                        toolCall.error = parsed.error || "Tool returned error in response";
+                      } catch {
+                        toolCall.error = "Tool returned error in response";
+                      }
+                    } else {
                       toolCall.error = "Tool returned error in response";
                     }
                   }
                 }
-                break;
               }
+              break;
             }
-
-            toolCalls.push(toolCall);
           }
+
+          toolCalls.push(toolCall);
         }
       } catch (e) {
         // Skip malformed entries
@@ -243,6 +319,59 @@ function analyzeConnectionIssues(entries: LogEntry[]): Issue[] {
   return issues;
 }
 
+function analyzeAPIErrors(toolCalls: ToolCall[]): Issue[] {
+  const issues: Issue[] = [];
+
+  // Check for 403 Access Denied errors
+  const accessDeniedCalls = toolCalls.filter(tc =>
+    tc.error?.includes("403") || tc.error?.includes("Access Denied")
+  );
+  if (accessDeniedCalls.length > 0) {
+    issues.push({
+      severity: "error",
+      category: "API Authentication",
+      description: "403 Access Denied errors from DXR API",
+      occurrences: accessDeniedCalls.length,
+      examples: accessDeniedCalls.slice(0, 3).map(tc =>
+        `${tc.tool}: ${tc.error?.substring(0, 150) || "Unknown error"}`
+      )
+    });
+  }
+
+  // Check for "Insufficient parameters" errors
+  const insufficientParamsCalls = toolCalls.filter(tc =>
+    tc.error?.includes("Insufficient parameters")
+  );
+  if (insufficientParamsCalls.length > 0) {
+    issues.push({
+      severity: "error",
+      category: "API Parameters",
+      description: "API calls missing required parameters",
+      occurrences: insufficientParamsCalls.length,
+      examples: insufficientParamsCalls.slice(0, 3).map(tc =>
+        `${tc.tool}(${JSON.stringify(tc.params).substring(0, 100)})`
+      )
+    });
+  }
+
+  // Check for other API errors
+  const otherApiErrors = toolCalls.filter(tc =>
+    tc.error && !tc.error.includes("403") && !tc.error.includes("Insufficient parameters") &&
+    (tc.error.includes("API") || tc.error.includes("request failed"))
+  );
+  if (otherApiErrors.length > 0) {
+    issues.push({
+      severity: "warning",
+      category: "API Errors",
+      description: "Other API errors detected",
+      occurrences: otherApiErrors.length,
+      examples: otherApiErrors.slice(0, 3).map(tc => tc.error?.substring(0, 100) || "Unknown error")
+    });
+  }
+
+  return issues;
+}
+
 function generateRecommendations(issues: Issue[], toolCalls: ToolCall[]): Recommendation[] {
   const recommendations: Recommendation[] = [];
 
@@ -277,14 +406,42 @@ function generateRecommendations(issues: Issue[], toolCalls: ToolCall[]): Recomm
     });
   }
 
+  // API authentication issues
+  const authIssues = issues.filter(i => i.category === "API Authentication");
+  if (authIssues.length > 0) {
+    recommendations.push({
+      priority: "high",
+      area: "API Configuration",
+      suggestion: "Check DXR API authentication - verify API key and datasource ID are correct",
+      rationale: `${authIssues[0].occurrences} authentication failures. May need to update .env configuration.`
+    });
+  }
+
+  // API parameter issues
+  const paramIssues = issues.filter(i => i.category === "API Parameters");
+  if (paramIssues.length > 0) {
+    recommendations.push({
+      priority: "high",
+      area: "Tool Schema",
+      suggestion: "Review required parameters for DXR API calls - some tools may need additional required fields",
+      rationale: `${paramIssues[0].occurrences} calls failed due to missing parameters. Check if datasourceId or other params are required.`
+    });
+  }
+
   // Analyze tool usage patterns
   const toolUsage: Record<string, number> = {};
   toolCalls.forEach(tc => {
     toolUsage[tc.tool] = (toolUsage[tc.tool] || 0) + 1;
   });
 
-  const unusedTools = ["list_file_metadata", "get_file_content", "get_file_redacted_text", "get_classifications", "get_redactors"]
-    .filter(tool => !toolUsage[tool]);
+  const unusedTools = [
+    "list_file_metadata",
+    "get_file_metadata_details",
+    "get_file_content",
+    "get_file_redacted_text",
+    "get_classifications",
+    "get_redactors"
+  ].filter(tool => !toolUsage[tool]);
 
   if (unusedTools.length > 0) {
     recommendations.push({
@@ -319,7 +476,8 @@ function generateRecommendations(issues: Issue[], toolCalls: ToolCall[]): Recomm
 function generateReport(entries: LogEntry[], toolCalls: ToolCall[]): AnalysisReport {
   const issues: Issue[] = [
     ...analyzeKQLIssues(toolCalls),
-    ...analyzeConnectionIssues(entries)
+    ...analyzeConnectionIssues(entries),
+    ...analyzeAPIErrors(toolCalls)
   ];
 
   const recommendations = generateRecommendations(issues, toolCalls);
