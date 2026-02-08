@@ -34,8 +34,10 @@ execution:
   max_tool_calls: 20
   dxr_hints:
     expected_tools:
+      - "get_classifications"
       - "list_file_metadata"
     expected_queries:
+      - 'labels.name:"Governance: Needs Classification"'
       - '_exists_:annotators'
 
 compliance:

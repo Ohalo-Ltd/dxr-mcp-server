@@ -17,7 +17,7 @@
         { "id": "ann-002", "name": "Medical Record Number", "occurrences": 10, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-003", "name": "Diagnosis Code", "occurrences": 8, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-002", "name": "Confidential" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-002", "name": "Confidential" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [
@@ -41,7 +41,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 12, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-004", "name": "Treatment Plan", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -63,7 +63,7 @@
         { "id": "ann-002", "name": "Medical Record Number", "occurrences": 15, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-005", "name": "Date of Birth", "occurrences": 3, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-002", "name": "Confidential" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-002", "name": "Confidential" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -84,7 +84,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 8, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-006", "name": "Imaging Results", "occurrences": 3, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-003", "name": "Radiology" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-003", "name": "Radiology" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -105,7 +105,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 6, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-006", "name": "Imaging Results", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-003", "name": "Radiology" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-003", "name": "Radiology" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -126,7 +126,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 10, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-007", "name": "Medication Name", "occurrences": 25, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-004", "name": "Medication" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-004", "name": "Medication" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -147,7 +147,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 8, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-007", "name": "Medication Name", "occurrences": 20, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-004", "name": "Medication" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-004", "name": "Medication" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -168,7 +168,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 12, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-008", "name": "Procedure Code", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-005", "name": "Surgical" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-005", "name": "Surgical" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -189,7 +189,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 10, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-008", "name": "Procedure Code", "occurrences": 4, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-005", "name": "Surgical" }],
+      "labels": [{ "id": "lbl-001", "name": "HIPAA: Confirmed PHI Document" }, { "id": "lbl-005", "name": "Surgical" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
@@ -211,7 +211,7 @@
         { "id": "ann-009", "name": "Health Insurance ID", "occurrences": 3, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-003", "name": "Diagnosis Code", "occurrences": 4, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-006", "name": "Insurance Claims" }],
+      "labels": [{ "id": "lbl-006", "name": "HIPAA: Confirmed PHI Document" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Claims-Processing" }]
@@ -232,7 +232,7 @@
         { "id": "ann-001", "name": "Patient Name", "occurrences": 6, "domain": { "id": "dom-phi", "name": "PHI" } },
         { "id": "ann-009", "name": "Health Insurance ID", "occurrences": 4, "domain": { "id": "dom-phi", "name": "PHI" } }
       ],
-      "labels": [{ "id": "lbl-006", "name": "Insurance Claims" }],
+      "labels": [{ "id": "lbl-006", "name": "HIPAA: Confirmed PHI Document" }],
       "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Claims-Processing" }]
@@ -253,7 +253,7 @@
         { "id": "ann-010", "name": "Full Name", "occurrences": 8, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-011", "name": "Employee ID", "occurrences": 3, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -274,7 +274,7 @@
         { "id": "ann-010", "name": "Full Name", "occurrences": 10, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-011", "name": "Employee ID", "occurrences": 2, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -296,7 +296,7 @@
         { "id": "ann-012", "name": "Bank Account Number", "occurrences": 50, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-013", "name": "Salary", "occurrences": 50, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }, { "id": "lbl-009", "name": "Financial Records" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }, { "id": "lbl-009", "name": "Governance: Highly Sensitive Financial Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }, { "accountType": "GROUP", "name": "Finance-Team" }]
@@ -317,7 +317,7 @@
         { "id": "ann-010", "name": "Full Name", "occurrences": 30, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-013", "name": "Salary", "occurrences": 30, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -339,7 +339,7 @@
         { "id": "ann-014", "name": "Date of Birth", "occurrences": 100, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-015", "name": "Gender", "occurrences": 100, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -361,7 +361,7 @@
         { "id": "ann-015", "name": "Gender", "occurrences": 80, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-016", "name": "Ethnicity", "occurrences": 80, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -383,7 +383,7 @@
         { "id": "ann-017", "name": "Email Address", "occurrences": 500, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-018", "name": "Phone Number", "occurrences": 450, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -424,7 +424,7 @@
         { "id": "ann-010", "name": "Full Name", "occurrences": 25, "domain": { "id": "dom-pii", "name": "PII" } },
         { "id": "ann-011", "name": "Employee ID", "occurrences": 25, "domain": { "id": "dom-pii", "name": "PII" } }
       ],
-      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "labels": [{ "id": "lbl-007", "name": "GDPR: Confirmed Employee PII" }, { "id": "lbl-008", "name": "EU Data" }],
       "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
@@ -442,7 +442,7 @@
       "owner": "Defense Programs",
       "contentSha256": "u777zz76z3y22yz7w3uu0123456789uvwxyz21",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
@@ -465,7 +465,7 @@
       "owner": "Defense Programs",
       "contentSha256": "v888aa87a4z33za8x4vv1234567890vwxyza22",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
@@ -487,7 +487,7 @@
       "owner": "Defense Programs",
       "contentSha256": "w999bb98b5a44ab9y5ww2345678901wxyzab23",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
@@ -545,7 +545,7 @@
       "owner": "Defense Programs",
       "contentSha256": "z222ee21e8d77de2b8zz5678901234zabcde26",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared-TS" }]
@@ -568,7 +568,7 @@
       "owner": "Defense Programs",
       "contentSha256": "a333ff32f9e88ef3c9aa6789012345abcdef27",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared-TS" }]
@@ -591,7 +591,7 @@
       "owner": "Defense Programs",
       "contentSha256": "b444gg43g0f99fg4d0bb7890123456bcdefg28",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
@@ -614,7 +614,7 @@
       "owner": "Defense Programs",
       "contentSha256": "c555hh54h1g00gh5e1cc8901234567cdefgh29",
       "annotators": [],
-      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }],
+      "labels": [{ "id": "lbl-010", "name": "ITAR: Confirmed ITAR Controlled" }],
       "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
@@ -639,7 +639,7 @@
         { "id": "ann-019", "name": "Credit Card Number", "occurrences": 500, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } },
         { "id": "ann-020", "name": "CVV", "occurrences": 500, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
       ],
-      "labels": [{ "id": "lbl-009", "name": "Financial Records" }, { "id": "lbl-013", "name": "PCI Scope" }],
+      "labels": [{ "id": "lbl-009", "name": "Governance: Highly Sensitive Financial Data" }, { "id": "lbl-013", "name": "PCI: Confirmed Cardholder Data" }],
       "dlpLabels": [{ "name": "PCI-DSS", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-PCI-Certified" }]
@@ -659,7 +659,7 @@
       "annotators": [
         { "id": "ann-019", "name": "Credit Card Number", "occurrences": 350, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
       ],
-      "labels": [{ "id": "lbl-009", "name": "Financial Records" }, { "id": "lbl-013", "name": "PCI Scope" }],
+      "labels": [{ "id": "lbl-009", "name": "Governance: Highly Sensitive Financial Data" }, { "id": "lbl-013", "name": "PCI: Confirmed Cardholder Data" }],
       "dlpLabels": [{ "name": "PCI-DSS", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-PCI-Certified" }]
@@ -679,7 +679,7 @@
       "annotators": [
         { "id": "ann-019", "name": "Credit Card Number", "occurrences": 1, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
       ],
-      "labels": [{ "id": "lbl-013", "name": "PCI Scope" }],
+      "labels": [{ "id": "lbl-013", "name": "PCI: Confirmed Cardholder Data" }],
       "dlpLabels": [{ "name": "PCI-DSS", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-PCI-Certified" }]
@@ -697,7 +697,7 @@
       "owner": "Legal Dept",
       "contentSha256": "g999ll98l5k44kl9i5gg2345678901ghijkl33",
       "annotators": [],
-      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "labels": [{ "id": "lbl-014", "name": "Search: Confirmed Contract" }],
       "dlpLabels": [{ "name": "Confidential", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [
@@ -722,7 +722,7 @@
       "owner": "Legal Dept",
       "contentSha256": "h000mm09m6l55lm0j6hh3456789012hijklm34",
       "annotators": [],
-      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "labels": [{ "id": "lbl-014", "name": "Search: Confirmed Contract" }],
       "dlpLabels": [{ "name": "Confidential", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Legal-Team" }]
@@ -744,7 +744,7 @@
       "owner": "Legal Dept",
       "contentSha256": "i111nn10n7m66mn1k7ii4567890123ijklmn35",
       "annotators": [],
-      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "labels": [{ "id": "lbl-014", "name": "Search: Confirmed Contract" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Legal-Team" }]
@@ -765,7 +765,7 @@
       "owner": "Legal Dept",
       "contentSha256": "j222oo21o8n77no2l8jj5678901234jklmno36",
       "annotators": [],
-      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "labels": [{ "id": "lbl-014", "name": "Search: Confirmed Contract" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Legal-Team" }]
@@ -786,7 +786,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "k333pp32p9o88op3m9kk6789012345klmnop37",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -807,7 +807,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "l444qq43q0p99pq4n0ll7890123456lmnopq38",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -828,7 +828,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "m555rr54r1q00qr5o1mm8901234567mnopqr39",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -849,7 +849,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "n666ss65s2r11rs6p2nn9012345678nopqrs40",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -870,7 +870,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "o777tt76t3s22st7q3oo0123456789opqrst41",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -891,7 +891,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "p888uu87u4t33tu8r4pp1234567890pqrstu42",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -912,7 +912,7 @@
       "owner": "Accounts Payable",
       "contentSha256": "q999vv98v5u44uv9s5qq2345678901qrstuv43",
       "annotators": [],
-      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "labels": [{ "id": "lbl-015", "name": "Search: Confirmed Invoice" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -971,7 +971,7 @@
       "annotators": [
         { "id": "ann-021", "name": "Dollar Amount", "occurrences": 50, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
       ],
-      "labels": [{ "id": "lbl-009", "name": "Financial Records" }],
+      "labels": [{ "id": "lbl-009", "name": "Governance: Highly Sensitive Financial Data" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
@@ -1009,7 +1009,7 @@
       "annotators": [
         { "id": "ann-021", "name": "Dollar Amount", "occurrences": 100, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
       ],
-      "labels": [{ "id": "lbl-009", "name": "Financial Records" }],
+      "labels": [{ "id": "lbl-009", "name": "Governance: Highly Sensitive Financial Data" }],
       "dlpLabels": [{ "name": "Confidential", "source": "PURVIEW", "type": "APPLIED" }],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Leadership" }]
@@ -1044,7 +1044,7 @@
       "lastModifiedAt": "2022-06-01T10:00:00Z",
       "contentSha256": "x666cc65c2b11bc6z2xx9012345678xyzabc50",
       "annotators": [],
-      "labels": [{ "id": "lbl-020", "name": "Template" }],
+      "labels": [{ "id": "lbl-020", "name": "Template" }, { "id": "lbl-gov-001", "name": "Governance: Missing Owner" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]
@@ -1061,7 +1061,7 @@
       "lastModifiedAt": "2022-05-15T09:00:00Z",
       "contentSha256": "y777dd76d3c22cd7a3yy0123456789yzabcd51",
       "annotators": [],
-      "labels": [{ "id": "lbl-020", "name": "Template" }],
+      "labels": [{ "id": "lbl-020", "name": "Template" }, { "id": "lbl-gov-001", "name": "Governance: Missing Owner" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]
@@ -1078,7 +1078,7 @@
       "lastModifiedAt": "2022-04-01T10:00:00Z",
       "contentSha256": "z888ee87e4d33de8b4zz1234567890zabcde52",
       "annotators": [],
-      "labels": [{ "id": "lbl-020", "name": "Template" }],
+      "labels": [{ "id": "lbl-020", "name": "Template" }, { "id": "lbl-gov-001", "name": "Governance: Missing Owner" }],
       "dlpLabels": [],
       "entitlements": {
         "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]

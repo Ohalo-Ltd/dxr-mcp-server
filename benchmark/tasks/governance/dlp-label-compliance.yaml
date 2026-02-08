@@ -45,9 +45,14 @@ execution:
   max_tool_calls: 20
   dxr_hints:
     expected_tools:
+      - "get_classifications"
       - "list_file_metadata"
     expected_queries:
-      - '_exists_:dlpLabels'
+      - '_exists_:labels'
+      - 'labels.name:"HIPAA: Confirmed PHI Document"'
+      - 'labels.name:"GDPR: Confirmed Employee PII"'
+      - 'labels.name:"ITAR: Confirmed ITAR Controlled"'
+      - 'labels.name:"PCI: Confirmed Cardholder Data"'
 
 compliance:
   must_respect_access_controls: true

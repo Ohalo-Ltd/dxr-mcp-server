@@ -34,9 +34,10 @@ execution:
   max_tool_calls: 15
   dxr_hints:
     expected_tools:
+      - "get_classifications"
       - "list_file_metadata"
     expected_queries:
-      - '-owner:*'
+      - 'labels.name:"Governance: Missing Owner"'
       - 'NOT _exists_:owner'
 
 compliance:

@@ -16,6 +16,14 @@ export interface PrecisionRecallResult {
 }
 
 /**
+ * Normalize file name for comparison by removing extension
+ */
+function normalizeFileName(fileName: string): string {
+  // Remove common file extensions for comparison
+  return fileName.replace(/\.(txt|pdf|docx?|xlsx?|csv|json|xml)$/i, '');
+}
+
+/**
  * Calculate precision, recall, and F1 score
  *
  * @param foundFiles - File IDs returned by the agent
@@ -27,25 +35,33 @@ export function calculatePrecisionRecall(
   expectedFiles: ExpectedFile[],
   relevanceThreshold = 0.5
 ): PrecisionRecallResult {
-  // Get set of expected file IDs (filtered by relevance threshold)
-  const expectedSet = new Set(
-    expectedFiles
-      .filter((f) => f.relevance >= relevanceThreshold)
-      .map((f) => f.id)
+  // Normalize file names for comparison (handles extension mismatches)
+  const normalizedFound = foundFiles.map(normalizeFileName);
+  const normalizedFoundSet = new Set(normalizedFound);
+
+  // Get set of expected file IDs (filtered by relevance threshold), normalized
+  const expectedFiltered = expectedFiles.filter(
+    (f) => f.relevance >= relevanceThreshold
   );
+  const normalizedExpectedMap = new Map(
+    expectedFiltered.map((f) => [normalizeFileName(f.id), f.id])
+  );
+  const normalizedExpectedSet = new Set(normalizedExpectedMap.keys());
 
-  const foundSet = new Set(foundFiles);
-
-  // Calculate true positives (found AND expected)
-  const truePositives = foundFiles.filter((f) => expectedSet.has(f));
+  // Calculate true positives (found AND expected) - use normalized comparison
+  const truePositives = foundFiles.filter((f) =>
+    normalizedExpectedSet.has(normalizeFileName(f))
+  );
 
   // Calculate false positives (found but NOT expected)
-  const falsePositives = foundFiles.filter((f) => !expectedSet.has(f));
+  const falsePositives = foundFiles.filter(
+    (f) => !normalizedExpectedSet.has(normalizeFileName(f))
+  );
 
   // Calculate false negatives (expected but NOT found)
-  const falseNegatives = Array.from(expectedSet).filter(
-    (f) => !foundSet.has(f)
-  );
+  const falseNegatives = expectedFiltered
+    .filter((f) => !normalizedFoundSet.has(normalizeFileName(f.id)))
+    .map((f) => f.id);
 
   // Calculate metrics
   const tp = truePositives.length;
@@ -86,12 +102,15 @@ export function calculateWeightedPrecision(
 ): number {
   if (foundFiles.length === 0) return 0;
 
-  const expectedMap = new Map(expectedFiles.map((f) => [f.id, f.relevance]));
+  // Use normalized names for matching
+  const expectedMap = new Map(
+    expectedFiles.map((f) => [normalizeFileName(f.id), f.relevance])
+  );
 
   let weightedSum = 0;
   for (const fileId of foundFiles) {
     // If found file is expected, add its relevance; otherwise add 0
-    weightedSum += expectedMap.get(fileId) || 0;
+    weightedSum += expectedMap.get(normalizeFileName(fileId)) || 0;
   }
 
   // Maximum possible score would be if all found files had relevance 1.0
@@ -110,14 +129,15 @@ export function calculateWeightedRecall(
 ): number {
   if (expectedFiles.length === 0) return 1; // Nothing to find = perfect recall
 
-  const foundSet = new Set(foundFiles);
+  // Use normalized names for matching
+  const normalizedFoundSet = new Set(foundFiles.map(normalizeFileName));
   const totalRelevance = expectedFiles.reduce((sum, f) => sum + f.relevance, 0);
 
   if (totalRelevance === 0) return 1;
 
   let foundRelevance = 0;
   for (const expected of expectedFiles) {
-    if (foundSet.has(expected.id)) {
+    if (normalizedFoundSet.has(normalizeFileName(expected.id))) {
       foundRelevance += expected.relevance;
     }
   }

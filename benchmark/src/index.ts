@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url';
 import { TaskLoader } from './harness/TaskLoader.js';
 import { MockDXRServer } from './mocks/MockDXRServer.js';
 import { MockGDriveServer } from './mocks/MockGDriveServer.js';
+import { LiveDXRServer } from './live/LiveDXRServer.js';
 import { generateMarkdownReport } from './reporting/MarkdownReporter.js';
 import { saveReportToJson } from './reporting/JSONReporter.js';
 import type {
@@ -129,12 +130,43 @@ async function runBenchmark(options: RunOptions): Promise<void> {
       return;
     }
 
-    // Initialize mock servers
-    const dxrServer = new MockDXRServer();
-    const gdriveServer = new MockGDriveServer();
+    const isLiveMode = options.live === true;
+    let dxrServer: MockDXRServer | LiveDXRServer;
+    let gdriveServer: MockGDriveServer;
 
-    console.log(chalk.blue('\nRunning benchmarks in MOCK mode'));
-    console.log(chalk.gray('(Both DXR and baseline use curated mock data)\n'));
+    if (isLiveMode) {
+      // Initialize live servers
+      console.log(chalk.blue('\nInitializing LIVE mode...'));
+
+      try {
+        const liveDxr = new LiveDXRServer();
+        const connected = await liveDxr.testConnection();
+
+        if (!connected) {
+          spinner.fail('Failed to connect to DXR API');
+          process.exit(1);
+        }
+
+        dxrServer = liveDxr;
+        console.log(chalk.green('✓ Connected to DXR API'));
+      } catch (error) {
+        spinner.fail(`Failed to initialize live DXR server: ${error}`);
+        process.exit(1);
+      }
+
+      // For baseline, still use mock GDrive (or implement live GDrive client)
+      gdriveServer = new MockGDriveServer();
+
+      console.log(chalk.blue('\nRunning benchmarks in LIVE mode'));
+      console.log(chalk.gray('(DXR uses real API, baseline uses mock data)\n'));
+    } else {
+      // Initialize mock servers
+      dxrServer = new MockDXRServer();
+      gdriveServer = new MockGDriveServer();
+
+      console.log(chalk.blue('\nRunning benchmarks in MOCK mode'));
+      console.log(chalk.gray('(Both DXR and baseline use curated mock data)\n'));
+    }
 
     const taskResults: TaskComparison[] = [];
 
@@ -146,10 +178,12 @@ async function runBenchmark(options: RunOptions): Promise<void> {
       ).start();
 
       try {
-        // Run with DXR agent (mock)
-        const dxrResult = await runMockDXRAgent(task, dxrServer);
+        // Run with DXR agent
+        const dxrResult = isLiveMode
+          ? await runLiveDXRAgent(task, dxrServer as LiveDXRServer)
+          : await runMockDXRAgent(task, dxrServer as MockDXRServer);
 
-        // Run with baseline agent (mock)
+        // Run with baseline agent (mock for now)
         const baselineResult = await runMockBaselineAgent(task, gdriveServer);
 
         // Compare results
@@ -184,7 +218,7 @@ async function runBenchmark(options: RunOptions): Promise<void> {
     }
 
     // Generate report
-    const report = generateComparisonReport(taskResults);
+    const report = generateComparisonReport(taskResults, isLiveMode ? 'live' : 'mock');
 
     // Save results
     const outputDir = options.output;
@@ -304,6 +338,88 @@ async function runMockDXRAgent(
 }
 
 /**
+ * Run live DXR agent - calls real DXR API
+ */
+async function runLiveDXRAgent(
+  task: Task,
+  server: LiveDXRServer
+): Promise<TaskResult> {
+  const startTime = Date.now();
+  const toolCalls: ToolCall[] = [];
+  let filesFound: string[] = [];
+
+  // Step 1: Get classifications (common first step)
+  const classifyStart = Date.now();
+  const classifications = await server.getClassifications();
+  toolCalls.push({
+    name: 'get_classifications',
+    args: {},
+    result: `Found ${classifications.length} classifications`,
+    durationMs: Date.now() - classifyStart,
+  });
+
+  // Step 2: Search for files based on task domain
+  const searchStart = Date.now();
+  let query = '';
+
+  // Build query based on task hints or domain
+  if (task.execution.dxrHints?.expectedQueries?.[0]) {
+    query = task.execution.dxrHints.expectedQueries[0];
+  } else {
+    // Default queries based on category
+    switch (task.category) {
+      case 'compliance':
+        if (task.domain.includes('HIPAA') || task.domain.includes('PHI')) {
+          query = 'annotators.domain.name:"PHI"';
+        } else if (task.domain.includes('GDPR') || task.domain.includes('PII')) {
+          query = 'annotators.domain.name:"PII"';
+        } else if (task.domain.includes('ITAR')) {
+          query = 'labels.name:"ITAR: Confirmed ITAR Controlled"';
+        } else if (task.domain.includes('PCI')) {
+          query = 'annotators.domain.name:"Financially Sensitive"';
+        }
+        break;
+      case 'search':
+        if (task.domain.includes('Contract')) {
+          query = 'labels.name:"Search: Confirmed Contract"';
+        } else if (task.domain.includes('Invoice')) {
+          query = 'labels.name:"Search: Confirmed Invoice"';
+        }
+        break;
+      case 'governance':
+        query = '_exists_:labels';
+        break;
+    }
+  }
+
+  const searchResult = await server.listFileMetadata(query);
+  // Use fileName for matching against ground truth (which uses file names, not IDs)
+  filesFound = searchResult.files.map((f) => f.fileName);
+
+  toolCalls.push({
+    name: 'list_file_metadata',
+    args: { q: query },
+    result: `Found ${searchResult.files.length} files`,
+    durationMs: Date.now() - searchStart,
+  });
+
+  const timeToAnswerMs = Date.now() - startTime;
+
+  // Generate agent response
+  const agentResponse = `Based on my search using DXR metadata, I found ${filesFound.length} files matching the criteria "${query}".`;
+
+  return scoreTask({
+    task,
+    agentType: 'dxr',
+    filesFound,
+    toolCalls,
+    agentResponse,
+    timeToAnswerMs,
+    modelVersion: 'live-dxr-agent',
+  });
+}
+
+/**
  * Run mock baseline agent - simulates Claude with only GDrive MCP
  */
 async function runMockBaselineAgent(
@@ -365,7 +481,8 @@ async function runMockBaselineAgent(
  * Generate comparison report from task results
  */
 function generateComparisonReport(
-  taskResults: TaskComparison[]
+  taskResults: TaskComparison[],
+  mode: 'mock' | 'live' = 'mock'
 ): ComparisonReport {
   // Calculate summary
   const dxrWins = taskResults.filter((t) => t.winner === 'dxr').length;
@@ -405,9 +522,9 @@ function generateComparisonReport(
   return {
     metadata: {
       generatedAt: new Date().toISOString(),
-      modelVersion: 'mock-agents',
+      modelVersion: mode === 'live' ? 'live-agents' : 'mock-agents',
       benchmarkVersion: '1.0.0',
-      mode: 'mock',
+      mode,
     },
     summary: {
       totalTasks: taskResults.length,

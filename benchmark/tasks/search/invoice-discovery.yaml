@@ -41,9 +41,12 @@ execution:
   max_tool_calls: 10
   dxr_hints:
     expected_tools:
+      - "get_classifications"
       - "list_file_metadata"
     expected_queries:
-      - 'labels.name:"Invoice"'
+      - 'labels.name:"Search: Confirmed Invoice"'
+      - 'annotators.name:"Invoice Documents"'
+      - 'annotators.name:"Invoice Terms"'
 
 compliance:
   must_respect_access_controls: true

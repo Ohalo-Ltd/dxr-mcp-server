@@ -33,10 +33,12 @@ execution:
   max_tool_calls: 15
   dxr_hints:
     expected_tools:
+      - "get_classifications"
       - "list_file_metadata"
     expected_queries:
-      - 'labels.name:"Contract"'
-      - 'extractedMetadata.effectiveDate > "2024-01-01"'
+      - 'labels.name:"Search: Confirmed Contract"'
+      - 'labels.name:"Search: Loan Document"'
+      - 'annotators.name:"Contract Terms"'
 
 compliance:
   must_respect_access_controls: true

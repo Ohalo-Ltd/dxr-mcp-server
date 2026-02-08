@@ -7,3 +7,5 @@ coverage/
 
 # Claude Code scratch/helper files (not for repository)
 .claude/
+
+results/
