@@ -1,0 +1,148 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "Payment Card Terms",
+    "description": "Terms indicating payment card content for PCI-DSS compliance",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "credit card",
+      "debit card",
+      "payment card",
+      "card number",
+      "card holder",
+      "cardholder",
+      "account number",
+      "primary account",
+      "PAN",
+      "card data",
+      "card details",
+      "payment details"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Card Brands",
+    "description": "Payment card brand names",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "Visa",
+      "Mastercard",
+      "American Express",
+      "Amex",
+      "Discover",
+      "Diners Club",
+      "JCB",
+      "UnionPay",
+      "Maestro"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "CVV Terms",
+    "description": "Terms related to card verification values",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "CVV",
+      "CVV2",
+      "CVC",
+      "CVC2",
+      "CID",
+      "security code",
+      "verification code",
+      "card verification",
+      "three digit",
+      "four digit"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Payment Processing Terms",
+    "description": "Terms related to payment processing",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "transaction",
+      "authorization",
+      "settlement",
+      "chargeback",
+      "refund",
+      "merchant",
+      "acquirer",
+      "issuer",
+      "payment gateway",
+      "point of sale",
+      "POS",
+      "EMV",
+      "chip and pin",
+      "contactless",
+      "tokenization"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "PCI Compliance Terms",
+    "description": "PCI-DSS compliance terminology",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "PCI DSS",
+      "PCI-DSS",
+      "payment card industry",
+      "data security standard",
+      "cardholder data environment",
+      "CDE",
+      "SAQ",
+      "self-assessment",
+      "QSA",
+      "ASV"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

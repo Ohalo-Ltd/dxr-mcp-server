@@ -1,0 +1,469 @@
+# ITAR Export Control Detection Taxonomy
+# Supports: compliance-003 (ITAR Controlled Content)
+#
+# Detects International Traffic in Arms Regulations (ITAR) controlled content:
+# - Defense articles and technical data
+# - Military specifications and designs
+# - Weapons systems documentation
+# - Export-controlled technology
+
+id: itar-export-control
+name: "ITAR Export Control"
+version: "1.0.0"
+domain: "ITAR"
+regulations:
+  - "ITAR"
+  - "EAR"
+  - "USML"
+
+# =============================================================================
+# REGULAR EXPRESSION PATTERNS
+# =============================================================================
+regex_patterns:
+
+  # USML Category References
+  - id: usml_category
+    name: "USML Category Reference"
+    description: "Detects United States Munitions List category references"
+    patterns:
+      - "\\bUSML\\s+Category\\s+([IVX]+|[0-9]{1,2})\\b"
+      - "\\bCategory\\s+([IVX]+|[0-9]{1,2})\\s+of\\s+(the\\s+)?USML\\b"
+      - "\\b22\\s+CFR\\s+121\\.1\\s+Category\\s+([IVX]+|[0-9]{1,2})\\b"
+    case_sensitive: false
+    confidence: 0.95
+    itar_category: "usml_reference"
+
+  # ITAR Control Markings
+  - id: itar_marking
+    name: "ITAR Control Marking"
+    description: "Detects ITAR export control markings"
+    patterns:
+      - "\\bITAR\\s+(CONTROLLED|RESTRICTED|EXPORT\\s+CONTROLLED)\\b"
+      - "\\bEXPORT\\s+CONTROLLED\\b"
+      - "\\bNOFORN\\b"
+      - "\\bDISTRIBUTION\\s+(STATEMENT\\s+)?[A-F]\\b"
+      - "\\bUNCLASSIFIED//FOR\\s+OFFICIAL\\s+USE\\s+ONLY\\b"
+      - "\\bCUI//SP-EXPT\\b"
+      - "\\bEXPORT\\s+ADMINISTRATION\\s+REGULATIONS\\b"
+    case_sensitive: false
+    confidence: 0.95
+    itar_category: "marking"
+
+  # Military Specification Numbers (MIL-SPEC)
+  - id: mil_spec
+    name: "Military Specification"
+    description: "Detects MIL-SPEC document references"
+    patterns:
+      - "\\bMIL[-\\s]?(STD|SPEC|PRF|DTL|HDBK)[-\\s]?[0-9]{1,6}[A-Z]?\\b"
+      - "\\bMIL[-\\s]?[A-Z][-\\s]?[0-9]{4,6}[A-Z]?\\b"
+      - "\\bDOD[-\\s]?STD[-\\s]?[0-9]{4,6}\\b"
+    case_sensitive: false
+    confidence: 0.9
+    itar_category: "mil_spec"
+
+  # Defense Contract Numbers
+  - id: defense_contract
+    name: "Defense Contract Number"
+    description: "Detects DoD contract number formats"
+    patterns:
+      - "\\b(DAAB|DAAE|DAAH|DACA|DACW|DAHC|DAJA|F[0-9]{5}|N[0-9]{5}|W[0-9]{5})[0-9\\-]{8,15}\\b"
+      - "\\bContract\\s+(No\\.?|Number|#)?\\s*[A-Z]{1,5}[0-9]{2}[-\\s]?[A-Z][-\\s]?[0-9]{4}\\b"
+    case_sensitive: false
+    confidence: 0.85
+    itar_category: "contract"
+
+  # National Stock Numbers (NSN)
+  - id: nsn_pattern
+    name: "National Stock Number"
+    description: "Detects NATO/US National Stock Numbers"
+    patterns:
+      - "\\bNSN[:\\s]?[0-9]{4}[-\\s]?[0-9]{2}[-\\s]?[0-9]{3}[-\\s]?[0-9]{4}\\b"
+      - "\\b[0-9]{4}[-\\s][0-9]{2}[-\\s][0-9]{3}[-\\s][0-9]{4}\\b"
+    case_sensitive: false
+    confidence: 0.85
+    itar_category: "nsn"
+
+  # CAGE Codes
+  - id: cage_code
+    name: "CAGE Code"
+    description: "Detects Commercial and Government Entity codes"
+    patterns:
+      - "\\bCAGE[:\\s]?[0-9A-Z]{5}\\b"
+      - "\\bCAGE\\s+Code[:\\s]?[0-9A-Z]{5}\\b"
+    case_sensitive: false
+    confidence: 0.8
+    itar_category: "cage"
+
+  # Technical Data Package indicators
+  - id: tdp_indicators
+    name: "Technical Data Package"
+    description: "Detects TDP documentation markers"
+    patterns:
+      - "\\bTDP[-\\s]?[0-9]{4,10}\\b"
+      - "\\bTechnical\\s+Data\\s+Package\\b"
+      - "\\bEngineering\\s+Drawing\\s+[A-Z0-9]{6,12}\\b"
+    case_sensitive: false
+    confidence: 0.85
+    itar_category: "technical_data"
+
+  # Classification markings
+  - id: classification_marking
+    name: "Classification Marking"
+    description: "Detects security classification markings"
+    patterns:
+      - "\\b(TOP\\s+SECRET|SECRET|CONFIDENTIAL)\\b"
+      - "\\bCLASSIFIED\\b"
+      - "\\bSCI\\b"
+      - "\\bSAP\\b"
+    case_sensitive: false
+    confidence: 0.95
+    itar_category: "classified"
+
+# =============================================================================
+# DICTIONARIES
+# =============================================================================
+dictionaries:
+
+  # Defense/Military document indicators
+  - id: defense_document_types
+    name: "Defense Document Types"
+    description: "Terms indicating defense-related documents"
+    terms:
+      - "technical data"
+      - "technical specification"
+      - "engineering drawing"
+      - "schematic diagram"
+      - "assembly drawing"
+      - "wiring diagram"
+      - "system design"
+      - "weapons system"
+      - "defense article"
+      - "defense service"
+      - "munitions"
+      - "ordnance"
+      - "armament"
+      - "military specification"
+      - "mil-spec"
+      - "tactical"
+      - "strategic"
+      - "operational manual"
+      - "maintenance manual"
+      - "training manual"
+      - "flight manual"
+      - "technical manual"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.85
+
+  # USML categories (items)
+  - id: usml_items
+    name: "USML Controlled Items"
+    description: "Items specifically listed on USML"
+    terms:
+      # Category I - Firearms
+      - "firearm"
+      - "rifle"
+      - "shotgun"
+      - "machine gun"
+      - "submachine gun"
+      # Category II - Guns and Armament
+      - "cannon"
+      - "howitzer"
+      - "mortar"
+      - "gun turret"
+      # Category III - Ammunition
+      - "ammunition"
+      - "cartridge"
+      - "projectile"
+      - "warhead"
+      # Category IV - Launch Vehicles, Guided Missiles
+      - "missile"
+      - "rocket"
+      - "launch vehicle"
+      - "guided missile"
+      - "cruise missile"
+      - "ballistic missile"
+      # Category V - Explosives
+      - "explosive"
+      - "propellant"
+      - "detonator"
+      - "fuze"
+      # Category VI - Surface Vessels
+      - "warship"
+      - "submarine"
+      - "naval vessel"
+      # Category VII - Ground Vehicles
+      - "tank"
+      - "armored vehicle"
+      - "combat vehicle"
+      # Category VIII - Aircraft
+      - "military aircraft"
+      - "fighter"
+      - "bomber"
+      - "attack helicopter"
+      - "unmanned aerial vehicle"
+      - "UAV"
+      - "drone"
+      # Category XI - Military Electronics
+      - "radar"
+      - "sonar"
+      - "electronic warfare"
+      - "jamming"
+      - "countermeasure"
+      # Category XII - Fire Control
+      - "fire control"
+      - "targeting system"
+      - "guidance system"
+      - "navigation system"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.8
+
+  # Defense contractors and agencies
+  - id: defense_entities
+    name: "Defense Entities"
+    description: "Known defense contractors and agencies"
+    terms:
+      - "Department of Defense"
+      - "DoD"
+      - "Pentagon"
+      - "DARPA"
+      - "DLA"
+      - "DCMA"
+      - "Defense Contract"
+      - "US Army"
+      - "US Navy"
+      - "US Air Force"
+      - "US Marine Corps"
+      - "Coast Guard"
+      - "Lockheed Martin"
+      - "Raytheon"
+      - "Northrop Grumman"
+      - "Boeing Defense"
+      - "General Dynamics"
+      - "BAE Systems"
+      - "L3Harris"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.75
+
+  # Export control terminology
+  - id: export_control_terms
+    name: "Export Control Terms"
+    description: "Terms related to export control"
+    terms:
+      - "export controlled"
+      - "export license"
+      - "export authorization"
+      - "deemed export"
+      - "re-export"
+      - "foreign person"
+      - "foreign national"
+      - "dual use"
+      - "end user"
+      - "end use"
+      - "destination control"
+      - "technology transfer"
+      - "technical assistance"
+      - "defense service"
+      - "brokering"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.85
+
+# =============================================================================
+# LLM PROMPTS
+# =============================================================================
+llm_prompts:
+
+  # ITAR classification assessment
+  - id: itar_classification
+    name: "ITAR Classification Assessment"
+    description: "Determines if content is ITAR-controlled"
+    prompt: |
+      Analyze this document to determine if it contains ITAR-controlled technical data
+      or defense articles as defined by 22 CFR Parts 120-130.
+
+      ITAR covers:
+      1. Defense articles listed on the United States Munitions List (USML)
+      2. Technical data directly related to defense articles
+      3. Defense services
+
+      ITAR does NOT cover:
+      - Publicly available information
+      - General scientific, mathematical, or engineering principles
+      - Basic marketing information
+      - Patent applications
+
+      Answer only: Is this document ITAR-controlled? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether the document is ITAR-controlled"
+    temperature: 0.1
+    max_tokens: 50
+
+  # ITAR vs EAR determination
+  - id: itar_ear_determination
+    name: "ITAR vs EAR Determination"
+    description: "Determines appropriate export control regime"
+    prompt: |
+      Determine whether this content falls under:
+
+      - ITAR: Specifically designed for military applications, listed on USML
+      - EAR: Dual-use items (commercial and military applications), listed on CCL
+      - NEITHER: Publicly available, mass market items, general knowledge
+      - UNCLEAR: Cannot determine
+
+      Answer with only the control regime.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["ITAR", "EAR", "NEITHER", "UNCLEAR"]
+    temperature: 0.1
+    max_tokens: 50
+
+  # Defense technology identification
+  - id: defense_tech_identifier
+    name: "Defense Technology Identifier"
+    description: "Identifies specific defense technologies"
+    prompt: |
+      Identify the type of defense technology described in this document.
+
+      Categories:
+      - WEAPONS: Weapons systems (firearms, missiles, explosives)
+      - VEHICLES: Military vehicles (tanks, ships, aircraft)
+      - ELECTRONICS: Military electronics (radar, communications, EW)
+      - PROPULSION: Propulsion systems (engines, rocket motors)
+      - GUIDANCE_NAV: Guidance and navigation systems
+      - C2_SYSTEMS: Command and control systems
+      - PROTECTIVE: Protective equipment (armor, NBC)
+      - TRAINING: Training and simulation systems
+      - OTHER_DEFENSE: Other defense-related
+      - NOT_DEFENSE: Not defense technology
+
+      Answer with only the category name.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["WEAPONS", "VEHICLES", "ELECTRONICS", "PROPULSION",
+             "GUIDANCE_NAV", "C2_SYSTEMS", "PROTECTIVE", "TRAINING",
+             "OTHER_DEFENSE", "NOT_DEFENSE"]
+    temperature: 0.1
+    max_tokens: 50
+
+# =============================================================================
+# COMPOSITE RULES
+# =============================================================================
+composite_rules:
+
+  # Confirmed ITAR controlled
+  - id: confirmed_itar
+    name: "Confirmed ITAR Controlled"
+    description: "Document confirmed to be ITAR controlled"
+    conditions:
+      - any:
+          - regex: "itar_marking"
+          - regex: "usml_category"
+          - regex: "classification_marking"
+      - any:
+          - dictionary: "defense_document_types"
+          - dictionary: "usml_items"
+    minimum_matches: 2
+    output_label: "ITAR Controlled"
+    confidence_threshold: 0.9
+
+  # Likely ITAR (needs review)
+  - id: likely_itar
+    name: "Likely ITAR Controlled"
+    description: "Document likely contains ITAR-controlled content"
+    conditions:
+      - any:
+          - regex: "mil_spec"
+          - regex: "defense_contract"
+          - regex: "nsn_pattern"
+      - dictionary: "usml_items"
+    minimum_matches: 2
+    output_label: "Review for ITAR"
+    confidence_threshold: 0.75
+
+  # Defense-related (may be EAR or ITAR)
+  - id: defense_related
+    name: "Defense Related"
+    description: "Defense-related content requiring export review"
+    conditions:
+      - any:
+          - dictionary: "defense_entities"
+          - dictionary: "export_control_terms"
+      - any:
+          - dictionary: "defense_document_types"
+          - dictionary: "usml_items"
+    minimum_matches: 2
+    output_label: "Export Review Required"
+    confidence_threshold: 0.7
+
+# =============================================================================
+# NEGATIVE PATTERNS (False Positive Reduction)
+# =============================================================================
+negative_patterns:
+
+  # Commercial aviation (not ITAR)
+  - id: commercial_aviation
+    name: "Commercial Aviation Exclusion"
+    description: "Commercial aviation content is generally not ITAR"
+    terms:
+      - "commercial aircraft"
+      - "passenger aircraft"
+      - "commercial airline"
+      - "civil aviation"
+      - "FAA certified"
+    reduces_confidence: 0.3
+
+  # Academic/Research (may be public domain)
+  - id: academic_research
+    name: "Academic Research"
+    description: "Academic research may be publicly available"
+    terms:
+      - "university research"
+      - "academic paper"
+      - "peer reviewed"
+      - "published research"
+      - "public domain"
+    reduces_confidence: 0.2
+
+# =============================================================================
+# OUTPUT LABELS
+# =============================================================================
+labels:
+  - name: "ITAR Controlled"
+    color: "#DC2626"
+    severity: "critical"
+    requires_license: true
+    us_persons_only: true
+    marking_required: true
+
+  - name: "Review for ITAR"
+    color: "#F97316"
+    severity: "high"
+    requires_review: true
+    export_team_review: true
+
+  - name: "Export Review Required"
+    color: "#EAB308"
+    severity: "medium"
+    requires_review: true
+
+  - name: "EAR Controlled"
+    color: "#8B5CF6"
+    severity: "high"
+    requires_license: true
+
+  - name: "Not Export Controlled"
+    color: "#22C55E"
+    severity: "none"

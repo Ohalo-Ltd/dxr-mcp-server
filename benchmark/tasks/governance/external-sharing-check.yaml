@@ -1,0 +1,49 @@
+id: "governance-005"
+name: "External Sharing Check"
+description: "Find files shared outside the organization"
+category: "governance"
+domain: "External Sharing"
+difficulty: "hard"
+
+prompt: |
+  Identify all files that are shared with external users (people outside
+  the organization). Flag any files that contain sensitive data and are
+  shared externally, as these may represent data exfiltration risks.
+
+ground_truth:
+  # Note: External sharing metadata depends on source system permissions
+  # This task verifies DXR can detect externally shared files
+  # Expected files will depend on actual sharing configuration in Google Drive
+  expected_files:
+    # These files are candidates that might be shared externally
+    # Actual results depend on Google Drive sharing settings
+    - id: "MLA style report.docx"
+      relevance: 0.7
+      reason: "Report document - candidate for external sharing check"
+    - id: "Sample evaluation agreement.docx"
+      relevance: 0.7
+      reason: "Evaluation agreement - may be shared with external parties"
+  forbidden_files: []
+  # Lower thresholds since this depends on actual sharing configuration
+  minimum_precision: 0.5
+  minimum_recall: 0.5
+
+execution:
+  timeout_seconds: 120
+  max_tool_calls: 20
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - 'entitlements.whoCanAccess.email:*external*'
+      - 'shared externally'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "external-sharing"
+  - "data-loss"
+  - "governance"
+  - "security"

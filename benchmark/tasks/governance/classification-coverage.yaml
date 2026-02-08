@@ -1,0 +1,49 @@
+id: "governance-003"
+name: "Classification Coverage"
+description: "Verify sensitive files are properly classified"
+category: "governance"
+domain: "Classification"
+difficulty: "medium"
+
+prompt: |
+  Analyze the file repository to identify files that contain sensitive
+  data (as detected by annotators) but may lack proper classification
+  labels. These represent potential compliance gaps.
+
+ground_truth:
+  # Note: This task identifies files with detected sensitive data but missing labels
+  # Results depend on DXR annotator detection vs label application
+  # Files in search/general and governance folders may lack labels but contain data
+  expected_files:
+    # Files that may have detected data but could lack labels
+    - id: "Amortization-Schedule-Template.xlsx"
+      relevance: 0.7
+      reason: "Financial template - may have financial data detected but no labels"
+    - id: "sample_redaction_text.txt"
+      relevance: 0.7
+      reason: "Redaction sample - may contain sensitive text patterns"
+    - id: "Data Dictionary of Contoso BI demo dataset for Retail Industry.xlsx"
+      relevance: 0.5
+      reason: "Data dictionary - may contain field names matching sensitive patterns"
+  forbidden_files: []
+  minimum_precision: 0.5
+  minimum_recall: 0.8
+
+execution:
+  timeout_seconds: 120
+  max_tool_calls: 20
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - '_exists_:annotators'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "classification"
+  - "coverage"
+  - "gap-analysis"
+  - "governance"

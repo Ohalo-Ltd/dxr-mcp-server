@@ -1,0 +1,136 @@
+Patient Medical Records
+
+Patient Information  
+Name: John Doe  
+Date of Birth: March 15, 1985  
+Gender: Male  
+Patient ID: 123456789  
+Address: 456 Elm Street, Springfield, IL 62701  
+Phone: (555) 123-4567  
+Insurance Provider: HealthFirst Insurance  
+Policy Number: HF78901234  
+
+Emergency Contact:  
+Name: Jane Doe  
+Relationship: Spouse  
+Phone: (555) 987-6543  
+
+Date of Admission: October 1, 2023  
+Date of Last Update: October 15, 2023  
+
+---  
+
+**Medical History**  
+- **Past Illnesses:**  
+  - Hypertension - diagnosed in 2015; controlled with medication.  
+  - Seasonal Allergies - managed with antihistamines.  
+  - Appendectomy - performed in 2000.  
+
+- **Surgeries:**  
+  - Tonsillectomy - performed in 1995.  
+  - Knee arthroscopy - performed in 2019 for meniscus tear.  
+
+- **Chronic Conditions:**  
+  - Hypertension  
+    - Current Treatment: Lisinopril 20 mg once daily.  
+  - Hyperlipidemia  
+    - Current Treatment: Atorvastatin 10 mg once daily.  
+
+- **Family History:**  
+  - Father: Hypertension, Type 2 Diabetes  
+  - Mother: Breast Cancer, resolved  
+
+- **Lifestyle Information:**  
+  - Non-smoker.  
+  - Moderate alcohol consumption (1-2 drinks per week).  
+  - Regular exercise (3 times weekly).  
+
+---  
+
+**Medication List**  
+- Lisinopril 20 mg - one tablet daily  
+- Atorvastatin 10 mg - one tablet daily  
+- Loratadine 10 mg - as needed for allergies  
+- Aspirin 81 mg - daily for cardiovascular health  
+
+**Allergies:**  
+- Penicillin - causes rash and swelling.  
+- Shellfish - causes anaphylaxis (known since 2010).  
+
+---  
+
+**Physician's Notes**  
+**Physician:** Dr. Emily Carter, MD  
+**Specialty:** Internal Medicine  
+**Date of Visit:** October 1, 2023  
+
+**Subjective:**  
+Patient presents for routine follow-up for hypertension and hyperlipidemia management. Reports good adherence to medication and denies any side effects. States he feels well overall. No new concerns noted. 
+
+**Objective:**  
+- Vital Signs:  
+  - Blood Pressure: 128/84 mmHg  
+  - Heart Rate: 72 bpm  
+  - Weight: 180 lbs  
+  - Height: 5'11"  
+
+- Physical Exam:  
+  - General: Alert, oriented, in no acute distress.  
+  - Cardiovascular: Regular rate and rhythm, no murmurs.  
+  - Respiratory: Clear to auscultation bilaterally.  
+  - Abdominal: Soft, nontender, no masses.  
+  - Extremities: No edema.  
+
+**Assessment:**  
+- Hypertension - well controlled.  
+- Hyperlipidemia - stable on current therapy.  
+- Allergies - well managed.  
+
+**Plan:**  
+- Continue current medications.  
+- Recheck blood pressure in three months.  
+- Lipid panel to be drawn at next visit.  
+
+---  
+
+**Lab Reports**  
+**Test Name:** Comprehensive Metabolic Panel  
+**Date of Test:** October 5, 2023  
+**Results:**  
+- Glucose: 84 mg/dL (Normal)  
+- Sodium: 140 mmol/L (Normal)  
+- Potassium: 4.2 mmol/L (Normal)  
+- BUN: 15 mg/dL (Normal)  
+- Creatinine: 1.0 mg/dL (Normal)  
+- Calcium: 9.2 mg/dL (Normal)  
+- Total Protein: 7.2 g/dL (Normal)  
+- Albumin: 4.0 g/dL (Normal)  
+- Alkaline Phosphatase: 65 IU/L (Normal)  
+- ALT: 22 IU/L (Normal)  
+- AST: 20 IU/L (Normal)  
+
+**Imaging Studies**  
+**Study:** Chest X-Ray  
+**Date of Study:** October 10, 2023  
+**Results:**  
+- Findings: Clear lung fields. No evidence of pulmonary edema or effusion. Heart size within normal limits.  
+- Impression: Normal chest X-ray, no acute findings.  
+
+---  
+
+**Follow-Up Appointments**  
+- Schedule: Next routine check-up on January 1, 2024.  
+- Specialty Referral: Cardiology for further evaluation of family history of cardiovascular disease, appointment scheduled for October 30, 2023.  
+
+---  
+
+**Signatures**  
+Physician: Dr. Emily Carter, MD  
+Date: October 15, 2023  
+Signature: ______________________  
+
+Patient: John Doe  
+Date: October 15, 2023  
+Signature: ______________________  
+
+This document is confidential and protected under HIPAA regulations. Unauthorized access or disclosure is prohibited. Please consult with the healthcare provider for any questions related to this medical record.

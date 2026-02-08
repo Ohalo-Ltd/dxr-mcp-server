@@ -1,0 +1,67 @@
+Payroll Summary Report
+
+Company: Apex Innovations Inc.  
+Address: 123 Business Lane, Suite 400  
+City, State, Zip: Metropolis, CA 90210  
+Payroll Cycle: September 1, 2023 - September 15, 2023  
+Date Issued: September 16, 2023  
+
+Prepared for: Human Resources Department  
+Prepared by: Payroll Services Team  
+
+-------------------------------------------------------------------
+
+Employee Payroll Summary  
+
+| Employee Name     | Employee ID | Gross Salary | Bonuses | Tax Withholdings | Benefit Contributions | Net Pay   |
+|-------------------|-------------|--------------|---------|-------------------|----------------------|-----------|
+| John Smith        | 001         | $4,500       | $500    | $900              | $300                 | $3,800    |
+| Jane Doe          | 002         | $5,000       | $750    | $1,050            | $250                 | $4,450    |
+| Michael Johnson    | 003         | $4,800       | $600    | $950              | $200                 | $4,250    |
+| Emily Davis       | 004         | $4,200       | $400    | $850              | $180                 | $3,570    |
+| William Brown     | 005         | $5,500       | $0      | $1,200            | $270                 | $4,030    |
+
+-------------------------------------------------------------------
+
+Total Payroll Costs  
+
+| Description                     | Amount          |
+|---------------------------------|------------------|
+| Total Gross Salaries            | $24,000          |
+| Total Bonuses                   | $2,250           |
+| Total Tax Withholdings          | $4,950           |
+| Total Benefit Contributions      | $1,200           |
+| Total Net Pay                   | $18,750          |
+
+-------------------------------------------------------------------
+
+Tax Withholding Breakdown  
+
+| Tax Type               | Rate     | Amount          |
+|-----------------------|----------|------------------|
+| Federal Income Tax     | 22%      | $3,600           |
+| State Income Tax       | 8%       | $1,200           |
+| Social Security Tax    | 6.2%     | $1,259           |
+| Medicare Tax           | 1.45%    | $263             |
+
+-------------------------------------------------------------------
+
+Benefit Contributions  
+
+| Benefit Type             | Employee Contribution | Company Contribution | Total Contribution |
+|--------------------------|-----------------------|---------------------|--------------------|
+| Health Insurance          | $120                  | $500                | $620               |
+| Retirement Plan           | $150                  | $300                | $450               |
+| Disability Insurance      | $30                   | $70                 | $100               |
+
+-------------------------------------------------------------------
+
+Notes:  
+1. All employees are advised to review their individual summaries and report any discrepancies by September 23, 2023.  
+2. Tax information is based on current applicable federal and state guidelines.  
+3. For questions regarding benefit contributions, please contact the Benefits Administrator.  
+
+Thank you for your attention to this Payroll Summary.  
+
+Apex Innovations Inc.  
+Human Resources Department  

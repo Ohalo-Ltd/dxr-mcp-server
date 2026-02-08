@@ -1,0 +1,56 @@
+Medication Administration Record (MAR)
+
+Patient Name: John Doe  
+Patient ID: 123456  
+Date of Birth: 01/15/1980  
+Admission Date: 10/01/2023  
+Attending Physician: Dr. Smith, M.D.  
+Nursing Unit: General Medicine  
+
+**MAR Period: October 1, 2023 – October 7, 2023**
+
+| Date       | Time       | Medication Name       | Dosage      | Route      | Administered By | Signature              | Patient Reaction/Notes          |
+|------------|------------|-----------------------|-------------|------------|------------------|------------------------|----------------------------------|
+| 10/01/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg      | Oral       | Jane Taylor, RN   | J. Taylor               | Stable blood glucose            |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | Nausea reported                 |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Blood sugar levels dropped      |
+|            |            |                       |             |            |                  |                        |                                 |
+| 10/02/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg      | Oral       | Jane Taylor, RN   | J. Taylor               | Stable blood glucose            |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | No reaction observed            |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Normal blood sugar              |
+|            |            |                       |             |            |                  |                        |                                 |
+| 10/03/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg      | Oral       | Jane Taylor, RN   | J. Taylor               | Blood glucose stable            |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | No reaction                     |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Patient felt dizziness           |
+|            |            |                       |             |            |                  |                        | Monitor blood sugar closely     |
+|            |            |                       |             |            |                  |                        |                                 |
+| 10/04/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg      | Oral       | Jane Taylor, RN   | J. Taylor               | Continue monitoring             |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | No reported side effects        |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Dizziness persists              |
+|            |            |                       |             |            |                  |                        | Consult with physician          |
+|            |            |                       |             |            |                  |                        |                                 |
+| 10/05/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg      | Oral       | Jane Taylor, RN   | J. Taylor               | Stable glucose levels           |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | No side effects noted           |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Dizziness improving             |
+|            |            |                       |             |            |                  |                        |                                 |
+| 10/06/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg      | Oral       | Jane Taylor, RN   | J. Taylor               | Blood sugar controlled          |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | No adverse effects              |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Normal levels reported          |
+|            |            |                       |             |            |                  |                        |                                 |
+| 10/07/2023 | 08:00 AM   | Lisinopril             | 10 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | No adverse reaction             |
+|            | 08:00 AM   | Metformin              | 500 mg       | Oral       | Jane Taylor, RN   | J. Taylor               | Blood glucose normal            |
+|            | 02:00 PM   | Atorvastatin           | 20 mg       | Oral       | John Miller, RN   | J. Miller               | No reaction                     |
+|            | 06:00 PM   | Insulin (Novolog)      | 5 units     | Subcutaneous| Mike Johnson, LPN | M. Johnson              | Patient stable                  |
+
+**Notes:**
+- Monitor patient’s blood sugar levels regularly due to previous dizziness.
+- Ensure all medications are administered in accordance with hospital protocols.
+- Document any allergies or adverse reactions immediately. 
+
+**End of MAR**

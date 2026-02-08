@@ -1,0 +1,45 @@
+Surgical Procedure Notes
+
+Patient ID: 003758  
+Date of Surgery: October 15, 2023  
+Surgeon: Dr. Emily J. Carter, MD  
+Assistants: Dr. Mark S. Thompson, MD, Nurse Helen K. Roberts, RN  
+Procedure: Laparoscopic Cholecystectomy  
+Anesthesia: General Anesthesia, administered by Anesthetist James F. Wilson, CRNA  
+
+Pre-operative Assessment:  
+The patient is a 34-year-old female with a medical history significant for chronic gallbladder disease diagnosed two years prior. She has undergone conservative management but presented to the emergency department with acute cholecystitis. Pre-operative laboratory tests, including complete blood count (CBC), liver function tests, and coagulation profile, were within normal limits. The patient was assessed using the ASA classification system and was determined to be ASA II. Informed consent was obtained after discussing the risks, benefits, and potential complications of the procedure, including bile duct injury and postoperative infection.
+
+Operative Procedure:  
+The patient was taken to the operating room at 10:00 AM. After confirming the patient's identity and the procedure to be performed, general anesthesia was induced without complications. The patient was positioned supine with appropriate padding and monitoring devices applied.
+
+Aseptic technique was maintained, and the abdomen was prepped with chlorhexidine gluconate. A small incision was made at the umbilicus, and a Veress needle was inserted to establish pneumoperitoneum. Once adequate insufflation was achieved, a 10mm trocar was introduced, followed by the insertion of three additional trocars: a 5mm epigastric trocar, a 5mm right mid-clavicular trocar, and a 10mm right subcostal trocar.
+
+Intraoperative Findings:  
+Upon entry into the abdominal cavity, significant edema of the gallbladder was noted. The gallbladder was adherent to the surrounding tissues; however, no signs of perforation or abscess were observed. The cystic duct and cystic artery were identified and dissected using electrocautery. The gallbladder was decompressed, and after careful dissection, it was placed into an endoscopic retrieval bag.
+
+The cystic duct was clipped and divided, followed by clipping and division of the cystic artery. The gallbladder was successfully removed without any intraoperative complications. The operative field was inspected for hemostasis, with no active bleeding noted. 
+
+Wound closure was performed using absorbable sutures for the fascia and adhesive strips for the skin. The total operative time was approximately 90 minutes, and the patient tolerated the procedure well with no significant complications.
+
+Post-operative Care:  
+The patient was transferred to the recovery room at 11:30 AM. Vital signs were monitored closely, and the patient remained stable with no immediate post-anesthetic complications. Pain control was initiated with intravenous morphine, and the patient was encouraged to engage in deep breathing exercises to prevent atelectasis.
+
+The patient was advised of possible post-operative complications, including nausea, vomiting, and shoulder pain due to diaphragmatic irritation. She was discharged to the inpatient ward by 1:30 PM after a successful recovery, with orders for routine postoperative care, including pain management and dietary progression as tolerated.
+
+Follow-up Instructions:  
+The patient is to follow up in the surgical clinic within one week post-discharge for suture removal and further assessment. She was instructed to monitor for any signs of infection, including increased redness, swelling, or discharge from the incision sites, and to report any persistent abdominal pain or fever.
+
+Discharge Medications:  
+1. Acetaminophen 500mg every 8 hours as needed for pain.
+2. Ondansetron 4mg orally every 8 hours as needed for nausea.
+
+Complications:  
+None encountered during the procedure. 
+
+Operative Report Completed By:  
+Dr. Emily J. Carter, MD  
+Date: October 15, 2023  
+Time: 2:00 PM
+
+End of Document.

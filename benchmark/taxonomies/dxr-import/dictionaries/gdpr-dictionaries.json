@@ -1,0 +1,170 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "HR Document Types",
+    "description": "Terms indicating HR/employee documents subject to GDPR",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "employee record",
+      "personnel file",
+      "performance review",
+      "performance evaluation",
+      "appraisal",
+      "salary review",
+      "compensation",
+      "payroll",
+      "payslip",
+      "pay stub",
+      "wage slip",
+      "employment contract",
+      "offer letter",
+      "termination",
+      "disciplinary",
+      "grievance",
+      "absence record",
+      "leave request",
+      "timesheet",
+      "workforce",
+      "headcount"
+    ],
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Demographic Data Terms",
+    "description": "GDPR special category demographic data indicators",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "gender",
+      "sex",
+      "male",
+      "female",
+      "non-binary",
+      "ethnicity",
+      "ethnic origin",
+      "race",
+      "nationality",
+      "religion",
+      "religious belief",
+      "political opinion",
+      "trade union",
+      "disability",
+      "health condition",
+      "sexual orientation",
+      "marital status",
+      "age group",
+      "date of birth"
+    ],
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "PII Field Labels",
+    "description": "Labels that typically precede PII values in documents",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "full name",
+      "first name",
+      "last name",
+      "surname",
+      "forename",
+      "given name",
+      "family name",
+      "date of birth",
+      "dob",
+      "address",
+      "home address",
+      "postal code",
+      "postcode",
+      "telephone",
+      "phone",
+      "mobile",
+      "email",
+      "e-mail",
+      "bank account",
+      "account number",
+      "sort code",
+      "iban",
+      "national insurance",
+      "social security",
+      "tax id",
+      "passport",
+      "id number"
+    ],
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "EU Countries",
+    "description": "EU member state names for geographic context",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "Austria",
+      "Belgium",
+      "Bulgaria",
+      "Croatia",
+      "Cyprus",
+      "Czech Republic",
+      "Denmark",
+      "Estonia",
+      "Finland",
+      "France",
+      "Germany",
+      "Greece",
+      "Hungary",
+      "Ireland",
+      "Italy",
+      "Latvia",
+      "Lithuania",
+      "Luxembourg",
+      "Malta",
+      "Netherlands",
+      "Poland",
+      "Portugal",
+      "Romania",
+      "Slovakia",
+      "Slovenia",
+      "Spain",
+      "Sweden",
+      "United Kingdom",
+      "UK"
+    ],
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,479 @@
+# Governance Task Detection Taxonomy
+# Supports: governance-001 through governance-005
+#
+# Detects patterns for data governance tasks including:
+# - Sensitive financial data (access control audit)
+# - Confidentiality markings (DLP label compliance)
+# - Classification indicators (classification coverage)
+# - Ownership patterns (ownership verification)
+# - External sharing indicators (external sharing check)
+
+id: governance-detection
+name: "Data Governance Detection"
+version: "1.0.0"
+domain: "Governance"
+tasks:
+  - "governance-001: Access Control Audit"
+  - "governance-002: DLP Label Compliance"
+  - "governance-003: Classification Coverage"
+  - "governance-004: Ownership Verification"
+  - "governance-005: External Sharing Check"
+
+# =============================================================================
+# REGULAR EXPRESSION PATTERNS
+# =============================================================================
+regex_patterns:
+
+  # Confidentiality markings
+  - id: confidentiality_marking
+    name: "Confidentiality Marking"
+    description: "Detects document confidentiality markings"
+    patterns:
+      - "\\b(CONFIDENTIAL|HIGHLY\\s+CONFIDENTIAL|STRICTLY\\s+CONFIDENTIAL)\\b"
+      - "\\b(INTERNAL\\s+USE\\s+ONLY|INTERNAL\\s+ONLY|NOT\\s+FOR\\s+DISTRIBUTION)\\b"
+      - "\\b(PROPRIETARY|COMPANY\\s+CONFIDENTIAL|TRADE\\s+SECRET)\\b"
+      - "\\b(RESTRICTED|SENSITIVE|PRIVATE)\\b"
+    case_sensitive: false
+    confidence: 0.9
+    governance_type: "classification"
+
+  # Classification levels
+  - id: classification_level
+    name: "Classification Level"
+    description: "Detects formal classification levels"
+    patterns:
+      - "\\b(PUBLIC|INTERNAL|CONFIDENTIAL|SECRET|TOP\\s+SECRET)\\b"
+      - "\\bClassification[:\\s]*(Public|Internal|Confidential|Restricted|Secret)\\b"
+      - "\\bSensitivity[:\\s]*(Low|Medium|High|Critical)\\b"
+    case_sensitive: false
+    confidence: 0.85
+    governance_type: "classification"
+
+  # Document control numbers
+  - id: document_control_number
+    name: "Document Control Number"
+    description: "Detects document control and version identifiers"
+    patterns:
+      - "\\b(Doc|Document)\\s*(Control|ID|No\\.?|Number)[:\\s]*([A-Z0-9]{4,15})\\b"
+      - "\\bVersion[:\\s]*([0-9]+\\.[0-9]+([\\.-][0-9]+)?)\\b"
+      - "\\bRev(ision)?[:\\s]*([A-Z0-9]+)\\b"
+    case_sensitive: false
+    confidence: 0.8
+    governance_type: "tracking"
+
+  # Retention/Disposal markings
+  - id: retention_marking
+    name: "Retention Marking"
+    description: "Detects retention and disposal requirements"
+    patterns:
+      - "\\b(Retain\\s+Until|Retention\\s+Period|Dispose\\s+After)[:\\s]*([0-9]+\\s*(years?|months?|days?))\\b"
+      - "\\b(Permanent\\s+Retention|Do\\s+Not\\s+Destroy|Keep\\s+Indefinitely)\\b"
+      - "\\bRetention\\s+Class[:\\s]*([A-Z0-9]+)\\b"
+    case_sensitive: false
+    confidence: 0.85
+    governance_type: "retention"
+
+  # Legal hold indicators
+  - id: legal_hold
+    name: "Legal Hold"
+    description: "Detects legal hold and litigation markers"
+    patterns:
+      - "\\b(LEGAL\\s+HOLD|LITIGATION\\s+HOLD|PRESERVATION\\s+NOTICE)\\b"
+      - "\\b(Do\\s+Not\\s+Delete|Preserve\\s+All\\s+Copies)\\b"
+      - "\\bMatter[:\\s]*([A-Z0-9]{4,15})\\b"
+    case_sensitive: false
+    confidence: 0.9
+    governance_type: "legal"
+
+  # Financial sensitivity indicators
+  - id: financial_sensitivity
+    name: "Financial Sensitivity"
+    description: "Detects financial data that requires access control"
+    patterns:
+      # Account numbers (generic)
+      - "\\b(Account|Acct)\\s*(No\\.?|Number|#)[:\\s]*([0-9]{6,12})\\b"
+      # Bank routing numbers
+      - "\\b(Routing|ABA)\\s*(No\\.?|Number|#)?[:\\s]*([0-9]{9})\\b"
+      # Audit/Financial report references
+      - "\\b(Audit\\s+Report|Financial\\s+Statement)[:\\s]*([A-Z0-9-]{4,15})\\b"
+    case_sensitive: false
+    confidence: 0.85
+    governance_type: "access_control"
+
+  # External sharing indicators
+  - id: external_sharing_notice
+    name: "External Sharing Notice"
+    description: "Detects notices about external sharing"
+    patterns:
+      - "\\b(Shared\\s+With|Distributed\\s+To)[:\\s]*(External|Third\\s+Party|Vendor|Partner|Client)\\b"
+      - "\\b(For\\s+External\\s+Use|External\\s+Distribution\\s+Permitted)\\b"
+      - "\\b(NDA\\s+Required|Under\\s+NDA)\\b"
+    case_sensitive: false
+    confidence: 0.8
+    governance_type: "sharing"
+
+  # Owner/Responsible party patterns
+  - id: owner_attribution
+    name: "Owner Attribution"
+    description: "Detects document ownership attribution"
+    patterns:
+      - "\\b(Owner|Data\\s+Owner|Document\\s+Owner|Responsible\\s+Party)[:\\s]*([A-Z][a-z]+\\s+[A-Z][a-z]+)\\b"
+      - "\\b(Owner|Data\\s+Owner)[:\\s]*([a-z.]+@[a-z]+\\.[a-z]+)\\b"
+      - "\\b(Approved\\s+By|Signed\\s+By)[:\\s]*([A-Z][a-z]+\\s+[A-Z][a-z]+)\\b"
+    case_sensitive: false
+    confidence: 0.8
+    governance_type: "ownership"
+
+  # Access restriction markers
+  - id: access_restriction
+    name: "Access Restriction"
+    description: "Detects access restriction notices"
+    patterns:
+      - "\\b(Access\\s+Restricted\\s+To|Limited\\s+To|Only\\s+For)[:\\s]*(HR|Finance|Legal|Executive|Management)\\b"
+      - "\\b(Need\\s+to\\s+Know|Authorized\\s+Personnel\\s+Only|Restricted\\s+Access)\\b"
+      - "\\b(Do\\s+Not\\s+Share|Do\\s+Not\\s+Forward|Do\\s+Not\\s+Copy)\\b"
+    case_sensitive: false
+    confidence: 0.85
+    governance_type: "access_control"
+
+  # Compliance framework references
+  - id: compliance_framework
+    name: "Compliance Framework"
+    description: "Detects references to compliance frameworks"
+    patterns:
+      - "\\b(SOX|Sarbanes-Oxley)\\s*(Compliant|Compliance|Section\\s+[0-9]+)\\b"
+      - "\\b(SOC\\s*[12]|ISO\\s*27001|NIST)\\s*(Certified|Compliant|Compliance)\\b"
+      - "\\b(HIPAA|GDPR|PCI-DSS|CCPA)\\s*(Compliant|Compliance|Notice)\\b"
+    case_sensitive: false
+    confidence: 0.85
+    governance_type: "compliance"
+
+# =============================================================================
+# DICTIONARIES
+# =============================================================================
+dictionaries:
+
+  # Confidentiality levels
+  - id: confidentiality_levels
+    name: "Confidentiality Levels"
+    description: "Terms indicating document confidentiality"
+    terms:
+      - "confidential"
+      - "highly confidential"
+      - "strictly confidential"
+      - "internal use only"
+      - "internal only"
+      - "proprietary"
+      - "company confidential"
+      - "trade secret"
+      - "restricted"
+      - "sensitive"
+      - "private"
+      - "not for distribution"
+      - "do not share"
+      - "do not forward"
+      - "privileged"
+      - "attorney-client privilege"
+      - "work product"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.9
+
+  # Governance document types
+  - id: governance_document_types
+    name: "Governance Document Types"
+    description: "Types of documents requiring governance oversight"
+    terms:
+      - "policy"
+      - "procedure"
+      - "guideline"
+      - "standard"
+      - "compliance report"
+      - "audit report"
+      - "risk assessment"
+      - "security assessment"
+      - "data inventory"
+      - "data catalog"
+      - "retention schedule"
+      - "records management"
+      - "access control list"
+      - "permission matrix"
+      - "classification guide"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.85
+
+  # Department/Access group terms
+  - id: access_groups
+    name: "Access Groups"
+    description: "Organizational units for access control"
+    terms:
+      - "human resources"
+      - "HR"
+      - "finance"
+      - "accounting"
+      - "legal"
+      - "executive"
+      - "management"
+      - "board of directors"
+      - "C-suite"
+      - "senior leadership"
+      - "IT security"
+      - "information security"
+      - "compliance"
+      - "audit"
+      - "risk management"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.7
+
+  # External party indicators
+  - id: external_parties
+    name: "External Parties"
+    description: "Terms indicating external parties"
+    terms:
+      - "vendor"
+      - "supplier"
+      - "contractor"
+      - "consultant"
+      - "partner"
+      - "client"
+      - "customer"
+      - "third party"
+      - "external auditor"
+      - "external counsel"
+      - "outsourced"
+      - "service provider"
+      - "subcontractor"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.75
+
+  # Sensitive data indicators
+  - id: sensitive_data_indicators
+    name: "Sensitive Data Indicators"
+    description: "Terms indicating presence of sensitive data"
+    terms:
+      - "personal information"
+      - "personally identifiable"
+      - "PII"
+      - "PHI"
+      - "protected health"
+      - "financial data"
+      - "payment card"
+      - "credit card"
+      - "social security"
+      - "tax information"
+      - "bank account"
+      - "salary"
+      - "compensation"
+      - "employee records"
+      - "customer data"
+      - "trade secret"
+      - "intellectual property"
+      - "IP"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.85
+
+# =============================================================================
+# LLM PROMPTS
+# =============================================================================
+llm_prompts:
+
+  # Sensitivity assessment
+  - id: sensitivity_assessment
+    name: "Sensitivity Assessment"
+    description: "Assesses document sensitivity level"
+    prompt: |
+      Assess the sensitivity level of this document based on its content.
+
+      Consider:
+      - Personal information (names, addresses, IDs)
+      - Financial data (accounts, amounts, transactions)
+      - Business-sensitive information (strategies, forecasts)
+      - Confidentiality markings
+
+      Sensitivity levels:
+      - PUBLIC: Can be shared externally
+      - INTERNAL: Internal use only
+      - CONFIDENTIAL: Limited distribution
+      - RESTRICTED: Need-to-know basis
+      - HIGHLY_RESTRICTED: Most sensitive
+
+      Answer with only the sensitivity level.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED", "HIGHLY_RESTRICTED"]
+    temperature: 0.1
+    max_tokens: 50
+
+  # Classification gap detector
+  - id: classification_gap_detector
+    name: "Classification Gap Detector"
+    description: "Identifies documents that may need classification"
+    prompt: |
+      Analyze this document to determine if it contains sensitive data
+      that would require classification or labeling.
+
+      Look for:
+      - Personal identifiers (names, SSNs, IDs)
+      - Financial information (accounts, amounts)
+      - Health information
+      - Legal/contractual content
+      - Business confidential content
+
+      Answer only: Does this document need classification? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether the document needs classification"
+    temperature: 0.1
+    max_tokens: 50
+
+  # External sharing risk assessment
+  - id: external_sharing_risk
+    name: "External Sharing Risk"
+    description: "Assesses risk if document is shared externally"
+    prompt: |
+      Assess the risk level if this document were shared externally
+      (outside the organization).
+
+      Consider:
+      - What sensitive data is present?
+      - What is the potential impact of disclosure?
+      - Are there any confidentiality markings?
+      - Does it reference internal-only processes or systems?
+
+      Risk levels:
+      - LOW: Safe to share
+      - MEDIUM: Some caution needed
+      - HIGH: Significant risk
+      - CRITICAL: Must not be shared
+
+      Answer with only the risk level.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+    temperature: 0.1
+    max_tokens: 50
+
+  # Owner identification
+  - id: owner_identification
+    name: "Owner Identification"
+    description: "Attempts to identify document owner"
+    prompt: |
+      Attempt to identify if the owner or responsible party for this document
+      can be determined.
+
+      Look for:
+      - Author/Owner fields
+      - Signatures or approvals
+      - Department indicators
+      - Email addresses
+      - References to responsible parties
+
+      Answer only: Can the document owner be identified? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether the document owner can be identified"
+    temperature: 0.1
+    max_tokens: 50
+
+# =============================================================================
+# COMPOSITE RULES
+# =============================================================================
+composite_rules:
+
+  # Highly sensitive financial data
+  - id: sensitive_financial
+    name: "Highly Sensitive Financial Data"
+    description: "Financial data requiring access control"
+    conditions:
+      - any:
+          - regex: "financial_sensitivity"
+          - dictionary: "sensitive_data_indicators"
+      - any:
+          - regex: "access_restriction"
+          - dictionary: "confidentiality_levels"
+    minimum_matches: 2
+    output_label: "Sensitive Financial"
+    confidence_threshold: 0.85
+
+  # Classification required
+  - id: needs_classification
+    name: "Needs Classification"
+    description: "Document contains sensitive data but may lack labels"
+    conditions:
+      - dictionary: "sensitive_data_indicators"
+      - not:
+          - dictionary: "confidentiality_levels"
+    minimum_matches: 1
+    output_label: "Classification Gap"
+    confidence_threshold: 0.75
+
+  # External sharing risk
+  - id: external_sharing_risk_rule
+    name: "External Sharing Risk"
+    description: "Document poses risk if shared externally"
+    conditions:
+      - any:
+          - dictionary: "confidentiality_levels"
+          - dictionary: "sensitive_data_indicators"
+      - dictionary: "external_parties"
+    minimum_matches: 2
+    output_label: "External Sharing Risk"
+    confidence_threshold: 0.8
+
+  # Missing owner
+  - id: missing_owner
+    name: "Missing Owner"
+    description: "Document lacks clear ownership"
+    conditions:
+      - not:
+          - regex: "owner_attribution"
+      - any:
+          - dictionary: "sensitive_data_indicators"
+          - dictionary: "confidentiality_levels"
+    minimum_matches: 1
+    output_label: "Ownership Gap"
+    confidence_threshold: 0.7
+
+# =============================================================================
+# OUTPUT LABELS
+# =============================================================================
+labels:
+  - name: "Sensitive Financial"
+    color: "#EF4444"
+    severity: "high"
+    requires_access_control: true
+
+  - name: "Classification Gap"
+    color: "#F59E0B"
+    severity: "medium"
+    requires_review: true
+
+  - name: "External Sharing Risk"
+    color: "#DC2626"
+    severity: "high"
+    requires_review: true
+
+  - name: "Ownership Gap"
+    color: "#8B5CF6"
+    severity: "medium"
+    requires_assignment: true
+
+  - name: "Governance Compliant"
+    color: "#22C55E"
+    severity: "none"

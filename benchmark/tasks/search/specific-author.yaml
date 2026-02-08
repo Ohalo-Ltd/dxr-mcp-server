@@ -1,0 +1,50 @@
+id: "search-005"
+name: "Specific Author Search"
+description: "Find documents created by a specific person"
+category: "search"
+domain: "Author"
+difficulty: "medium"
+
+prompt: |
+  Find all documents that appear to be authored by or related to "JSmith"
+  or "J Smith". List the files with their types and any dates found.
+
+ground_truth:
+  expected_files:
+    # Files with JSmith/J Smith in filename
+    - id: "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ.txt"
+      relevance: 1.0
+      reason: "Radiology report with JSmith in filename"
+    - id: "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789.txt"
+      relevance: 1.0
+      reason: "MAR record with JSmith in filename"
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
+      relevance: 1.0
+      reason: "Payroll summary with JD_Smith in filename"
+    - id: "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt"
+      relevance: 1.0
+      reason: "Workforce report with JD_Smith in filename"
+    - id: "CBA_Final_Analysis_v3.2_2023_JSmith_4790_ABC123.txt"
+      relevance: 1.0
+      reason: "Analysis document with JSmith in filename"
+  forbidden_files: []
+  minimum_precision: 0.7
+  minimum_recall: 0.7
+
+execution:
+  timeout_seconds: 90
+  max_tool_calls: 15
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - 'owner:"Legal"'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "author"
+  - "ownership"
+  - "legal"

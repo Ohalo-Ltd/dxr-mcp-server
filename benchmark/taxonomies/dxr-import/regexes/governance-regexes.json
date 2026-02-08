@@ -1,0 +1,194 @@
+[
+  {
+    "type": "REGEX",
+    "name": "Confidentiality Marking",
+    "description": "Detects document confidentiality markings",
+    "disableCategory": false,
+    "value": "(CONFIDENTIAL|HIGHLY\\s+CONFIDENTIAL|STRICTLY\\s+CONFIDENTIAL)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Confidential",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Internal Use Only Marking",
+    "description": "Detects internal use only markings",
+    "disableCategory": false,
+    "value": "(INTERNAL\\s+USE\\s+ONLY|INTERNAL\\s+ONLY|NOT\\s+FOR\\s+DISTRIBUTION)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Confidential",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Proprietary Marking",
+    "description": "Detects proprietary and trade secret markings",
+    "disableCategory": false,
+    "value": "(PROPRIETARY|COMPANY\\s+CONFIDENTIAL|TRADE\\s+SECRET)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Confidential",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Classification Level",
+    "description": "Detects formal classification levels",
+    "disableCategory": false,
+    "value": "Classification[:\\s]*(Public|Internal|Confidential|Restricted|Secret)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Sensitivity Level",
+    "description": "Detects document sensitivity levels",
+    "disableCategory": false,
+    "value": "Sensitivity[:\\s]*(Low|Medium|High|Critical)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Document Control Number",
+    "description": "Detects document control identifiers",
+    "disableCategory": false,
+    "value": "(Doc|Document)\\s*(Control|ID|No\\.?|Number)[:\\s]*([A-Z0-9]{4,15})",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Retention Period",
+    "description": "Detects retention period requirements",
+    "disableCategory": false,
+    "value": "(Retain\\s+Until|Retention\\s+Period|Dispose\\s+After)[:\\s]*([0-9]+\\s*(years?|months?|days?))",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Legal Hold",
+    "description": "Detects legal hold and litigation markers",
+    "disableCategory": false,
+    "value": "(LEGAL\\s+HOLD|LITIGATION\\s+HOLD|PRESERVATION\\s+NOTICE)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Legal",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Owner Attribution",
+    "description": "Detects document ownership attribution",
+    "disableCategory": false,
+    "value": "(Owner|Data\\s+Owner|Document\\s+Owner|Responsible\\s+Party)[:\\s]*([A-Z][a-z]+\\s+[A-Z][a-z]+)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Access Restriction",
+    "description": "Detects access restriction notices",
+    "disableCategory": false,
+    "value": "(Access\\s+Restricted\\s+To|Limited\\s+To|Only\\s+For)[:\\s]*(HR|Finance|Legal|Executive|Management)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Confidential",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Do Not Share Marking",
+    "description": "Detects do not share/forward markings",
+    "disableCategory": false,
+    "value": "(Do\\s+Not\\s+Share|Do\\s+Not\\s+Forward|Do\\s+Not\\s+Copy)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Confidential",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Compliance Framework Reference",
+    "description": "Detects references to compliance frameworks",
+    "disableCategory": false,
+    "value": "(SOX|SOC\\s*[12]|ISO\\s*27001|NIST)\\s*(Certified|Compliant|Compliance)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

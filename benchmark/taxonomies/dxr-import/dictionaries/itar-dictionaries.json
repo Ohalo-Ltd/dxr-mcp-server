@@ -1,0 +1,175 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "Defense Document Types",
+    "description": "Terms indicating defense-related documents subject to ITAR",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "technical data",
+      "technical specification",
+      "engineering drawing",
+      "schematic diagram",
+      "assembly drawing",
+      "wiring diagram",
+      "system design",
+      "weapons system",
+      "defense article",
+      "defense service",
+      "munitions",
+      "ordnance",
+      "armament",
+      "military specification",
+      "mil-spec",
+      "tactical",
+      "strategic",
+      "operational manual",
+      "maintenance manual",
+      "training manual",
+      "flight manual",
+      "technical manual"
+    ],
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "USML Controlled Items",
+    "description": "Items listed on the United States Munitions List",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "firearm",
+      "rifle",
+      "shotgun",
+      "machine gun",
+      "submachine gun",
+      "cannon",
+      "howitzer",
+      "mortar",
+      "gun turret",
+      "ammunition",
+      "cartridge",
+      "projectile",
+      "warhead",
+      "missile",
+      "rocket",
+      "launch vehicle",
+      "guided missile",
+      "cruise missile",
+      "ballistic missile",
+      "explosive",
+      "propellant",
+      "detonator",
+      "fuze",
+      "warship",
+      "submarine",
+      "naval vessel",
+      "tank",
+      "armored vehicle",
+      "combat vehicle",
+      "military aircraft",
+      "fighter",
+      "bomber",
+      "attack helicopter",
+      "unmanned aerial vehicle",
+      "UAV",
+      "drone",
+      "radar",
+      "sonar",
+      "electronic warfare",
+      "jamming",
+      "countermeasure",
+      "fire control",
+      "targeting system",
+      "guidance system",
+      "navigation system"
+    ],
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Defense Entities",
+    "description": "Known defense contractors and agencies",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "Department of Defense",
+      "DoD",
+      "Pentagon",
+      "DARPA",
+      "DLA",
+      "DCMA",
+      "Defense Contract",
+      "US Army",
+      "US Navy",
+      "US Air Force",
+      "US Marine Corps",
+      "Coast Guard",
+      "Lockheed Martin",
+      "Raytheon",
+      "Northrop Grumman",
+      "Boeing Defense",
+      "General Dynamics",
+      "BAE Systems",
+      "L3Harris"
+    ],
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Export Control Terms",
+    "description": "Terms related to export control regulations",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "export controlled",
+      "export license",
+      "export authorization",
+      "deemed export",
+      "re-export",
+      "foreign person",
+      "foreign national",
+      "dual use",
+      "end user",
+      "end use",
+      "destination control",
+      "technology transfer",
+      "technical assistance",
+      "defense service",
+      "brokering"
+    ],
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,424 @@
+# PCI-DSS Payment Card Detection Taxonomy
+# Supports: compliance-004 (PCI Credit Card Files)
+#
+# Detects Payment Card Industry data including:
+# - Primary Account Numbers (PAN)
+# - Cardholder names
+# - Expiration dates
+# - Card Verification Values (CVV/CVC)
+# - PIN data
+
+id: pci-dss
+name: "PCI-DSS Payment Card Data"
+version: "1.0.0"
+domain: "PCI"
+regulations:
+  - "PCI-DSS"
+  - "PCI-PA-DSS"
+
+# =============================================================================
+# REGULAR EXPRESSION PATTERNS
+# =============================================================================
+regex_patterns:
+
+  # Primary Account Number (PAN) - Credit Card Numbers
+  - id: credit_card_pan
+    name: "Credit Card Number (PAN)"
+    description: "Detects credit card numbers by brand patterns"
+    patterns:
+      # Visa: 13-16 digits starting with 4
+      - "\\b4[0-9]{12}(?:[0-9]{3})?\\b"
+      # Mastercard: 16 digits starting with 51-55 or 2221-2720
+      - "\\b5[1-5][0-9]{14}\\b"
+      - "\\b2(?:2[2-9][1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[01][0-9]|720)[0-9]{12}\\b"
+      # American Express: 15 digits starting with 34 or 37
+      - "\\b3[47][0-9]{13}\\b"
+      # Discover: 16 digits starting with 6011, 622126-622925, 644-649, 65
+      - "\\b6(?:011|5[0-9]{2})[0-9]{12}\\b"
+      - "\\b6(?:4[4-9]|22(?:1(?:2[6-9]|[3-9])|[2-8]|9(?:[01]|2[0-5])))[0-9]{10}\\b"
+      # Diners Club: 14 digits starting with 300-305, 36, 38
+      - "\\b3(?:0[0-5]|[68][0-9])[0-9]{11}\\b"
+      # JCB: 16 digits starting with 3528-3589
+      - "\\b(?:2131|1800|35\\d{3})\\d{11}\\b"
+      # Generic pattern with separators
+      - "\\b[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}[\\s\\-]?[0-9]{4}\\b"
+      - "\\b[0-9]{4}[\\s\\-]?[0-9]{6}[\\s\\-]?[0-9]{5}\\b"  # Amex format
+    case_sensitive: false
+    confidence: 0.9
+    pci_category: "pan"
+    validation:
+      luhn_check: true
+      exclude_patterns:
+        - "^0{4,}"  # Exclude all zeros
+        - "^1234"   # Exclude obvious test patterns
+
+  # Formatted card numbers (with spaces or dashes)
+  - id: formatted_card_number
+    name: "Formatted Card Number"
+    description: "Detects card numbers with formatting"
+    patterns:
+      # Standard 16-digit with separators
+      - "\\b[0-9]{4}[\\s\\-\\.][0-9]{4}[\\s\\-\\.][0-9]{4}[\\s\\-\\.][0-9]{4}\\b"
+      # Amex format (4-6-5)
+      - "\\b[0-9]{4}[\\s\\-\\.][0-9]{6}[\\s\\-\\.][0-9]{5}\\b"
+    case_sensitive: false
+    confidence: 0.95
+    pci_category: "pan"
+    validation:
+      luhn_check: true
+
+  # Card Verification Value (CVV/CVC/CID)
+  - id: cvv_pattern
+    name: "Card Verification Value"
+    description: "Detects CVV/CVC/CID codes in context"
+    patterns:
+      - "\\b(CVV|CVC|CVV2|CVC2|CID)[:\\s]*([0-9]{3,4})\\b"
+      - "\\b(security\\s+code|verification\\s+code)[:\\s]*([0-9]{3,4})\\b"
+    case_sensitive: false
+    confidence: 0.9
+    pci_category: "cvv"
+    sensitive_authentication_data: true
+
+  # Expiration Date
+  - id: expiration_date
+    name: "Card Expiration Date"
+    description: "Detects card expiration dates"
+    patterns:
+      - "\\b(exp|expiry|expiration|valid\\s+thru)[:\\s]*(0[1-9]|1[0-2])[/\\-]([0-9]{2}|[0-9]{4})\\b"
+      - "\\b(0[1-9]|1[0-2])[/\\-](2[0-9])\\b"  # MM/YY format
+      - "\\b(0[1-9]|1[0-2])[/\\-](20[2-9][0-9])\\b"  # MM/YYYY format
+    case_sensitive: false
+    confidence: 0.7
+    pci_category: "expiration"
+    context_required: true
+
+  # Magnetic Stripe Data (Track 1)
+  - id: track1_data
+    name: "Track 1 Data"
+    description: "Detects magnetic stripe Track 1 data"
+    patterns:
+      - "%B[0-9]{13,19}\\^[A-Z\\s/]+\\^[0-9]{4}[0-9]*\\?"
+    case_sensitive: false
+    confidence: 0.99
+    pci_category: "track_data"
+    sensitive_authentication_data: true
+    critical: true
+
+  # Magnetic Stripe Data (Track 2)
+  - id: track2_data
+    name: "Track 2 Data"
+    description: "Detects magnetic stripe Track 2 data"
+    patterns:
+      - ";[0-9]{13,19}=[0-9]{4}[0-9]*\\?"
+    case_sensitive: false
+    confidence: 0.99
+    pci_category: "track_data"
+    sensitive_authentication_data: true
+    critical: true
+
+  # PIN Block
+  - id: pin_block
+    name: "PIN Block"
+    description: "Detects encrypted PIN blocks"
+    patterns:
+      - "\\b(PIN\\s+block|encrypted\\s+PIN)[:\\s]*([0-9A-F]{16})\\b"
+    case_sensitive: false
+    confidence: 0.9
+    pci_category: "pin"
+    sensitive_authentication_data: true
+    critical: true
+
+  # Bank Identification Number (BIN) in context
+  - id: bin_pattern
+    name: "Bank Identification Number"
+    description: "Detects BIN/IIN references"
+    patterns:
+      - "\\b(BIN|IIN)[:\\s]*([0-9]{6,8})\\b"
+      - "\\bBank\\s+ID[:\\s]*([0-9]{6,8})\\b"
+    case_sensitive: false
+    confidence: 0.8
+    pci_category: "bin"
+
+# =============================================================================
+# DICTIONARIES
+# =============================================================================
+dictionaries:
+
+  # Payment card terminology
+  - id: payment_card_terms
+    name: "Payment Card Terms"
+    description: "Terms indicating payment card content"
+    terms:
+      - "credit card"
+      - "debit card"
+      - "payment card"
+      - "card number"
+      - "card holder"
+      - "cardholder"
+      - "account number"
+      - "primary account"
+      - "PAN"
+      - "card data"
+      - "card details"
+      - "payment details"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.8
+
+  # Card brand names
+  - id: card_brands
+    name: "Card Brands"
+    description: "Payment card brand names"
+    terms:
+      - "Visa"
+      - "Mastercard"
+      - "American Express"
+      - "Amex"
+      - "Discover"
+      - "Diners Club"
+      - "JCB"
+      - "UnionPay"
+      - "Maestro"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.7
+    context_required: true
+
+  # CVV-related terms
+  - id: cvv_terms
+    name: "CVV Terms"
+    description: "Terms related to card verification values"
+    terms:
+      - "CVV"
+      - "CVV2"
+      - "CVC"
+      - "CVC2"
+      - "CID"
+      - "security code"
+      - "verification code"
+      - "card verification"
+      - "three digit"
+      - "four digit"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.85
+
+  # Payment processing terms
+  - id: payment_processing
+    name: "Payment Processing Terms"
+    description: "Terms related to payment processing"
+    terms:
+      - "transaction"
+      - "authorization"
+      - "settlement"
+      - "chargeback"
+      - "refund"
+      - "merchant"
+      - "acquirer"
+      - "issuer"
+      - "payment gateway"
+      - "point of sale"
+      - "POS"
+      - "EMV"
+      - "chip and pin"
+      - "contactless"
+      - "tokenization"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.7
+
+  # PCI compliance terms
+  - id: pci_compliance_terms
+    name: "PCI Compliance Terms"
+    description: "PCI-DSS compliance terminology"
+    terms:
+      - "PCI DSS"
+      - "PCI-DSS"
+      - "payment card industry"
+      - "data security standard"
+      - "cardholder data environment"
+      - "CDE"
+      - "scope"
+      - "SAQ"
+      - "self-assessment"
+      - "QSA"
+      - "ASV"
+      - "penetration test"
+      - "vulnerability scan"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.8
+
+# =============================================================================
+# LLM PROMPTS
+# =============================================================================
+llm_prompts:
+
+  # Payment card detection
+  - id: payment_card_detection
+    name: "Payment Card Data Detection"
+    description: "Identifies payment card data in documents"
+    prompt: |
+      Analyze this document for payment card data covered by PCI-DSS.
+
+      Look for:
+      - Primary Account Numbers (PAN) - Full credit/debit card numbers
+      - Cardholder name, expiration date, service code
+      - Sensitive Authentication Data (track data, CVV/CVC, PIN)
+
+      Answer only: Does this document contain cardholder data? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether cardholder data was detected"
+    temperature: 0.1
+    max_tokens: 50
+
+  # PCI scope assessment
+  - id: pci_scope_assessment
+    name: "PCI Scope Assessment"
+    description: "Assesses PCI-DSS scope implications"
+    prompt: |
+      Assess whether this document is in PCI-DSS scope.
+
+      Consider:
+      - Does it contain Cardholder Data (PAN, name, expiration, service code)?
+      - Does it contain Sensitive Authentication Data (track data, CVV, PIN)?
+      - Does it reference systems that store, process, or transmit card data?
+
+      Answer only: Is this document in PCI scope? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether the document is in PCI-DSS scope"
+    temperature: 0.1
+    max_tokens: 50
+
+  # Image/OCR card detection
+  - id: card_image_detection
+    name: "Card Image Detection"
+    description: "Detects payment cards in images (requires OCR)"
+    prompt: |
+      This is OCR-extracted text from an image. Determine if it contains
+      a payment card (credit card, debit card).
+
+      Look for:
+      - Card number patterns (16 digits, often in groups of 4)
+      - Card brand logos or names (Visa, Mastercard, etc.)
+      - Expiration date format (MM/YY)
+      - Cardholder name
+
+      Answer only: Does this image contain a payment card? (true/false)
+
+      OCR text:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether a payment card image was detected"
+    temperature: 0.1
+    max_tokens: 50
+
+# =============================================================================
+# COMPOSITE RULES
+# =============================================================================
+composite_rules:
+
+  # Critical: Sensitive Authentication Data
+  - id: sensitive_auth_data
+    name: "Sensitive Authentication Data"
+    description: "Contains SAD - must never be stored"
+    conditions:
+      - any:
+          - regex: "track1_data"
+          - regex: "track2_data"
+          - regex: "pin_block"
+    minimum_matches: 1
+    output_label: "PCI Critical - SAD"
+    confidence_threshold: 0.95
+    severity: "critical"
+
+  # Confirmed cardholder data
+  - id: confirmed_cardholder_data
+    name: "Confirmed Cardholder Data"
+    description: "Contains cardholder data requiring PCI compliance"
+    conditions:
+      - regex: "credit_card_pan"
+      - any:
+          - regex: "expiration_date"
+          - dictionary: "payment_card_terms"
+          - dictionary: "card_brands"
+    minimum_matches: 2
+    output_label: "PCI Scope - CHD"
+    confidence_threshold: 0.9
+
+  # Potential card data (needs review)
+  - id: potential_card_data
+    name: "Potential Card Data"
+    description: "May contain card data - needs review"
+    conditions:
+      - any:
+          - regex: "formatted_card_number"
+          - regex: "cvv_pattern"
+      - dictionary: "payment_processing"
+    minimum_matches: 2
+    output_label: "Review for PCI"
+    confidence_threshold: 0.75
+
+# =============================================================================
+# VALIDATION RULES
+# =============================================================================
+validation:
+
+  # Luhn algorithm for credit card validation
+  luhn_check:
+    description: "Validates credit card numbers using Luhn algorithm"
+    required_for:
+      - "credit_card_pan"
+      - "formatted_card_number"
+
+  # Known test card numbers (false positives)
+  test_card_exclusions:
+    description: "Known test card numbers to exclude"
+    patterns:
+      - "4111111111111111"  # Visa test
+      - "5500000000000004"  # Mastercard test
+      - "340000000000009"   # Amex test
+      - "6011000000000004"  # Discover test
+      - "4242424242424242"  # Stripe test
+
+# =============================================================================
+# OUTPUT LABELS
+# =============================================================================
+labels:
+  - name: "PCI Critical - SAD"
+    color: "#7F1D1D"
+    severity: "critical"
+    description: "Sensitive Authentication Data - MUST BE DELETED"
+    immediate_action: true
+    notify_security: true
+
+  - name: "PCI Scope - CHD"
+    color: "#DC2626"
+    severity: "high"
+    description: "Cardholder Data - PCI-DSS applies"
+    requires_encryption: true
+    retention_limit: true
+
+  - name: "Review for PCI"
+    color: "#F97316"
+    severity: "medium"
+    description: "Potential cardholder data - needs review"
+    requires_review: true
+
+  - name: "PCI Adjacent"
+    color: "#EAB308"
+    severity: "low"
+    description: "Payment-related but no CHD detected"
+
+  - name: "No Card Data"
+    color: "#22C55E"
+    severity: "none"

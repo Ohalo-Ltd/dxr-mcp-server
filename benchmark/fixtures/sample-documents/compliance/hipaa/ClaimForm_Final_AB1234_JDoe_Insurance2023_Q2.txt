@@ -1,0 +1,63 @@
+Insurance Claim Form
+
+Patient Information:
+- Patient Name: John Smith
+- Patient ID: 004321
+- Date of Birth: January 15, 1985
+- Address: 123 Maple Street, Springfield, USA, 62701
+- Phone Number: (555) 123-4567
+- Insurance Policy Number: ABC12345678
+
+Provider Information:
+- Provider Name: Springfield Community Health Center
+- NPI Number: 1234567890
+- Address: 456 Oak Avenue, Springfield, USA, 62701
+- Phone Number: (555) 987-6543
+- Tax ID Number: 12-3456789
+
+Claim Details:
+- Date of Service: September 30, 2023
+- CPT Code: 99213
+- Description of Service: Established Patient Office Visit
+- Modifier: None
+- Units: 1
+
+Cost Breakdown:
+- Amount Charged: $150.00
+- Amount Paid by Insurance: $120.00
+- Patient Responsibility: $30.00
+- Adjustments: $0.00
+
+Additional Services:
+1. CPT Code: 36415
+   Description: Venipuncture
+   Units: 1
+   Amount Charged: $30.00
+   Amount Paid by Insurance: $24.00
+   Patient Responsibility: $6.00
+   Adjustments: $0.00
+
+Total Claim Amount: $180.00
+Total Amount Paid by Insurance: $144.00
+Total Patient Responsibility: $36.00
+
+Additional Notes:
+- Please attach all supporting documentation for the claim, including detailed invoices and referral letters if applicable. 
+- This claim is submitted under the terms and conditions of the agreed policy with the above-mentioned insurance provider.
+- All services rendered were medically necessary and performed in compliance with applicable healthcare regulations.
+
+Certification:
+I hereby certify that the information provided in this claim is true, accurate, and complete to the best of my knowledge. I authorize the release of any medical information necessary to process this claim.
+
+Signature: _____________________________
+Date: October 10, 2023
+
+Please submit this form to:
+Claims Department
+ABC Insurance Company
+789 Insurance Plaza
+Springfield, USA, 62702
+Phone: (555) 654-3210
+Claims Fax: (555) 654-3211
+
+For inquiries regarding this claim, please reference Claim Number: 987654321. Thank you for your prompt attention to this matter.

@@ -1,0 +1,1131 @@
+{
+  "files": [
+    {
+      "fileId": "PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt",
+      "fileName": "PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt",
+      "path": "/compliance/hipaa/PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt",
+      "size": 45000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-10-15T10:30:00Z",
+      "lastModifiedAt": "2024-03-20T14:22:00Z",
+      "owner": "Dr. Sarah Johnson",
+      "createdBy": "Dr. Sarah Johnson",
+      "modifiedBy": "Nurse Mike Chen",
+      "contentSha256": "a707ff76f3e22ef7c2aa1234567890abcdef01",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 15, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-002", "name": "Medical Record Number", "occurrences": 10, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-003", "name": "Diagnosis Code", "occurrences": 8, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-002", "name": "Confidential" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [
+          { "accountType": "GROUP", "name": "Healthcare-Team" },
+          { "accountType": "USER", "name": "Dr. Sarah Johnson", "email": "sarah.johnson@example.com" }
+        ]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Smith_J_DiabetesMgt_PMR_Final_V3_092023_XYZ123.txt",
+      "fileName": "Smith_J_DiabetesMgt_PMR_Final_V3_092023_XYZ123.txt",
+      "path": "/compliance/hipaa/Smith_J_DiabetesMgt_PMR_Final_V3_092023_XYZ123.txt",
+      "size": 38000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-09-15T09:00:00Z",
+      "lastModifiedAt": "2023-09-20T11:30:00Z",
+      "owner": "Dr. Sarah Johnson",
+      "contentSha256": "b808gg87g4f33fg8d3bb2345678901bcdefg02",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 12, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-004", "name": "Treatment Plan", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Smith_JD_PatientMedRec_v3.2_FINAL_2023-10-15_AB123_XYZ_DR04.txt",
+      "fileName": "Smith_JD_PatientMedRec_v3.2_FINAL_2023-10-15_AB123_XYZ_DR04.txt",
+      "path": "/compliance/hipaa/Smith_JD_PatientMedRec_v3.2_FINAL_2023-10-15_AB123_XYZ_DR04.txt",
+      "size": 52000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-10-15T08:00:00Z",
+      "lastModifiedAt": "2023-10-15T16:00:00Z",
+      "owner": "Dr. Sarah Johnson",
+      "contentSha256": "c909hh98h5g44gh9e4cc3456789012cdefgh03",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 20, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-002", "name": "Medical Record Number", "occurrences": 15, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-005", "name": "Date of Birth", "occurrences": 3, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-002", "name": "Confidential" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ.txt",
+      "fileName": "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ.txt",
+      "path": "/compliance/hipaa/RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ.txt",
+      "size": 28000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-10-25T10:00:00Z",
+      "lastModifiedAt": "2023-10-25T14:00:00Z",
+      "owner": "Radiology Dept",
+      "contentSha256": "d010ii09i6h55hi0f5dd4567890123defghi04",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 8, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-006", "name": "Imaging Results", "occurrences": 3, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-003", "name": "Radiology" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Rpt_2023_FNL_DR_Smith_MRI_Chest_0A1B2C3D.txt",
+      "fileName": "Rpt_2023_FNL_DR_Smith_MRI_Chest_0A1B2C3D.txt",
+      "path": "/compliance/hipaa/Rpt_2023_FNL_DR_Smith_MRI_Chest_0A1B2C3D.txt",
+      "size": 32000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-11-01T09:00:00Z",
+      "lastModifiedAt": "2023-11-01T12:00:00Z",
+      "owner": "Radiology Dept",
+      "contentSha256": "e111jj10j7i66ij1g6ee5678901234efghij05",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 6, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-006", "name": "Imaging Results", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-003", "name": "Radiology" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "MAR_Final_JD_Smith_20231015_Rev3_AB1234_XY.txt",
+      "fileName": "MAR_Final_JD_Smith_20231015_Rev3_AB1234_XY.txt",
+      "path": "/compliance/hipaa/MAR_Final_JD_Smith_20231015_Rev3_AB1234_XY.txt",
+      "size": 22000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-10-15T07:00:00Z",
+      "lastModifiedAt": "2023-10-15T19:00:00Z",
+      "owner": "Nursing Staff",
+      "contentSha256": "f222kk21k8j77jk2h7ff6789012345fghijk06",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 10, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-007", "name": "Medication Name", "occurrences": 25, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-004", "name": "Medication" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789.txt",
+      "fileName": "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789.txt",
+      "path": "/compliance/hipaa/MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789.txt",
+      "size": 19000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-09-01T08:00:00Z",
+      "lastModifiedAt": "2023-09-30T17:00:00Z",
+      "owner": "Nursing Staff",
+      "contentSha256": "g333ll32l9k88kl3i8gg7890123456ghijkl07",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 8, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-007", "name": "Medication Name", "occurrences": 20, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-004", "name": "Medication" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "SurgProcNote_Final_v3.2_JDoe_20230815_Op12345_ABCtxt_A1B2C3.txt",
+      "fileName": "SurgProcNote_Final_v3.2_JDoe_20230815_Op12345_ABCtxt_A1B2C3.txt",
+      "path": "/compliance/hipaa/SurgProcNote_Final_v3.2_JDoe_20230815_Op12345_ABCtxt_A1B2C3.txt",
+      "size": 41000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-08-15T14:00:00Z",
+      "lastModifiedAt": "2023-08-15T18:00:00Z",
+      "owner": "Surgery Dept",
+      "contentSha256": "h444mm43m0l99lm4j9hh8901234567hijklm08",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 12, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-008", "name": "Procedure Code", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-005", "name": "Surgical" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "DrSmith_SurgProc_Notes_v3.2_FINAL_2023_07_12_ABD-HR78-XY88.txt",
+      "fileName": "DrSmith_SurgProc_Notes_v3.2_FINAL_2023_07_12_ABD-HR78-XY88.txt",
+      "path": "/compliance/hipaa/DrSmith_SurgProc_Notes_v3.2_FINAL_2023_07_12_ABD-HR78-XY88.txt",
+      "size": 38000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-07-12T10:00:00Z",
+      "lastModifiedAt": "2023-07-12T16:00:00Z",
+      "owner": "Surgery Dept",
+      "contentSha256": "i555nn54n1m00mn5k0ii9012345678ijklmn09",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 10, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-008", "name": "Procedure Code", "occurrences": 4, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-001", "name": "Medical Records" }, { "id": "lbl-005", "name": "Surgical" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Healthcare-Team" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "ClaimForm_Final_AB1234_JDoe_Insurance2023_Q2.txt",
+      "fileName": "ClaimForm_Final_AB1234_JDoe_Insurance2023_Q2.txt",
+      "path": "/compliance/hipaa/ClaimForm_Final_AB1234_JDoe_Insurance2023_Q2.txt",
+      "size": 25000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-06-30T09:00:00Z",
+      "lastModifiedAt": "2023-07-05T11:00:00Z",
+      "owner": "Claims Dept",
+      "contentSha256": "j666oo65o2n11no6l1jj0123456789jklmno10",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 5, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-009", "name": "Health Insurance ID", "occurrences": 3, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-003", "name": "Diagnosis Code", "occurrences": 4, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-006", "name": "Insurance Claims" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Claims-Processing" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "ClaimForm_Final_DG2023_abc123_XYZ_JohnDoe_InsuranceA11.txt",
+      "fileName": "ClaimForm_Final_DG2023_abc123_XYZ_JohnDoe_InsuranceA11.txt",
+      "path": "/compliance/hipaa/ClaimForm_Final_DG2023_abc123_XYZ_JohnDoe_InsuranceA11.txt",
+      "size": 27000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-08-01T10:00:00Z",
+      "lastModifiedAt": "2023-08-05T14:00:00Z",
+      "owner": "Claims Dept",
+      "contentSha256": "k777pp76p3o22op7m2kk1234567890klmnop11",
+      "annotators": [
+        { "id": "ann-001", "name": "Patient Name", "occurrences": 6, "domain": { "id": "dom-phi", "name": "PHI" } },
+        { "id": "ann-009", "name": "Health Insurance ID", "occurrences": 4, "domain": { "id": "dom-phi", "name": "PHI" } }
+      ],
+      "labels": [{ "id": "lbl-006", "name": "Insurance Claims" }],
+      "dlpLabels": [{ "name": "HIPAA Protected", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Claims-Processing" }]
+      },
+      "datasource": { "id": "ds-001", "name": "Healthcare SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "EmpPerfRev_Final_JD34_2023_Q3_AE2389_XYZ.txt",
+      "fileName": "EmpPerfRev_Final_JD34_2023_Q3_AE2389_XYZ.txt",
+      "path": "/compliance/gdpr/EmpPerfRev_Final_JD34_2023_Q3_AE2389_XYZ.txt",
+      "size": 18000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-09-30T10:00:00Z",
+      "lastModifiedAt": "2023-10-05T15:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "l888qq87q4p33pq8n3ll2345678901lmnopq12",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 8, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-011", "name": "Employee ID", "occurrences": 3, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "EmpPerfRev_JohnDoe_Final_V2_2023_Q3_7634AB.txt",
+      "fileName": "EmpPerfRev_JohnDoe_Final_V2_2023_Q3_7634AB.txt",
+      "path": "/compliance/gdpr/EmpPerfRev_JohnDoe_Final_V2_2023_Q3_7634AB.txt",
+      "size": 16000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-09-28T09:00:00Z",
+      "lastModifiedAt": "2023-10-02T11:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "m999rr98r5q44qr9o4mm3456789012mnopqr13",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 10, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-011", "name": "Employee ID", "occurrences": 2, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt",
+      "fileName": "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt",
+      "path": "/compliance/gdpr/Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt",
+      "size": 35000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-12-31T10:00:00Z",
+      "lastModifiedAt": "2024-01-05T14:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "n000ss09s6r55rs0p5nn4567890123nopqrs14",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 50, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-012", "name": "Bank Account Number", "occurrences": 50, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-013", "name": "Salary", "occurrences": 50, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }, { "id": "lbl-009", "name": "Financial Records" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }, { "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "PS_2023_Fnl_Summary_JDoe_84521_XYZ.txt",
+      "fileName": "PS_2023_Fnl_Summary_JDoe_84521_XYZ.txt",
+      "path": "/compliance/gdpr/PS_2023_Fnl_Summary_JDoe_84521_XYZ.txt",
+      "size": 28000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-12-15T08:00:00Z",
+      "lastModifiedAt": "2023-12-20T12:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "o111tt10t7s66st1q6oo5678901234opqrst15",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 30, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-013", "name": "Salary", "occurrences": 30, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "WD_Report_FINAL_2023_ABG_JohnD_XYZ_7431_A1B2C3.txt",
+      "fileName": "WD_Report_FINAL_2023_ABG_JohnD_XYZ_7431_A1B2C3.txt",
+      "path": "/compliance/gdpr/WD_Report_FINAL_2023_ABG_JohnD_XYZ_7431_A1B2C3.txt",
+      "size": 42000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-11-01T09:00:00Z",
+      "lastModifiedAt": "2023-11-10T16:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "p222uu21u8t77tu2r7pp6789012345pqrstu16",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 100, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-014", "name": "Date of Birth", "occurrences": 100, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-015", "name": "Gender", "occurrences": 100, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt",
+      "fileName": "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt",
+      "path": "/compliance/gdpr/WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt",
+      "size": 38000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-10-07T08:00:00Z",
+      "lastModifiedAt": "2023-10-12T14:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "q333vv32v9u88uv3s8qq7890123456qrstuv17",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 80, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-015", "name": "Gender", "occurrences": 80, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-016", "name": "Ethnicity", "occurrences": 80, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "personal_data.xlsx",
+      "fileName": "personal_data.xlsx",
+      "path": "/compliance/gdpr/personal_data.xlsx",
+      "size": 125000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "createdAt": "2023-06-01T10:00:00Z",
+      "lastModifiedAt": "2024-01-15T11:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "r444ww43w0v99vw4t9rr8901234567rstuvw18",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 500, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-017", "name": "Email Address", "occurrences": 500, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-018", "name": "Phone Number", "occurrences": 450, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "emails.xlsx",
+      "fileName": "emails.xlsx",
+      "path": "/compliance/gdpr/emails.xlsx",
+      "size": 85000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "createdAt": "2023-05-15T09:00:00Z",
+      "lastModifiedAt": "2024-01-10T10:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "s555xx54x1w00wx5u0ss9012345678stuvwx19",
+      "annotators": [
+        { "id": "ann-017", "name": "Email Address", "occurrences": 800, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Employment status.docx",
+      "fileName": "Employment status.docx",
+      "path": "/compliance/gdpr/Employment status.docx",
+      "size": 45000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2023-04-01T08:00:00Z",
+      "lastModifiedAt": "2024-02-01T09:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "t666yy65y2x11xy6v1tt0123456789tuvwxy20",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 25, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-011", "name": "Employee ID", "occurrences": 25, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-007", "name": "HR Records" }, { "id": "lbl-008", "name": "EU Data" }],
+      "dlpLabels": [{ "name": "GDPR Personal Data", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "HR-Team" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "ITAR_Sample_1.pdf",
+      "fileName": "ITAR_Sample_1.pdf",
+      "path": "/compliance/itar/ITAR_Sample_1.pdf",
+      "size": 2500000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-01-15T10:00:00Z",
+      "lastModifiedAt": "2023-06-01T14:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "u777zz76z3y22yz7w3uu0123456789uvwxyz21",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes",
+        "clearanceRequired": "SECRET"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "ITAR_Sample_2.pdf",
+      "fileName": "ITAR_Sample_2.pdf",
+      "path": "/compliance/itar/ITAR_Sample_2.pdf",
+      "size": 3200000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-02-01T09:00:00Z",
+      "lastModifiedAt": "2023-07-15T11:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "v888aa87a4z33za8x4vv1234567890vwxyza22",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "ITAR_Sample_3.pdf",
+      "fileName": "ITAR_Sample_3.pdf",
+      "path": "/compliance/itar/ITAR_Sample_3.pdf",
+      "size": 1800000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-03-10T08:00:00Z",
+      "lastModifiedAt": "2023-08-20T10:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "w999bb98b5a44ab9y5ww2345678901wxyzab23",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "ITAR_Lookalike_1.pdf",
+      "fileName": "ITAR_Lookalike_1.pdf",
+      "path": "/compliance/itar/ITAR_Lookalike_1.pdf",
+      "size": 1500000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-04-01T09:00:00Z",
+      "lastModifiedAt": "2023-09-01T11:00:00Z",
+      "owner": "Engineering Dept",
+      "contentSha256": "x000cc09c6b55bc0z6xx3456789012xyzabc24",
+      "annotators": [],
+      "labels": [{ "id": "lbl-012", "name": "Technical Documentation" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Engineering-All" }]
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "ITAR_Lookalike_2.pdf",
+      "fileName": "ITAR_Lookalike_2.pdf",
+      "path": "/compliance/itar/ITAR_Lookalike_2.pdf",
+      "size": 1600000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-04-15T10:00:00Z",
+      "lastModifiedAt": "2023-09-15T12:00:00Z",
+      "owner": "Engineering Dept",
+      "contentSha256": "y111dd10d7c66cd1a7yy4567890123yzabcd25",
+      "annotators": [],
+      "labels": [{ "id": "lbl-012", "name": "Technical Documentation" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Engineering-All" }]
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "Submarine schematic.docx",
+      "fileName": "Submarine schematic.docx",
+      "path": "/compliance/itar/Submarine schematic.docx",
+      "size": 5500000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2022-11-01T08:00:00Z",
+      "lastModifiedAt": "2023-05-01T10:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "z222ee21e8d77de2b8zz5678901234zabcde26",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared-TS" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes",
+        "clearanceRequired": "TOP SECRET"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "Missile launch systems.docx",
+      "fileName": "Missile launch systems.docx",
+      "path": "/compliance/itar/Missile launch systems.docx",
+      "size": 4200000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2022-10-15T09:00:00Z",
+      "lastModifiedAt": "2023-04-15T11:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "a333ff32f9e88ef3c9aa6789012345abcdef27",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared-TS" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes",
+        "clearanceRequired": "TOP SECRET"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "Schematic Overview - Model AE-2100 Jet Engine.docx",
+      "fileName": "Schematic Overview - Model AE-2100 Jet Engine.docx",
+      "path": "/compliance/itar/Schematic Overview - Model AE-2100 Jet Engine.docx",
+      "size": 8500000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2022-09-01T08:00:00Z",
+      "lastModifiedAt": "2023-03-01T10:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "b444gg43g0f99fg4d0bb7890123456bcdefg28",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }, { "id": "lbl-011", "name": "Defense Research" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes",
+        "clearanceRequired": "SECRET"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "Handling hazardous explosives.docx",
+      "fileName": "Handling hazardous explosives.docx",
+      "path": "/compliance/itar/Handling hazardous explosives.docx",
+      "size": 2100000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2022-08-15T09:00:00Z",
+      "lastModifiedAt": "2023-02-15T11:00:00Z",
+      "owner": "Defense Programs",
+      "contentSha256": "c555hh54h1g00gh5e1cc8901234567cdefgh29",
+      "annotators": [],
+      "labels": [{ "id": "lbl-010", "name": "ITAR Controlled" }],
+      "dlpLabels": [{ "name": "ITAR - Export Controlled", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Defense-Cleared" }]
+      },
+      "extractedMetadata": {
+        "classification": "ITAR Controlled",
+        "exportControl": "Yes"
+      },
+      "datasource": { "id": "ds-003", "name": "Engineering Vault", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "credit-card-numbers_extradata.csv",
+      "fileName": "credit-card-numbers_extradata.csv",
+      "path": "/compliance/pci/credit-card-numbers_extradata.csv",
+      "size": 250000,
+      "mimeType": "text/csv",
+      "createdAt": "2023-06-01T10:00:00Z",
+      "lastModifiedAt": "2024-01-15T14:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "d666ii65i2h11hi6f2dd9012345678defghi30",
+      "annotators": [
+        { "id": "ann-019", "name": "Credit Card Number", "occurrences": 500, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } },
+        { "id": "ann-020", "name": "CVV", "occurrences": 500, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
+      ],
+      "labels": [{ "id": "lbl-009", "name": "Financial Records" }, { "id": "lbl-013", "name": "PCI Scope" }],
+      "dlpLabels": [{ "name": "PCI-DSS", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-PCI-Certified" }]
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "CardBase.csv",
+      "fileName": "CardBase.csv",
+      "path": "/compliance/pci/CardBase.csv",
+      "size": 180000,
+      "mimeType": "text/csv",
+      "createdAt": "2023-05-15T09:00:00Z",
+      "lastModifiedAt": "2024-01-10T11:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "e777jj76j3i22ij7g3ee0123456789efghij31",
+      "annotators": [
+        { "id": "ann-019", "name": "Credit Card Number", "occurrences": 350, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
+      ],
+      "labels": [{ "id": "lbl-009", "name": "Financial Records" }, { "id": "lbl-013", "name": "PCI Scope" }],
+      "dlpLabels": [{ "name": "PCI-DSS", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-PCI-Certified" }]
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "credit card screenshot.png",
+      "fileName": "credit card screenshot.png",
+      "path": "/compliance/pci/credit card screenshot.png",
+      "size": 450000,
+      "mimeType": "image/png",
+      "createdAt": "2023-07-01T10:00:00Z",
+      "lastModifiedAt": "2023-07-01T10:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "f888kk87k4j33jk8h4ff1234567890fghijk32",
+      "annotators": [
+        { "id": "ann-019", "name": "Credit Card Number", "occurrences": 1, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
+      ],
+      "labels": [{ "id": "lbl-013", "name": "PCI Scope" }],
+      "dlpLabels": [{ "name": "PCI-DSS", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-PCI-Certified" }]
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Sample evaluation agreement.docx",
+      "fileName": "Sample evaluation agreement.docx",
+      "path": "/search/contracts/Sample evaluation agreement.docx",
+      "size": 85000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2024-01-15T10:00:00Z",
+      "lastModifiedAt": "2024-02-01T14:00:00Z",
+      "owner": "Legal Dept",
+      "contentSha256": "g999ll98l5k44kl9i5gg2345678901ghijkl33",
+      "annotators": [],
+      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "dlpLabels": [{ "name": "Confidential", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [
+          { "accountType": "GROUP", "name": "Legal-Team" },
+          { "accountType": "USER", "name": "External Partner", "email": "partner@external.com" }
+        ]
+      },
+      "extractedMetadata": {
+        "contractType": "Evaluation Agreement",
+        "effectiveDate": "2024-02-01"
+      },
+      "datasource": { "id": "ds-005", "name": "Legal SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Loan_Agreement_1.docx",
+      "fileName": "Loan_Agreement_1.docx",
+      "path": "/search/contracts/Loan_Agreement_1.docx",
+      "size": 92000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2024-01-10T09:00:00Z",
+      "lastModifiedAt": "2024-01-20T11:00:00Z",
+      "owner": "Legal Dept",
+      "contentSha256": "h000mm09m6l55lm0j6hh3456789012hijklm34",
+      "annotators": [],
+      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "dlpLabels": [{ "name": "Confidential", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Legal-Team" }]
+      },
+      "extractedMetadata": {
+        "contractType": "Loan Agreement",
+        "effectiveDate": "2024-01-15"
+      },
+      "datasource": { "id": "ds-005", "name": "Legal SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "loan.pdf",
+      "fileName": "loan.pdf",
+      "path": "/search/contracts/loan.pdf",
+      "size": 78000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-12-01T10:00:00Z",
+      "lastModifiedAt": "2023-12-15T12:00:00Z",
+      "owner": "Legal Dept",
+      "contentSha256": "i111nn10n7m66mn1k7ii4567890123ijklmn35",
+      "annotators": [],
+      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Legal-Team" }]
+      },
+      "extractedMetadata": {
+        "contractType": "Loan Agreement"
+      },
+      "datasource": { "id": "ds-005", "name": "Legal SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "interest-free-loan-agreement.pdf",
+      "fileName": "interest-free-loan-agreement.pdf",
+      "path": "/search/contracts/interest-free-loan-agreement.pdf",
+      "size": 65000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-11-15T09:00:00Z",
+      "lastModifiedAt": "2023-11-20T11:00:00Z",
+      "owner": "Legal Dept",
+      "contentSha256": "j222oo21o8n77no2l8jj5678901234jklmno36",
+      "annotators": [],
+      "labels": [{ "id": "lbl-014", "name": "Contract" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Legal-Team" }]
+      },
+      "extractedMetadata": {
+        "contractType": "Interest-Free Loan Agreement"
+      },
+      "datasource": { "id": "ds-005", "name": "Legal SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Invoice_1.pdf",
+      "fileName": "Invoice_1.pdf",
+      "path": "/search/invoices/Invoice_1.pdf",
+      "size": 52000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-05T10:00:00Z",
+      "lastModifiedAt": "2024-01-05T10:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "k333pp32p9o88op3m9kk6789012345klmnop37",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "INV-2024-001"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Invoice_2.pdf",
+      "fileName": "Invoice_2.pdf",
+      "path": "/search/invoices/Invoice_2.pdf",
+      "size": 48000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-10T11:00:00Z",
+      "lastModifiedAt": "2024-01-10T11:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "l444qq43q0p99pq4n0ll7890123456lmnopq38",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "INV-2024-002"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Invoice_3.pdf",
+      "fileName": "Invoice_3.pdf",
+      "path": "/search/invoices/Invoice_3.pdf",
+      "size": 55000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-15T09:00:00Z",
+      "lastModifiedAt": "2024-01-15T09:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "m555rr54r1q00qr5o1mm8901234567mnopqr39",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "INV-2024-003"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Invoice_4.pdf",
+      "fileName": "Invoice_4.pdf",
+      "path": "/search/invoices/Invoice_4.pdf",
+      "size": 61000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-20T10:00:00Z",
+      "lastModifiedAt": "2024-01-20T10:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "n666ss65s2r11rs6p2nn9012345678nopqrs40",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "INV-2024-004"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "CD-invoice-1.pdf",
+      "fileName": "CD-invoice-1.pdf",
+      "path": "/search/invoices/CD-invoice-1.pdf",
+      "size": 45000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-08T09:00:00Z",
+      "lastModifiedAt": "2024-01-08T09:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "o777tt76t3s22st7q3oo0123456789opqrst41",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "CD-INV-001"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "james-gibb-sample-invoice.pdf",
+      "fileName": "james-gibb-sample-invoice.pdf",
+      "path": "/search/invoices/james-gibb-sample-invoice.pdf",
+      "size": 520000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-12T10:00:00Z",
+      "lastModifiedAt": "2024-01-12T10:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "p888uu87u4t33tu8r4pp1234567890pqrstu42",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "JG-2024-001"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "wordpress-pdf-invoice-plugin-sample.pdf",
+      "fileName": "wordpress-pdf-invoice-plugin-sample.pdf",
+      "path": "/search/invoices/wordpress-pdf-invoice-plugin-sample.pdf",
+      "size": 38000,
+      "mimeType": "application/pdf",
+      "createdAt": "2024-01-18T11:00:00Z",
+      "lastModifiedAt": "2024-01-18T11:00:00Z",
+      "owner": "Accounts Payable",
+      "contentSha256": "q999vv98v5u44uv9s5qq2345678901qrstuv43",
+      "annotators": [],
+      "labels": [{ "id": "lbl-015", "name": "Invoice" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "extractedMetadata": {
+        "invoiceNumber": "WP-INV-SAMPLE"
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "defining-issues-18-2-sec-cybersecurity.pdf",
+      "fileName": "defining-issues-18-2-sec-cybersecurity.pdf",
+      "path": "/search/general/defining-issues-18-2-sec-cybersecurity.pdf",
+      "size": 181000,
+      "mimeType": "application/pdf",
+      "createdAt": "2023-09-01T10:00:00Z",
+      "lastModifiedAt": "2023-09-15T14:00:00Z",
+      "owner": "Security Team",
+      "contentSha256": "r000ww09w6v55vw0t6rr3456789012rstuvw44",
+      "annotators": [],
+      "labels": [{ "id": "lbl-016", "name": "Security" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Security-Team" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "CBA_Final_Analysis_v3.2_2023_JSmith_4790_ABC123.txt",
+      "fileName": "CBA_Final_Analysis_v3.2_2023_JSmith_4790_ABC123.txt",
+      "path": "/search/general/CBA_Final_Analysis_v3.2_2023_JSmith_4790_ABC123.txt",
+      "size": 28000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-10-01T09:00:00Z",
+      "lastModifiedAt": "2023-10-15T11:00:00Z",
+      "owner": "J Smith",
+      "contentSha256": "s111xx10x7w66wx1u7ss4567890123stuvwx45",
+      "annotators": [],
+      "labels": [{ "id": "lbl-017", "name": "Analysis" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Business-Team" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "Amortization-Schedule-Template.xlsx",
+      "fileName": "Amortization-Schedule-Template.xlsx",
+      "path": "/search/general/Amortization-Schedule-Template.xlsx",
+      "size": 125000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "createdAt": "2023-06-01T10:00:00Z",
+      "lastModifiedAt": "2023-08-01T12:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "t222yy21y8x77xy2v8tt5678901234tuvwxy46",
+      "annotators": [
+        { "id": "ann-021", "name": "Dollar Amount", "occurrences": 50, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
+      ],
+      "labels": [{ "id": "lbl-009", "name": "Financial Records" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Team" }]
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Data Dictionary of Contoso BI demo dataset for Retail Industry.xlsx",
+      "fileName": "Data Dictionary of Contoso BI demo dataset for Retail Industry.xlsx",
+      "path": "/search/general/Data Dictionary of Contoso BI demo dataset for Retail Industry.xlsx",
+      "size": 95000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "createdAt": "2023-05-01T09:00:00Z",
+      "lastModifiedAt": "2023-07-15T11:00:00Z",
+      "owner": "BI Team",
+      "contentSha256": "u333zz32z9y88yz3w9uu6789012345uvwxyz47",
+      "annotators": [],
+      "labels": [{ "id": "lbl-018", "name": "Data Dictionary" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "BI-Team" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "2011_audited_financial_statement_msword.doc.docx",
+      "fileName": "2011_audited_financial_statement_msword.doc.docx",
+      "path": "/governance/2011_audited_financial_statement_msword.doc.docx",
+      "size": 185000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2011-03-15T10:00:00Z",
+      "lastModifiedAt": "2011-03-20T14:00:00Z",
+      "owner": "Finance Team",
+      "contentSha256": "v444aa43a0z99za4x0vv7890123456vwxyza48",
+      "annotators": [
+        { "id": "ann-021", "name": "Dollar Amount", "occurrences": 100, "domain": { "id": "dom-pci", "name": "Financially Sensitive" } }
+      ],
+      "labels": [{ "id": "lbl-009", "name": "Financial Records" }],
+      "dlpLabels": [{ "name": "Confidential", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Finance-Leadership" }]
+      },
+      "datasource": { "id": "ds-004", "name": "Finance SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "CAHRC_HR_Manual.docx",
+      "fileName": "CAHRC_HR_Manual.docx",
+      "path": "/governance/CAHRC_HR_Manual.docx",
+      "size": 450000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2023-01-01T08:00:00Z",
+      "lastModifiedAt": "2024-01-15T10:00:00Z",
+      "owner": "HR Department",
+      "contentSha256": "w555bb54b1a00ab5y1ww8901234567wxyzab49",
+      "annotators": [],
+      "labels": [{ "id": "lbl-019", "name": "HR Policy" }],
+      "dlpLabels": [{ "name": "Internal Only", "source": "PURVIEW", "type": "APPLIED" }],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]
+      },
+      "datasource": { "id": "ds-002", "name": "HR SharePoint", "type": "SHAREPOINT" }
+    },
+    {
+      "fileId": "Academic CV template.pdf",
+      "fileName": "Academic CV template.pdf",
+      "path": "/governance/Academic CV template.pdf",
+      "size": 252000,
+      "mimeType": "application/pdf",
+      "createdAt": "2022-06-01T10:00:00Z",
+      "lastModifiedAt": "2022-06-01T10:00:00Z",
+      "contentSha256": "x666cc65c2b11bc6z2xx9012345678xyzabc50",
+      "annotators": [],
+      "labels": [{ "id": "lbl-020", "name": "Template" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "Targeted CV template.docx",
+      "fileName": "Targeted CV template.docx",
+      "path": "/governance/Targeted CV template.docx",
+      "size": 85000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2022-05-15T09:00:00Z",
+      "lastModifiedAt": "2022-05-15T09:00:00Z",
+      "contentSha256": "y777dd76d3c22cd7a3yy0123456789yzabcd51",
+      "annotators": [],
+      "labels": [{ "id": "lbl-020", "name": "Template" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "College CV template.docx",
+      "fileName": "College CV template.docx",
+      "path": "/governance/College CV template.docx",
+      "size": 78000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2022-04-01T10:00:00Z",
+      "lastModifiedAt": "2022-04-01T10:00:00Z",
+      "contentSha256": "z888ee87e4d33de8b4zz1234567890zabcde52",
+      "annotators": [],
+      "labels": [{ "id": "lbl-020", "name": "Template" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "DOMAIN", "name": "example.com" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "MLA style report.docx",
+      "fileName": "MLA style report.docx",
+      "path": "/governance/MLA style report.docx",
+      "size": 65000,
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "createdAt": "2023-09-01T10:00:00Z",
+      "lastModifiedAt": "2024-01-01T12:00:00Z",
+      "owner": "Marketing Team",
+      "contentSha256": "a999ff98f5e44ef9c5aa2345678901abcdef53",
+      "annotators": [],
+      "labels": [{ "id": "lbl-021", "name": "Report" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [
+          { "accountType": "GROUP", "name": "Marketing-Team" },
+          { "accountType": "USER", "name": "External Reviewer", "email": "reviewer@external.com" }
+        ]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    },
+    {
+      "fileId": "sample_redaction_text.txt",
+      "fileName": "sample_redaction_text.txt",
+      "path": "/governance/sample_redaction_text.txt",
+      "size": 15000,
+      "mimeType": "text/plain",
+      "createdAt": "2023-08-01T09:00:00Z",
+      "lastModifiedAt": "2023-08-15T11:00:00Z",
+      "owner": "Security Team",
+      "contentSha256": "b000gg09g6f55fg0d6bb3456789012bcdefg54",
+      "annotators": [
+        { "id": "ann-010", "name": "Full Name", "occurrences": 10, "domain": { "id": "dom-pii", "name": "PII" } },
+        { "id": "ann-022", "name": "SSN", "occurrences": 5, "domain": { "id": "dom-pii", "name": "PII" } }
+      ],
+      "labels": [{ "id": "lbl-022", "name": "Test Data" }],
+      "dlpLabels": [],
+      "entitlements": {
+        "whoCanAccess": [{ "accountType": "GROUP", "name": "Security-Team" }]
+      },
+      "datasource": { "id": "ds-006", "name": "General Storage", "type": "FILE_SERVER" }
+    }
+  ]
+}

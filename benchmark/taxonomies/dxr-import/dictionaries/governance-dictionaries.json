@@ -1,0 +1,170 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "Confidentiality Levels",
+    "description": "Terms indicating document confidentiality for governance tasks",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "confidential",
+      "highly confidential",
+      "strictly confidential",
+      "internal use only",
+      "internal only",
+      "proprietary",
+      "company confidential",
+      "trade secret",
+      "restricted",
+      "sensitive",
+      "private",
+      "not for distribution",
+      "do not share",
+      "do not forward",
+      "privileged",
+      "attorney-client privilege",
+      "work product"
+    ],
+    "dataCategory": {
+      "name": "Confidential",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Governance Document Types",
+    "description": "Types of documents requiring governance oversight",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "policy",
+      "procedure",
+      "guideline",
+      "standard",
+      "compliance report",
+      "audit report",
+      "risk assessment",
+      "security assessment",
+      "data inventory",
+      "data catalog",
+      "retention schedule",
+      "records management",
+      "access control list",
+      "permission matrix",
+      "classification guide"
+    ],
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Access Groups",
+    "description": "Organizational units for access control governance",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "human resources",
+      "HR",
+      "finance",
+      "accounting",
+      "legal",
+      "executive",
+      "management",
+      "board of directors",
+      "C-suite",
+      "senior leadership",
+      "IT security",
+      "information security",
+      "compliance",
+      "audit",
+      "risk management"
+    ],
+    "dataCategory": {
+      "name": "Governance",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "External Parties",
+    "description": "Terms indicating external parties for sharing governance",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "vendor",
+      "supplier",
+      "contractor",
+      "consultant",
+      "partner",
+      "client",
+      "customer",
+      "third party",
+      "external auditor",
+      "external counsel",
+      "outsourced",
+      "service provider",
+      "subcontractor"
+    ],
+    "dataCategory": {
+      "name": "External",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Sensitive Data Indicators",
+    "description": "Terms indicating presence of sensitive data for classification",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "personal information",
+      "personally identifiable",
+      "PII",
+      "PHI",
+      "protected health",
+      "financial data",
+      "payment card",
+      "credit card",
+      "social security",
+      "tax information",
+      "bank account",
+      "salary",
+      "compensation",
+      "employee records",
+      "customer data",
+      "trade secret",
+      "intellectual property",
+      "IP"
+    ],
+    "dataCategory": {
+      "name": "Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

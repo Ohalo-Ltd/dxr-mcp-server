@@ -1,0 +1,58 @@
+id: "search-007"
+name: "File Type Distribution"
+description: "Analyze the distribution of file types"
+category: "search"
+domain: "File Analysis"
+difficulty: "easy"
+
+prompt: |
+  Analyze the file system and provide a breakdown of files by type (PDF,
+  Excel, Word, etc.). Include the count and total size for each file type.
+
+ground_truth:
+  # This task is about analyzing distribution, so we list representative files
+  # of each type to verify the analysis includes them
+  expected_files:
+    # PDF files
+    - id: "Invoice_1.pdf"
+      relevance: 0.5
+      reason: "PDF file - part of distribution"
+    # Excel files
+    - id: "personal_data.xlsx"
+      relevance: 0.5
+      reason: "Excel file - part of distribution"
+    # CSV files
+    - id: "credit-card-numbers_extradata.csv"
+      relevance: 0.5
+      reason: "CSV file - part of distribution"
+    # Word documents
+    - id: "CAHRC_HR_Manual.docx"
+      relevance: 0.5
+      reason: "Word document - part of distribution"
+    # Text files
+    - id: "PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt"
+      relevance: 0.5
+      reason: "Text file - part of distribution"
+    # Image files
+    - id: "credit card screenshot.png"
+      relevance: 0.5
+      reason: "PNG image - part of distribution"
+  forbidden_files: []
+  minimum_precision: 0.3
+  minimum_recall: 0.5
+
+execution:
+  timeout_seconds: 120
+  max_tool_calls: 20
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "analysis"
+  - "file-types"
+  - "statistics"

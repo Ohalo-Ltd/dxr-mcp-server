@@ -1,0 +1,178 @@
+[
+  {
+    "type": "REGEX",
+    "name": "UK National Insurance Number",
+    "description": "Detects UK National Insurance numbers",
+    "disableCategory": false,
+    "value": "[A-CEGHJ-PR-TW-Z]{2}[0-9]{6}[A-D]",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "IBAN",
+    "description": "Detects International Bank Account Numbers",
+    "disableCategory": false,
+    "value": "[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,16}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "IBAN with Label",
+    "description": "Detects IBAN with label prefix",
+    "disableCategory": false,
+    "value": "IBAN[:\\s]*[A-Z]{2}[0-9]{2}[A-Z0-9\\s]{10,30}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "BIC/SWIFT Code",
+    "description": "Detects bank identifier codes",
+    "disableCategory": false,
+    "value": "BIC[:\\s]*[A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "EU Phone Number",
+    "description": "Detects European phone number formats",
+    "disableCategory": false,
+    "value": "\\+[0-9]{1,3}[\\s.\\-]?[0-9]{1,4}[\\s.\\-]?[0-9]{3,4}[\\s.\\-]?[0-9]{3,4}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Email Address",
+    "description": "Detects email addresses",
+    "disableCategory": false,
+    "value": "[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "UK Postcode",
+    "description": "Detects UK postal codes",
+    "disableCategory": false,
+    "value": "[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Salary Amount (EUR)",
+    "description": "Detects salary/compensation values in EUR",
+    "disableCategory": false,
+    "value": "(salary|compensation|wage|pay)[:\\s]*(EUR)?\\s*[0-9]{1,3}[,.]?[0-9]{3}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Date of Birth (EU Format)",
+    "description": "Detects DOB in European date formats",
+    "disableCategory": false,
+    "value": "(DOB|Date\\s+of\\s+Birth|Born)[:\\s]*[0-9]{1,2}[/.\\-][0-9]{1,2}[/.\\-][0-9]{2,4}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Employee ID",
+    "description": "Detects employee identifier patterns",
+    "disableCategory": false,
+    "value": "(Employee\\s+ID|EMP\\s*ID|Staff\\s+ID|Personnel\\s+No)[:\\s#]*[A-Z0-9]{4,12}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Spanish DNI",
+    "description": "Detects Spanish national ID numbers",
+    "disableCategory": false,
+    "value": "[0-9]{8}[A-Z]",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

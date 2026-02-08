@@ -1,0 +1,67 @@
+Debt Schedule
+
+Organization: Global Innovations Inc.
+Address: 1234 Innovation Way, Suite 100
+City, State, ZIP: Tech City, CA 90210
+Date: October 1, 2023
+
+Content Description:
+This document serves as a comprehensive record of all outstanding loans and debt obligations of Global Innovations Inc. It includes details on loan principal amounts, interest rates, payment schedules, and maturity dates. The following table consolidates the organization’s debt commitments, providing stakeholders with a clear view of its financial obligations.
+
+Debt Schedule Summary
+
+| Loan Type            | Lender                  | Principal Amount | Interest Rate | Payment Schedule     | Maturity Date   | Remaining Balance |
+|----------------------|------------------------|------------------|---------------|----------------------|-----------------|-------------------|
+| Term Loan            | National Bank          | $500,000         | 4.50%         | Monthly (Principal + Interest) | January 15, 2028 | $375,000          |
+| Equipment Financing   | ABC Financial Services  | $250,000         | 5.00%         | Quarterly (Interest Only)   | April 1, 2025  | $125,000          |
+| Line of Credit       | Standard Credit Union  | $400,000         | 6.00%         | Monthly (Interest Only)      | August 31, 2024 | $200,000          |
+| Commercial Mortgage   | Realty Lenders Inc.    | $1,200,000       | 3.75%         | Monthly (Principal + Interest) | March 1, 2030  | $1,100,000        |
+| Business Credit Card | Bank of Business       | $75,000          | 18.00%        | Monthly (Minimum Payment)    | Revolving       | $45,000           |
+
+1. **Term Loan from National Bank**
+   - **Principal Amount:** $500,000
+   - **Interest Rate:** 4.50%
+   - **Payment Frequency:** Monthly combined payments of principal and interest.
+   - **Next Payment Due Date:** November 15, 2023
+   - **Remaining Balance:** $375,000
+
+2. **Equipment Financing from ABC Financial Services**
+   - **Principal Amount:** $250,000
+   - **Interest Rate:** 5.00%
+   - **Payment Frequency:** Quarterly payments covering interest only.
+   - **Next Payment Due Date:** January 1, 2024
+   - **Remaining Balance:** $125,000
+
+3. **Line of Credit from Standard Credit Union**
+   - **Credit Limit:** $400,000
+   - **Interest Rate:** 6.00%
+   - **Payment Frequency:** Monthly payments covering interest only.
+   - **Next Payment Due Date:** October 31, 2023
+   - **Remaining Balance:** $200,000
+
+4. **Commercial Mortgage from Realty Lenders Inc.**
+   - **Principal Amount:** $1,200,000
+   - **Interest Rate:** 3.75%
+   - **Payment Frequency:** Monthly combined payments of principal and interest.
+   - **Next Payment Due Date:** November 1, 2023
+   - **Remaining Balance:** $1,100,000
+
+5. **Business Credit Card from Bank of Business**
+   - **Credit Limit:** $75,000
+   - **Interest Rate:** 18.00%
+   - **Payment Frequency:** Monthly minimum payment required.
+   - **Next Payment Due Date:** October 25, 2023
+   - **Remaining Balance:** $45,000
+
+Overall Debt Summary
+- **Total Principal Amount of Outstanding Debt:** $2,425,000
+- **Total Remaining Balance:** $1,845,000
+- **Average Interest Rate on Debt:** 5.10%
+
+This Debt Schedule provides a detailed overview of the current debt obligations of Global Innovations Inc. Stakeholders should regularly review this schedule to ensure that debt management strategies align with the organization's financial goals and maintain compliance with repayment schedules. A review of financing terms and conditions allows for proactive financial planning and reporting.
+
+Prepared by:
+Finance Department
+Global Innovations Inc.
+Contact: finance@globalinnovations.com
+Phone: (555) 123-4567

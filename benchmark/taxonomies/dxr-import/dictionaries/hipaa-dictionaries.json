@@ -1,0 +1,113 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "Medical Document Types",
+    "description": "Terms indicating medical/healthcare documents for HIPAA compliance",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "patient medical record",
+      "medical history",
+      "discharge summary",
+      "admission record",
+      "progress note",
+      "physician note",
+      "nursing assessment",
+      "medication administration record",
+      "MAR",
+      "radiology report",
+      "lab results",
+      "pathology report",
+      "surgical report",
+      "operative note",
+      "consultation note",
+      "treatment plan",
+      "care plan",
+      "insurance claim",
+      "EOB",
+      "explanation of benefits"
+    ],
+    "dataCategory": {
+      "name": "PHI",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Medical Conditions",
+    "description": "Common medical condition terminology that may indicate PHI",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "diabetes mellitus",
+      "hypertension",
+      "coronary artery disease",
+      "congestive heart failure",
+      "chronic kidney disease",
+      "COPD",
+      "asthma",
+      "pneumonia",
+      "cancer",
+      "carcinoma",
+      "melanoma",
+      "leukemia",
+      "HIV",
+      "AIDS",
+      "hepatitis",
+      "tuberculosis",
+      "stroke",
+      "myocardial infarction",
+      "fracture",
+      "arthritis"
+    ],
+    "dataCategory": {
+      "name": "PHI",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "PHI Field Indicators",
+    "description": "Field labels that typically precede PHI values",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "patient name",
+      "patient:",
+      "date of birth",
+      "dob:",
+      "ssn:",
+      "social security",
+      "medical record",
+      "mrn:",
+      "diagnosis:",
+      "treatment:",
+      "medication:",
+      "prescription:",
+      "insurance id",
+      "policy number",
+      "provider:",
+      "physician:",
+      "attending:"
+    ],
+    "dataCategory": {
+      "name": "PHI",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

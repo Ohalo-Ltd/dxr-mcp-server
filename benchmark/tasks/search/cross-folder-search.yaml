@@ -1,0 +1,43 @@
+id: "search-004"
+name: "Cross-Folder Search"
+description: "Find files by name across all locations"
+category: "search"
+domain: "File Search"
+difficulty: "easy"
+
+prompt: |
+  Search across all folders to find any documents with "agreement" in
+  their filename. List all matching files regardless of their location.
+
+ground_truth:
+  expected_files:
+    - id: "Sample evaluation agreement.docx"
+      relevance: 1.0
+      reason: "Evaluation agreement document"
+    - id: "Loan_Agreement_1.docx"
+      relevance: 1.0
+      reason: "Loan agreement document"
+    - id: "interest-free-loan-agreement.pdf"
+      relevance: 1.0
+      reason: "Interest-free loan agreement PDF"
+  forbidden_files: []
+  minimum_precision: 0.7
+  minimum_recall: 0.8
+
+execution:
+  timeout_seconds: 60
+  max_tool_calls: 10
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - 'fileName:"agreement"'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "file-search"
+  - "cross-folder"
+  - "filename"

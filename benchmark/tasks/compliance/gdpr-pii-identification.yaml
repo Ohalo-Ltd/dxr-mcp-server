@@ -1,0 +1,74 @@
+id: "compliance-002"
+name: "GDPR PII Identification"
+description: "Identify files containing EU personal data subject to GDPR"
+category: "compliance"
+domain: "GDPR/PII"
+difficulty: "medium"
+
+prompt: |
+  Identify all documents that contain personal data subject to GDPR compliance.
+  This includes employee records with names, performance evaluations, payroll
+  information (salaries, bank details), and workforce demographic data (age,
+  gender, ethnicity). Provide a list of files and the types of personal data
+  they contain.
+
+ground_truth:
+  expected_files:
+    # Employee Performance Reviews
+    - id: "EmpPerfRev_Final_JD34_2023_Q3_AE2389_XYZ.txt"
+      relevance: 1.0
+      reason: "Employee performance evaluation with personal employment data"
+    - id: "EmpPerfRev_JohnDoe_Final_V2_2023_Q3_7634AB.txt"
+      relevance: 1.0
+      reason: "Employee performance evaluation with personal employment data"
+    # Payroll Summaries
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
+      relevance: 1.0
+      reason: "Payroll data with salary and bank details"
+    - id: "PS_2023_Fnl_Summary_JDoe_84521_XYZ.txt"
+      relevance: 1.0
+      reason: "Payroll data with employee compensation information"
+    # Workforce Demographics
+    - id: "WD_Report_FINAL_2023_ABG_JohnD_XYZ_7431_A1B2C3.txt"
+      relevance: 1.0
+      reason: "Workforce demographics with age, gender, ethnicity data"
+    - id: "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt"
+      relevance: 1.0
+      reason: "Workforce composition and demographic data"
+    # Spreadsheets
+    - id: "personal_data.xlsx"
+      relevance: 1.0
+      reason: "Personal identifiers spreadsheet"
+    - id: "emails.xlsx"
+      relevance: 0.9
+      reason: "Email addresses - personal contact information"
+    - id: "Employment status.docx"
+      relevance: 0.9
+      reason: "Employment records with personal data"
+  forbidden_files: []
+  minimum_precision: 0.7
+  minimum_recall: 0.8
+
+execution:
+  timeout_seconds: 120
+  max_tool_calls: 20
+  dxr_hints:
+    expected_tools:
+      - "get_classifications"
+      - "list_file_metadata"
+    expected_queries:
+      - 'labels.name:"GDPR: Confirmed Employee PII"'
+      - 'labels.name:"GDPR: Financial Personal Data"'
+      - 'annotators.domain.name:"PII"'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: true
+  sensitive_data_domains:
+    - "PII"
+
+tags:
+  - "gdpr"
+  - "eu-data"
+  - "regulated"
+  - "pii"

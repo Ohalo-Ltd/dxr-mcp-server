@@ -1,0 +1,339 @@
+# HIPAA/PHI Detection Taxonomy
+# Supports: compliance-001 (HIPAA Document Discovery)
+#
+# Detects Protected Health Information (PHI) including:
+# - Patient identifiers (names, MRNs, DOB)
+# - Medical information (diagnoses, treatments, medications)
+# - Insurance information (policy numbers, claims)
+
+id: hipaa-phi
+name: "HIPAA Protected Health Information"
+version: "1.0.0"
+domain: "PHI"
+regulations:
+  - "HIPAA"
+  - "HITECH"
+
+# =============================================================================
+# REGULAR EXPRESSION PATTERNS
+# =============================================================================
+regex_patterns:
+
+  # Medical Record Numbers (MRN)
+  - id: mrn_pattern
+    name: "Medical Record Number"
+    description: "Detects common MRN formats"
+    patterns:
+      - "\\bMRN[:\\s#]*([A-Z0-9]{6,12})\\b"
+      - "\\bMedical\\s+Record\\s*[:#]?\\s*([A-Z0-9]{6,12})\\b"
+      - "\\bPatient\\s+ID[:\\s#]*([A-Z0-9]{6,12})\\b"
+    case_sensitive: false
+    confidence: 0.9
+    phi_category: "medical_record_number"
+
+  # Health Insurance Claim Numbers
+  - id: claim_number
+    name: "Insurance Claim Number"
+    description: "Detects health insurance claim identifiers"
+    patterns:
+      - "\\bClaim\\s*[:#]?\\s*([A-Z0-9]{8,15})\\b"
+      - "\\bClaim\\s+Number[:\\s]*([A-Z0-9]{8,15})\\b"
+      - "\\bPolicy\\s*[:#]?\\s*([A-Z]{2,3}[0-9]{6,12})\\b"
+    case_sensitive: false
+    confidence: 0.85
+    phi_category: "health_plan_beneficiary"
+
+  # ICD-10 Diagnosis Codes
+  - id: icd10_codes
+    name: "ICD-10 Diagnosis Code"
+    description: "Detects ICD-10-CM diagnosis codes"
+    patterns:
+      - "\\b([A-TV-Z][0-9][0-9AB]\\.?[0-9A-TV-Z]{0,4})\\b"
+      - "\\bICD[-\\s]?10[:\\s]*([A-Z][0-9]{2}\\.?[0-9A-Z]*)\\b"
+      - "\\bDiagnosis\\s+Code[:\\s]*([A-Z][0-9]{2}\\.?[0-9A-Z]*)\\b"
+    case_sensitive: false
+    confidence: 0.8
+    phi_category: "diagnosis_code"
+    validation:
+      # Common ICD-10 prefixes for validation
+      valid_prefixes: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z"]
+
+  # CPT Procedure Codes
+  - id: cpt_codes
+    name: "CPT Procedure Code"
+    description: "Detects CPT procedure codes"
+    patterns:
+      - "\\bCPT[:\\s]*([0-9]{5})\\b"
+      - "\\bProcedure\\s+Code[:\\s]*([0-9]{5})\\b"
+    case_sensitive: false
+    confidence: 0.8
+    phi_category: "procedure_code"
+
+  # Date of Birth patterns
+  - id: dob_pattern
+    name: "Date of Birth"
+    description: "Detects DOB in medical context"
+    patterns:
+      - "\\bDOB[:\\s]*([0-9]{1,2}[/\\-][0-9]{1,2}[/\\-][0-9]{2,4})\\b"
+      - "\\bDate\\s+of\\s+Birth[:\\s]*([0-9]{1,2}[/\\-][0-9]{1,2}[/\\-][0-9]{2,4})\\b"
+      - "\\bBirth\\s*Date[:\\s]*([0-9]{1,2}[/\\-][0-9]{1,2}[/\\-][0-9]{2,4})\\b"
+    case_sensitive: false
+    confidence: 0.9
+    phi_category: "date_of_birth"
+
+  # National Provider Identifier (NPI)
+  - id: npi_pattern
+    name: "National Provider Identifier"
+    description: "Detects 10-digit NPI numbers"
+    patterns:
+      - "\\bNPI[:\\s#]*([0-9]{10})\\b"
+      - "\\bProvider\\s+ID[:\\s#]*([0-9]{10})\\b"
+    case_sensitive: false
+    confidence: 0.85
+    phi_category: "provider_identifier"
+    validation:
+      luhn_check: true
+
+  # Drug/Medication patterns (NDC codes)
+  - id: ndc_pattern
+    name: "National Drug Code"
+    description: "Detects NDC medication identifiers"
+    patterns:
+      - "\\bNDC[:\\s#]*([0-9]{4,5}-[0-9]{3,4}-[0-9]{1,2})\\b"
+      - "\\bNDC[:\\s#]*([0-9]{11})\\b"
+    case_sensitive: false
+    confidence: 0.85
+    phi_category: "medication_code"
+
+# =============================================================================
+# DICTIONARIES
+# =============================================================================
+dictionaries:
+
+  # Medical document type indicators
+  - id: medical_document_types
+    name: "Medical Document Types"
+    description: "Terms indicating medical/healthcare documents"
+    terms:
+      - "patient medical record"
+      - "medical history"
+      - "discharge summary"
+      - "admission record"
+      - "progress note"
+      - "physician note"
+      - "nursing assessment"
+      - "medication administration record"
+      - "MAR"
+      - "radiology report"
+      - "lab results"
+      - "pathology report"
+      - "surgical report"
+      - "operative note"
+      - "consultation note"
+      - "treatment plan"
+      - "care plan"
+      - "insurance claim"
+      - "EOB"
+      - "explanation of benefits"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.85
+
+  # Medical conditions/diagnoses (common terms)
+  - id: medical_conditions
+    name: "Medical Conditions"
+    description: "Common medical condition terminology"
+    terms:
+      - "diabetes mellitus"
+      - "hypertension"
+      - "coronary artery disease"
+      - "congestive heart failure"
+      - "chronic kidney disease"
+      - "COPD"
+      - "asthma"
+      - "pneumonia"
+      - "cancer"
+      - "carcinoma"
+      - "melanoma"
+      - "leukemia"
+      - "HIV"
+      - "AIDS"
+      - "hepatitis"
+      - "tuberculosis"
+      - "stroke"
+      - "myocardial infarction"
+      - "fracture"
+      - "arthritis"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.7
+    context_required: true  # Only flag if in medical context
+
+  # Protected health terms
+  - id: phi_indicators
+    name: "PHI Field Indicators"
+    description: "Field labels that precede PHI values"
+    terms:
+      - "patient name"
+      - "patient:"
+      - "date of birth"
+      - "dob:"
+      - "ssn:"
+      - "social security"
+      - "medical record"
+      - "mrn:"
+      - "diagnosis:"
+      - "treatment:"
+      - "medication:"
+      - "prescription:"
+      - "insurance id"
+      - "policy number"
+      - "provider:"
+      - "physician:"
+      - "attending:"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.9
+
+# =============================================================================
+# LLM PROMPTS
+# =============================================================================
+llm_prompts:
+
+  # Primary PHI detection prompt
+  - id: phi_detection
+    name: "PHI Content Detection"
+    description: "Analyzes document for Protected Health Information"
+    prompt: |
+      Analyze the following document excerpt for Protected Health Information (PHI)
+      as defined by HIPAA. Look for any of the 18 PHI identifiers including:
+      names, geographic data, dates, phone/fax numbers, email addresses,
+      SSNs, medical record numbers, health plan IDs, account numbers,
+      license numbers, vehicle/device identifiers, URLs, IPs, biometric data, or photos.
+
+      Answer only: Does this document contain PHI? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether PHI was detected"
+    temperature: 0.1
+    max_tokens: 50
+
+  # Medical document classification
+  - id: medical_document_classifier
+    name: "Medical Document Type Classifier"
+    description: "Classifies the type of medical document"
+    prompt: |
+      Classify this document into one of the following medical document categories:
+
+      - PATIENT_RECORD: Patient medical records, health history
+      - LAB_REPORT: Laboratory test results
+      - RADIOLOGY: X-ray, MRI, CT scan reports
+      - SURGICAL: Operative notes, surgical reports
+      - PRESCRIPTION: Medication orders, prescriptions
+      - INSURANCE: Claims, EOBs, insurance forms
+      - ADMINISTRATIVE: Consent forms, HIPAA notices
+      - OTHER_MEDICAL: Other healthcare-related documents
+      - NOT_MEDICAL: Not a medical document
+
+      Answer with only the category name.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["PATIENT_RECORD", "LAB_REPORT", "RADIOLOGY", "SURGICAL",
+             "PRESCRIPTION", "INSURANCE", "ADMINISTRATIVE", "OTHER_MEDICAL",
+             "NOT_MEDICAL"]
+    temperature: 0.1
+    max_tokens: 50
+
+  # HIPAA compliance risk assessment
+  - id: hipaa_risk_assessment
+    name: "HIPAA Compliance Risk"
+    description: "Assesses HIPAA compliance risk level"
+    prompt: |
+      Assess the HIPAA compliance risk for this document based on:
+      1. Volume of PHI present
+      2. Sensitivity of PHI (e.g., mental health, HIV status are more sensitive)
+      3. Whether PHI is linked to identifiable individuals
+      4. Presence of minimum necessary PHI vs. excessive disclosure
+
+      Risk Levels:
+      - CRITICAL: Multiple highly sensitive PHI elements linked to identifiable patient
+      - HIGH: Contains identifiable PHI that could cause harm if disclosed
+      - MEDIUM: Contains PHI but limited identifiability
+      - LOW: Minimal or de-identified health information
+      - NONE: No PHI detected
+
+      Answer with only the risk level.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["CRITICAL", "HIGH", "MEDIUM", "LOW", "NONE"]
+    temperature: 0.1
+    max_tokens: 50
+
+# =============================================================================
+# COMPOSITE RULES
+# =============================================================================
+composite_rules:
+
+  # High confidence PHI detection
+  - id: confirmed_phi
+    name: "Confirmed PHI Document"
+    description: "Document confirmed to contain PHI"
+    conditions:
+      - any:
+          - regex: "mrn_pattern"
+          - regex: "claim_number"
+          - regex: "icd10_codes"
+          - regex: "dob_pattern"
+      - any:
+          - dictionary: "medical_document_types"
+          - dictionary: "phi_indicators"
+    minimum_matches: 2
+    output_label: "HIPAA Protected"
+    confidence_threshold: 0.85
+
+  # Medical document with potential PHI
+  - id: potential_phi
+    name: "Potential PHI Document"
+    description: "Medical document that may contain PHI"
+    conditions:
+      - dictionary: "medical_document_types"
+      - any:
+          - dictionary: "medical_conditions"
+          - regex: "cpt_codes"
+          - regex: "ndc_pattern"
+    minimum_matches: 2
+    output_label: "Review for PHI"
+    confidence_threshold: 0.7
+
+# =============================================================================
+# OUTPUT LABELS
+# =============================================================================
+labels:
+  - name: "HIPAA Protected"
+    color: "#DC2626"
+    severity: "critical"
+    requires_encryption: true
+    retention_policy: "medical_records"
+
+  - name: "Contains PHI"
+    color: "#F97316"
+    severity: "high"
+    requires_encryption: true
+
+  - name: "Review for PHI"
+    color: "#EAB308"
+    severity: "medium"
+    requires_review: true
+
+  - name: "No PHI Detected"
+    color: "#22C55E"
+    severity: "none"

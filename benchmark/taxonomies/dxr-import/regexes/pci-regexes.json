@@ -1,0 +1,200 @@
+[
+  {
+    "type": "REGEX",
+    "name": "Visa Card Number",
+    "description": "Detects Visa credit card numbers (13-16 digits starting with 4)",
+    "disableCategory": false,
+    "value": "4[0-9]{12}([0-9]{3})?",
+    "validator": "LUHN_ALGORITHM",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Mastercard Number",
+    "description": "Detects Mastercard numbers (16 digits starting with 51-55)",
+    "disableCategory": false,
+    "value": "5[1-5][0-9]{14}",
+    "validator": "LUHN_ALGORITHM",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "American Express Number",
+    "description": "Detects American Express numbers (15 digits starting with 34 or 37)",
+    "disableCategory": false,
+    "value": "3[47][0-9]{13}",
+    "validator": "LUHN_ALGORITHM",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Discover Card Number",
+    "description": "Detects Discover card numbers (16 digits starting with 6011 or 65)",
+    "disableCategory": false,
+    "value": "6(?:011|5[0-9]{2})[0-9]{12}",
+    "validator": "LUHN_ALGORITHM",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Credit Card (Formatted)",
+    "description": "Detects formatted card numbers with spaces or dashes",
+    "disableCategory": false,
+    "value": "[0-9]{4}[\\s\\-][0-9]{4}[\\s\\-][0-9]{4}[\\s\\-][0-9]{4}",
+    "validator": "LUHN_ALGORITHM",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Amex Card (Formatted)",
+    "description": "Detects formatted American Express cards (4-6-5 format)",
+    "disableCategory": false,
+    "value": "[0-9]{4}[\\s\\-][0-9]{6}[\\s\\-][0-9]{5}",
+    "validator": "LUHN_ALGORITHM",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "CVV Code",
+    "description": "Detects CVV/CVC codes in context",
+    "disableCategory": false,
+    "value": "(CVV|CVC|CVV2|CVC2|CID)[:\\s]*[0-9]{3,4}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Security Code",
+    "description": "Detects security/verification codes",
+    "disableCategory": false,
+    "value": "(security\\s+code|verification\\s+code)[:\\s]*[0-9]{3,4}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Card Expiration Date",
+    "description": "Detects card expiration dates",
+    "disableCategory": false,
+    "value": "(exp|expiry|expiration|valid\\s+thru)[:\\s]*(0[1-9]|1[0-2])[/\\-]([0-9]{2}|[0-9]{4})",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Track 1 Magnetic Stripe Data",
+    "description": "Detects magnetic stripe Track 1 data (CRITICAL - must never be stored)",
+    "disableCategory": false,
+    "value": "%B[0-9]{13,19}\\^[A-Z\\s/]+\\^[0-9]{4}[0-9]*\\?",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Track 2 Magnetic Stripe Data",
+    "description": "Detects magnetic stripe Track 2 data (CRITICAL - must never be stored)",
+    "disableCategory": false,
+    "value": ";[0-9]{13,19}=[0-9]{4}[0-9]*\\?",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "BIN/IIN Number",
+    "description": "Detects Bank Identification Number references",
+    "disableCategory": false,
+    "value": "(BIN|IIN)[:\\s]*[0-9]{6,8}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,60 @@
+id: "governance-002"
+name: "DLP Label Compliance"
+description: "Check files have appropriate DLP labels"
+category: "governance"
+domain: "DLP"
+difficulty: "medium"
+
+prompt: |
+  Identify all files that have DLP labels applied. Verify that files
+  containing sensitive data have appropriate DLP labels. Flag any
+  sensitive files that are missing DLP labels.
+
+ground_truth:
+  # Note: DLP labels are applied by DXR during indexing
+  # These files should have DLP labels based on their content
+  expected_files:
+    # HIPAA files - should have PHI/HIPAA DLP labels
+    - id: "PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt"
+      relevance: 1.0
+      reason: "Patient record - should have HIPAA DLP label"
+    - id: "ClaimForm_Final_AB1234_JDoe_Insurance2023_Q2.txt"
+      relevance: 1.0
+      reason: "Insurance claim - should have HIPAA DLP label"
+    # GDPR files - should have PII/GDPR DLP labels
+    - id: "personal_data.xlsx"
+      relevance: 1.0
+      reason: "Personal data - should have GDPR DLP label"
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
+      relevance: 1.0
+      reason: "Payroll data - should have GDPR DLP label"
+    # ITAR files - should have export control DLP labels
+    - id: "ITAR_Sample_1.pdf"
+      relevance: 1.0
+      reason: "Defense technical data - should have ITAR DLP label"
+    # PCI files - should have PCI-DSS DLP labels
+    - id: "credit-card-numbers_extradata.csv"
+      relevance: 1.0
+      reason: "Credit card data - should have PCI-DSS DLP label"
+  forbidden_files: []
+  minimum_precision: 0.6
+  minimum_recall: 0.6
+
+execution:
+  timeout_seconds: 120
+  max_tool_calls: 20
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - '_exists_:dlpLabels'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "dlp"
+  - "labels"
+  - "compliance"
+  - "governance"

@@ -1,0 +1,1476 @@
+{
+  "metadata": {
+    "generatedAt": "2026-02-07T15:51:18.730Z",
+    "modelVersion": "mock-agents",
+    "benchmarkVersion": "1.0.0",
+    "mode": "mock"
+  },
+  "summary": {
+    "totalTasks": 17,
+    "dxrWins": 17,
+    "baselineWins": 0,
+    "ties": 0
+  },
+  "byCategory": {
+    "compliance": {
+      "category": "compliance",
+      "totalTasks": 5,
+      "dxr": {
+        "avgPrecision": 0.9,
+        "avgRecall": 1,
+        "avgF1": 0.9333333333333333,
+        "avgTimeMs": 0.2,
+        "tasksCompleted": 4,
+        "complianceRate": 1
+      },
+      "baseline": {
+        "avgPrecision": 0.2,
+        "avgRecall": 0.1,
+        "avgF1": 0.13333333333333333,
+        "avgTimeMs": 101.4,
+        "tasksCompleted": 0,
+        "complianceRate": 1
+      },
+      "dxrWins": 5,
+      "baselineWins": 0,
+      "ties": 0
+    },
+    "search": {
+      "category": "search",
+      "totalTasks": 7,
+      "dxr": {
+        "avgPrecision": 0.6714285714285714,
+        "avgRecall": 1,
+        "avgF1": 0.731772575250836,
+        "avgTimeMs": 0.2857142857142857,
+        "tasksCompleted": 4,
+        "complianceRate": 1
+      },
+      "baseline": {
+        "avgPrecision": 0.14285714285714285,
+        "avgRecall": 0.14285714285714285,
+        "avgF1": 0.14285714285714285,
+        "avgTimeMs": 102.57142857142857,
+        "tasksCompleted": 1,
+        "complianceRate": 1
+      },
+      "dxrWins": 7,
+      "baselineWins": 0,
+      "ties": 0
+    },
+    "governance": {
+      "category": "governance",
+      "totalTasks": 5,
+      "dxr": {
+        "avgPrecision": 0.7142857142857142,
+        "avgRecall": 0.9333333333333332,
+        "avgF1": 0.73,
+        "avgTimeMs": 0,
+        "tasksCompleted": 2,
+        "complianceRate": 1
+      },
+      "baseline": {
+        "avgPrecision": 0,
+        "avgRecall": 0,
+        "avgF1": 0,
+        "avgTimeMs": 101.6,
+        "tasksCompleted": 0,
+        "complianceRate": 1
+      },
+      "dxrWins": 5,
+      "baselineWins": 0,
+      "ties": 0
+    }
+  },
+  "metrics": {
+    "avgPrecisionDelta": 0.6336134453781512,
+    "avgRecallDelta": 0.892156862745098,
+    "avgF1Delta": 0.6924945898091678,
+    "avgTimeDeltaMs": 101.76470588235294,
+    "complianceImprovementRate": 0
+  },
+  "taskResults": [
+    {
+      "taskId": "compliance-005",
+      "taskName": "CCPA Consumer Data",
+      "category": "compliance",
+      "dxrResult": {
+        "taskId": "compliance-005",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 1,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-006"
+        ],
+        "filesExpected": [
+          "file-006"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "labels.name:\"CCPA Scope\""
+            },
+            "result": "Found 1 files",
+            "durationMs": 1
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 1 files matching the criteria \"labels.name:\"CCPA Scope\"\".",
+        "timestamp": "2026-02-07T15:51:16.972Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "compliance-005",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-006"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'ccpa'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'ccpa'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.075Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "compliance-002",
+      "taskName": "GDPR PII Identification",
+      "category": "compliance",
+      "dxrResult": {
+        "taskId": "compliance-002",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-003"
+        ],
+        "filesExpected": [
+          "file-003"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "labels.name:\"EU Data\""
+            },
+            "result": "Found 1 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 1 files matching the criteria \"labels.name:\"EU Data\"\".",
+        "timestamp": "2026-02-07T15:51:17.076Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "compliance-002",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 101,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-003"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'gdpr/pii'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'gdpr/pii'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.178Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "compliance-001",
+      "taskName": "HIPAA Document Discovery",
+      "category": "compliance",
+      "dxrResult": {
+        "taskId": "compliance-001",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-001",
+          "file-002"
+        ],
+        "filesExpected": [
+          "file-001",
+          "file-002"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "annotators.domain.name:\"PHI\""
+            },
+            "result": "Found 2 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 2 files matching the criteria \"annotators.domain.name:\"PHI\"\".",
+        "timestamp": "2026-02-07T15:51:17.179Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "compliance-001",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 1,
+        "recall": 0.5,
+        "f1Score": 0.6666666666666666,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-001"
+        ],
+        "filesExpected": [
+          "file-001",
+          "file-002"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'patient' or name contains 'medical'"
+            },
+            "result": "Found 1 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'patient' or name contains 'medical'\", I found 1 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.281Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0,
+      "recallDelta": 0.5,
+      "f1Delta": 0.33333333333333337,
+      "timeDeltaMs": 102,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "compliance-003",
+      "taskName": "ITAR Controlled Content",
+      "category": "compliance",
+      "dxrResult": {
+        "taskId": "compliance-003",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-004",
+          "file-017"
+        ],
+        "filesExpected": [
+          "file-004",
+          "file-017"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "labels.name:\"ITAR Controlled\""
+            },
+            "result": "Found 2 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 2 files matching the criteria \"labels.name:\"ITAR Controlled\"\".",
+        "timestamp": "2026-02-07T15:51:17.284Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "compliance-003",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 101,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-004",
+          "file-017"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'aerospace' or name contains 'defense'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'aerospace' or name contains 'defense'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.385Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "compliance-004",
+      "taskName": "PCI Credit Card Files",
+      "category": "compliance",
+      "dxrResult": {
+        "taskId": "compliance-004",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 0.5,
+        "recall": 1,
+        "f1Score": 0.6666666666666666,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-005",
+          "file-009"
+        ],
+        "filesExpected": [
+          "file-005"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "annotators.domain.name:\"Financially Sensitive\""
+            },
+            "result": "Found 2 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 2 files matching the criteria \"annotators.domain.name:\"Financially Sensitive\"\".",
+        "timestamp": "2026-02-07T15:51:17.386Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "compliance-004",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 101,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-005"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'pci-dss'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'pci-dss'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.489Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0.5,
+      "recallDelta": 1,
+      "f1Delta": 0.6666666666666666,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-004",
+      "taskName": "Cross-Folder Search",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-004",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-007",
+          "file-020"
+        ],
+        "filesExpected": [
+          "file-007",
+          "file-020"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "fileName:\"agreement\""
+            },
+            "result": "Found 2 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 2 files matching the criteria \"fileName:\"agreement\"\".",
+        "timestamp": "2026-02-07T15:51:17.490Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-004",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-007",
+          "file-020"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'file search'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'file search'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.592Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 102,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-007",
+      "taskName": "File Type Distribution",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-007",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 0.15,
+        "recall": 1,
+        "f1Score": 0.2608695652173913,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-001",
+          "file-002",
+          "file-003",
+          "file-004",
+          "file-005",
+          "file-006",
+          "file-007",
+          "file-008",
+          "file-009",
+          "file-010",
+          "file-011",
+          "file-012",
+          "file-013",
+          "file-014",
+          "file-015",
+          "file-016",
+          "file-017",
+          "file-018",
+          "file-019",
+          "file-020"
+        ],
+        "filesExpected": [
+          "file-001",
+          "file-002",
+          "file-003"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": ""
+            },
+            "result": "Found 20 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 20 files matching the criteria \"\".",
+        "timestamp": "2026-02-07T15:51:17.592Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-007",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 104,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-001",
+          "file-002",
+          "file-003"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'file analysis'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'file analysis'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.696Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0.15,
+      "recallDelta": 1,
+      "f1Delta": 0.2608695652173913,
+      "timeDeltaMs": 104,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-001",
+      "taskName": "Find Contracts by Date",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-001",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 0.25,
+        "recall": 1,
+        "f1Score": 0.4,
+        "timeToAnswerMs": 1,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-007",
+          "file-008",
+          "file-019",
+          "file-020"
+        ],
+        "filesExpected": [
+          "file-007"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "labels.name:\"Contract\""
+            },
+            "result": "Found 4 files",
+            "durationMs": 1
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 4 files matching the criteria \"labels.name:\"Contract\"\".",
+        "timestamp": "2026-02-07T15:51:17.698Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-001",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 100,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-019"
+        ],
+        "filesExpected": [
+          "file-007"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'contract' or name contains 'agreement'"
+            },
+            "result": "Found 1 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'contract' or name contains 'agreement'\", I found 1 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.798Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0.25,
+      "recallDelta": 1,
+      "f1Delta": 0.4,
+      "timeDeltaMs": 99,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-002",
+      "taskName": "Invoice Discovery",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-002",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 1,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-009",
+          "file-010"
+        ],
+        "filesExpected": [
+          "file-009",
+          "file-010"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "labels.name:\"Invoice\""
+            },
+            "result": "Found 2 files",
+            "durationMs": 1
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 2 files matching the criteria \"labels.name:\"Invoice\"\".",
+        "timestamp": "2026-02-07T15:51:17.799Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-002",
+        "agentType": "baseline",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-009",
+          "file-010"
+        ],
+        "filesExpected": [
+          "file-009",
+          "file-010"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'invoice'"
+            },
+            "result": "Found 2 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'invoice'\", I found 2 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:17.901Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0,
+      "recallDelta": 0,
+      "f1Delta": 0,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-003",
+      "taskName": "Large PDF Search",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-003",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-004",
+          "file-011",
+          "file-012"
+        ],
+        "filesExpected": [
+          "file-011",
+          "file-012",
+          "file-004"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "mimeType:\"application/pdf\" AND size > 10485760"
+            },
+            "result": "Found 3 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 3 files matching the criteria \"mimeType:\"application/pdf\" AND size > 10485760\".",
+        "timestamp": "2026-02-07T15:51:17.902Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-003",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 105,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-011",
+          "file-012",
+          "file-004"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'file size'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'file size'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.007Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 105,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-006",
+      "taskName": "Recent Modifications",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-006",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 0.3,
+        "recall": 1,
+        "f1Score": 0.4615384615384615,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-001",
+          "file-002",
+          "file-003",
+          "file-004",
+          "file-005",
+          "file-006",
+          "file-007",
+          "file-008",
+          "file-009",
+          "file-010",
+          "file-011",
+          "file-012",
+          "file-013",
+          "file-014",
+          "file-015",
+          "file-016",
+          "file-017",
+          "file-018",
+          "file-019",
+          "file-020"
+        ],
+        "filesExpected": [
+          "file-001",
+          "file-005",
+          "file-014",
+          "file-018",
+          "file-016",
+          "file-011"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "lastModifiedAt > \"2024-03-01\""
+            },
+            "result": "Found 20 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 20 files matching the criteria \"lastModifiedAt > \"2024-03-01\"\".",
+        "timestamp": "2026-02-07T15:51:18.008Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-006",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 103,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-001",
+          "file-005",
+          "file-014",
+          "file-018",
+          "file-016",
+          "file-011"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'recent files'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 1
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'recent files'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.111Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0.3,
+      "recallDelta": 1,
+      "f1Delta": 0.4615384615384615,
+      "timeDeltaMs": 103,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "search-005",
+      "taskName": "Specific Author Search",
+      "category": "search",
+      "dxrResult": {
+        "taskId": "search-005",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-007",
+          "file-008",
+          "file-019",
+          "file-020"
+        ],
+        "filesExpected": [
+          "file-007",
+          "file-008",
+          "file-019",
+          "file-020"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "owner:\"Legal\""
+            },
+            "result": "Found 4 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 4 files matching the criteria \"owner:\"Legal\"\".",
+        "timestamp": "2026-02-07T15:51:18.112Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "search-005",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-007",
+          "file-008",
+          "file-019",
+          "file-020"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'author'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'author'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.214Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 102,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "governance-001",
+      "taskName": "Access Control Audit",
+      "category": "governance",
+      "dxrResult": {
+        "taskId": "governance-001",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 1,
+        "recall": 0.6666666666666666,
+        "f1Score": 0.8,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-005",
+          "file-012"
+        ],
+        "filesExpected": [
+          "file-005",
+          "file-009",
+          "file-012"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "labels.name:\"Financial Records\""
+            },
+            "result": "Found 2 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 2 files matching the criteria \"labels.name:\"Financial Records\"\".",
+        "timestamp": "2026-02-07T15:51:18.215Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "governance-001",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-005",
+          "file-009",
+          "file-012"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'access control'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'access control'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.317Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 0.6666666666666666,
+      "f1Delta": 0.8,
+      "timeDeltaMs": 102,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "governance-003",
+      "taskName": "Classification Coverage",
+      "category": "governance",
+      "dxrResult": {
+        "taskId": "governance-003",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 0.14285714285714285,
+        "recall": 1,
+        "f1Score": 0.25,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-001",
+          "file-002",
+          "file-003",
+          "file-005",
+          "file-006",
+          "file-009",
+          "file-015"
+        ],
+        "filesExpected": [
+          "file-015"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "_exists_:annotators"
+            },
+            "result": "Found 7 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 7 files matching the criteria \"_exists_:annotators\".",
+        "timestamp": "2026-02-07T15:51:18.318Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "governance-003",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 101,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-015"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'classification'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'classification'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.419Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0.14285714285714285,
+      "recallDelta": 1,
+      "f1Delta": 0.25,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "governance-002",
+      "taskName": "DLP Label Compliance",
+      "category": "governance",
+      "dxrResult": {
+        "taskId": "governance-002",
+        "agentType": "dxr",
+        "taskCompleted": false,
+        "precision": 0.42857142857142855,
+        "recall": 1,
+        "f1Score": 0.6,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-001",
+          "file-002",
+          "file-003",
+          "file-004",
+          "file-005",
+          "file-006",
+          "file-007",
+          "file-008",
+          "file-011",
+          "file-012",
+          "file-014",
+          "file-016",
+          "file-017",
+          "file-020"
+        ],
+        "filesExpected": [
+          "file-001",
+          "file-002",
+          "file-003",
+          "file-004",
+          "file-005",
+          "file-006"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "_exists_:dlpLabels"
+            },
+            "result": "Found 14 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 14 files matching the criteria \"_exists_:dlpLabels\".",
+        "timestamp": "2026-02-07T15:51:18.420Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "governance-002",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-001",
+          "file-002",
+          "file-003",
+          "file-004",
+          "file-005",
+          "file-006"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'dlp'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'dlp'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.522Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 0.42857142857142855,
+      "recallDelta": 1,
+      "f1Delta": 0.6,
+      "timeDeltaMs": 102,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "governance-005",
+      "taskName": "External Sharing Check",
+      "category": "governance",
+      "dxrResult": {
+        "taskId": "governance-005",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-016"
+        ],
+        "filesExpected": [
+          "file-016"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "entitlements.whoCanAccess.email:*external*"
+            },
+            "result": "Found 1 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 1 files matching the criteria \"entitlements.whoCanAccess.email:*external*\".",
+        "timestamp": "2026-02-07T15:51:18.523Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "governance-005",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 102,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-016"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'external sharing'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'external sharing'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.625Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 102,
+      "winner": "dxr"
+    },
+    {
+      "taskId": "governance-004",
+      "taskName": "Ownership Verification",
+      "category": "governance",
+      "dxrResult": {
+        "taskId": "governance-004",
+        "agentType": "dxr",
+        "taskCompleted": true,
+        "precision": 1,
+        "recall": 1,
+        "f1Score": 1,
+        "timeToAnswerMs": 0,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [
+          "file-015"
+        ],
+        "filesExpected": [
+          "file-015"
+        ],
+        "toolCalls": [
+          {
+            "name": "get_classifications",
+            "args": {},
+            "result": "Found 32 classifications",
+            "durationMs": 0
+          },
+          {
+            "name": "list_file_metadata",
+            "args": {
+              "q": "-owner:*"
+            },
+            "result": "Found 1 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on my search using DXR metadata, I found 1 files matching the criteria \"-owner:*\".",
+        "timestamp": "2026-02-07T15:51:18.627Z",
+        "modelVersion": "mock-dxr-agent"
+      },
+      "baselineResult": {
+        "taskId": "governance-004",
+        "agentType": "baseline",
+        "taskCompleted": false,
+        "precision": 0,
+        "recall": 0,
+        "f1Score": 0,
+        "timeToAnswerMs": 101,
+        "complianceViolations": [],
+        "compliancePassed": true,
+        "filesFound": [],
+        "filesExpected": [
+          "file-015"
+        ],
+        "toolCalls": [
+          {
+            "name": "gdrive_search",
+            "args": {
+              "query": "name contains 'data ownership'"
+            },
+            "result": "Found 0 files",
+            "durationMs": 0
+          }
+        ],
+        "agentResponse": "Based on file name search for \"name contains 'data ownership'\", I found 0 potentially relevant files. Note: Without content classification, I cannot confirm if these files actually contain the requested sensitive data.",
+        "timestamp": "2026-02-07T15:51:18.729Z",
+        "modelVersion": "mock-baseline-agent"
+      },
+      "precisionDelta": 1,
+      "recallDelta": 1,
+      "f1Delta": 1,
+      "timeDeltaMs": 101,
+      "winner": "dxr"
+    }
+  ]
+}

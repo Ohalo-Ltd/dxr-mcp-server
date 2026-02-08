@@ -1,0 +1,178 @@
+[
+  {
+    "type": "REGEX",
+    "name": "USML Category Reference",
+    "description": "Detects United States Munitions List category references",
+    "disableCategory": false,
+    "value": "USML\\s+Category\\s+[IVX0-9]+",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "ITAR Control Marking",
+    "description": "Detects ITAR export control document markings",
+    "disableCategory": false,
+    "value": "ITAR\\s+(CONTROLLED|RESTRICTED|EXPORT\\s+CONTROLLED)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Export Controlled Marking",
+    "description": "Detects general export control markings",
+    "disableCategory": false,
+    "value": "EXPORT\\s+CONTROLLED",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Distribution Statement",
+    "description": "Detects DoD distribution statement markings",
+    "disableCategory": false,
+    "value": "DISTRIBUTION\\s+(STATEMENT\\s+)?[A-F]",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "MIL-SPEC Reference",
+    "description": "Detects Military Specification document references",
+    "disableCategory": false,
+    "value": "MIL[\\-\\s]?(STD|SPEC|PRF|DTL|HDBK)[\\-\\s]?[0-9]{1,6}[A-Z]?",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Defense Contract Number",
+    "description": "Detects DoD contract number formats",
+    "disableCategory": false,
+    "value": "(DAAB|DAAE|DAAH|DACA|DACW|DAHC|DAJA|F[0-9]{5}|N[0-9]{5}|W[0-9]{5})[0-9\\-]{8,15}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "National Stock Number (NSN)",
+    "description": "Detects NATO/US National Stock Numbers",
+    "disableCategory": false,
+    "value": "NSN[:\\s]?[0-9]{4}[\\-\\s]?[0-9]{2}[\\-\\s]?[0-9]{3}[\\-\\s]?[0-9]{4}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "CAGE Code",
+    "description": "Detects Commercial and Government Entity codes",
+    "disableCategory": false,
+    "value": "CAGE[:\\s]?[0-9A-Z]{5}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Technical Data Package",
+    "description": "Detects TDP documentation markers",
+    "disableCategory": false,
+    "value": "TDP[\\-\\s]?[0-9]{4,10}",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "Classification Marking",
+    "description": "Detects security classification markings",
+    "disableCategory": false,
+    "value": "(TOP\\s+SECRET|SECRET|CONFIDENTIAL|CLASSIFIED)",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "REGEX",
+    "name": "NOFORN Marking",
+    "description": "Detects No Foreign Nationals distribution marking",
+    "disableCategory": false,
+    "value": "NOFORN",
+    "organizationalUnit": {
+      "id": 1
+    },
+    "dataCategory": {
+      "name": "ITAR",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "redactors": [
+    {
+      "id": 1,
+      "name": "Standard PII Redactor",
+      "description": "Redacts common PII including names, emails, phone numbers, and addresses"
+    },
+    {
+      "id": 2,
+      "name": "HIPAA Redactor",
+      "description": "Redacts all PHI elements as defined by HIPAA Safe Harbor guidelines"
+    },
+    {
+      "id": 3,
+      "name": "PCI Redactor",
+      "description": "Redacts payment card data including PANs, CVVs, and expiration dates"
+    },
+    {
+      "id": 4,
+      "name": "Financial Redactor",
+      "description": "Redacts financial information including bank accounts and routing numbers"
+    },
+    {
+      "id": 5,
+      "name": "Full Redactor",
+      "description": "Comprehensive redaction of all detected sensitive data types"
+    },
+    {
+      "id": 6,
+      "name": "GDPR Redactor",
+      "description": "Redacts personal data as defined by GDPR Article 4"
+    },
+    {
+      "id": 7,
+      "name": "CCPA Redactor",
+      "description": "Redacts personal information as defined by CCPA"
+    }
+  ]
+}

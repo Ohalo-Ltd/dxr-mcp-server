@@ -1,0 +1,442 @@
+# GDPR/PII Detection Taxonomy
+# Supports: compliance-002 (GDPR PII Identification)
+#
+# Detects EU Personal Data including:
+# - Employee records (names, performance data)
+# - Payroll information (salary, bank details)
+# - Workforce demographics (age, gender, ethnicity)
+# - Contact information (email, phone, address)
+
+id: gdpr-pii
+name: "GDPR Personal Data"
+version: "1.0.0"
+domain: "PII"
+regulations:
+  - "GDPR"
+  - "UK-GDPR"
+  - "ePrivacy"
+
+# =============================================================================
+# REGULAR EXPRESSION PATTERNS
+# =============================================================================
+regex_patterns:
+
+  # EU National ID Numbers
+  - id: eu_national_id
+    name: "EU National ID"
+    description: "Detects various EU national ID formats"
+    patterns:
+      # German Personalausweisnummer
+      - "\\b[CFGHJKLMNPRTVWXYZ][0-9CFGHJKLMNPRTVWXYZ]{8}[0-9]\\b"
+      # French INSEE (Social Security)
+      - "\\b[12][0-9]{2}(0[1-9]|1[0-2])[0-9]{2}[0-9]{3}[0-9]{3}[0-9]{2}\\b"
+      # UK National Insurance Number
+      - "\\b[A-CEGHJ-PR-TW-Z]{2}[0-9]{6}[A-D]\\b"
+      # Spanish DNI
+      - "\\b[0-9]{8}[A-Z]\\b"
+      # Italian Codice Fiscale
+      - "\\b[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]\\b"
+    case_sensitive: false
+    confidence: 0.85
+    pii_category: "national_id"
+
+  # IBAN (International Bank Account Number)
+  - id: iban_pattern
+    name: "IBAN"
+    description: "Detects International Bank Account Numbers"
+    patterns:
+      - "\\b[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}\\b"
+      - "\\bIBAN[:\\s]*([A-Z]{2}[0-9]{2}[A-Z0-9\\s]{10,30})\\b"
+    case_sensitive: false
+    confidence: 0.9
+    pii_category: "financial"
+    validation:
+      iban_checksum: true
+
+  # BIC/SWIFT Code
+  - id: bic_pattern
+    name: "BIC/SWIFT Code"
+    description: "Detects bank identifier codes"
+    patterns:
+      - "\\b[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?\\b"
+      - "\\bBIC[:\\s]*([A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5})\\b"
+      - "\\bSWIFT[:\\s]*([A-Z]{4}[A-Z]{2}[A-Z0-9]{2,5})\\b"
+    case_sensitive: false
+    confidence: 0.8
+    pii_category: "financial"
+
+  # EU Phone Numbers
+  - id: eu_phone
+    name: "EU Phone Number"
+    description: "Detects European phone number formats"
+    patterns:
+      # International format
+      - "\\+[0-9]{1,3}[\\s.-]?[0-9]{1,4}[\\s.-]?[0-9]{3,4}[\\s.-]?[0-9]{3,4}\\b"
+      # Country-specific formats
+      - "\\b0[0-9]{2,4}[\\s.-]?[0-9]{3,4}[\\s.-]?[0-9]{3,4}\\b"
+    case_sensitive: false
+    confidence: 0.75
+    pii_category: "contact"
+
+  # Email Address
+  - id: email_pattern
+    name: "Email Address"
+    description: "Detects email addresses"
+    patterns:
+      - "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+    case_sensitive: false
+    confidence: 0.95
+    pii_category: "contact"
+
+  # EU Postal Codes
+  - id: eu_postal_code
+    name: "EU Postal Code"
+    description: "Detects various EU postal code formats"
+    patterns:
+      # UK postcode
+      - "\\b[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}\\b"
+      # German PLZ
+      - "\\b[0-9]{5}\\b"
+      # French code postal
+      - "\\b[0-9]{5}\\b"
+      # Dutch postcode
+      - "\\b[0-9]{4}\\s?[A-Z]{2}\\b"
+    case_sensitive: false
+    confidence: 0.6  # Lower confidence due to overlap with other numbers
+    pii_category: "geographic"
+    context_required: true
+
+  # Salary/Compensation amounts (with currency)
+  - id: salary_pattern
+    name: "Salary Amount"
+    description: "Detects salary/compensation values"
+    patterns:
+      - "\\b(salary|compensation|wage|pay)[:\\s]*(EUR|GBP|\\u20AC|\\u00A3)?\\s*[0-9]{1,3}([,\\.][0-9]{3})*([,\\.][0-9]{2})?\\b"
+      - "\\b(EUR|GBP|\\u20AC|\\u00A3)\\s*[0-9]{1,3}([,\\.][0-9]{3})*([,\\.][0-9]{2})?\\s*(per\\s+(year|month|annum))?\\b"
+      - "\\b[0-9]{2,3}[,\\.]?[0-9]{3}\\s*(EUR|GBP|per\\s+annum|p\\.a\\.)\\b"
+    case_sensitive: false
+    confidence: 0.8
+    pii_category: "financial"
+
+  # Date of Birth
+  - id: dob_eu_pattern
+    name: "Date of Birth (EU format)"
+    description: "Detects DOB in European date formats"
+    patterns:
+      - "\\b(DOB|Date\\s+of\\s+Birth|Born)[:\\s]*(\\d{1,2}[/\\.-]\\d{1,2}[/\\.-]\\d{2,4})\\b"
+      - "\\b(\\d{1,2}[/\\.-]\\d{1,2}[/\\.-]\\d{4})\\s*(DOB|date\\s+of\\s+birth)\\b"
+    case_sensitive: false
+    confidence: 0.85
+    pii_category: "date_of_birth"
+
+  # Employee ID patterns
+  - id: employee_id
+    name: "Employee ID"
+    description: "Detects employee identifier patterns"
+    patterns:
+      - "\\b(Employee\\s+ID|EMP\\s*ID|Staff\\s+ID|Personnel\\s+No)[:\\s#]*([A-Z0-9]{4,12})\\b"
+      - "\\bEMP[-_]?[0-9]{4,8}\\b"
+    case_sensitive: false
+    confidence: 0.85
+    pii_category: "employee_id"
+
+# =============================================================================
+# DICTIONARIES
+# =============================================================================
+dictionaries:
+
+  # HR/Employee document indicators
+  - id: hr_document_types
+    name: "HR Document Types"
+    description: "Terms indicating HR/employee documents"
+    terms:
+      - "employee record"
+      - "personnel file"
+      - "performance review"
+      - "performance evaluation"
+      - "appraisal"
+      - "salary review"
+      - "compensation"
+      - "payroll"
+      - "payslip"
+      - "pay stub"
+      - "wage slip"
+      - "employment contract"
+      - "offer letter"
+      - "termination"
+      - "disciplinary"
+      - "grievance"
+      - "absence record"
+      - "leave request"
+      - "timesheet"
+      - "workforce"
+      - "headcount"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.85
+
+  # Demographic categories (GDPR special categories)
+  - id: demographic_terms
+    name: "Demographic Data Terms"
+    description: "Terms indicating demographic/special category data"
+    terms:
+      - "gender"
+      - "sex"
+      - "male"
+      - "female"
+      - "non-binary"
+      - "ethnicity"
+      - "ethnic origin"
+      - "race"
+      - "nationality"
+      - "religion"
+      - "religious belief"
+      - "political opinion"
+      - "trade union"
+      - "disability"
+      - "health condition"
+      - "sexual orientation"
+      - "marital status"
+      - "age group"
+      - "date of birth"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.8
+    special_category: true
+
+  # PII field labels
+  - id: pii_field_labels
+    name: "PII Field Labels"
+    description: "Labels that typically precede PII values"
+    terms:
+      - "full name"
+      - "first name"
+      - "last name"
+      - "surname"
+      - "forename"
+      - "given name"
+      - "family name"
+      - "date of birth"
+      - "dob"
+      - "address"
+      - "home address"
+      - "postal code"
+      - "postcode"
+      - "telephone"
+      - "phone"
+      - "mobile"
+      - "email"
+      - "e-mail"
+      - "bank account"
+      - "account number"
+      - "sort code"
+      - "iban"
+      - "national insurance"
+      - "social security"
+      - "tax id"
+      - "passport"
+      - "id number"
+    match_type: "phrase"
+    case_sensitive: false
+    confidence: 0.9
+
+  # EU country names (for geographic context)
+  - id: eu_countries
+    name: "EU Countries"
+    description: "EU member state names for geographic detection"
+    terms:
+      - "Austria"
+      - "Belgium"
+      - "Bulgaria"
+      - "Croatia"
+      - "Cyprus"
+      - "Czech Republic"
+      - "Denmark"
+      - "Estonia"
+      - "Finland"
+      - "France"
+      - "Germany"
+      - "Greece"
+      - "Hungary"
+      - "Ireland"
+      - "Italy"
+      - "Latvia"
+      - "Lithuania"
+      - "Luxembourg"
+      - "Malta"
+      - "Netherlands"
+      - "Poland"
+      - "Portugal"
+      - "Romania"
+      - "Slovakia"
+      - "Slovenia"
+      - "Spain"
+      - "Sweden"
+      - "United Kingdom"
+      - "UK"
+    match_type: "word"
+    case_sensitive: false
+    confidence: 0.7
+
+# =============================================================================
+# LLM PROMPTS
+# =============================================================================
+llm_prompts:
+
+  # Primary PII detection
+  - id: gdpr_pii_detection
+    name: "GDPR Personal Data Detection"
+    description: "Identifies personal data as defined by GDPR Article 4"
+    prompt: |
+      Analyze this document for personal data as defined by GDPR Article 4(1):
+      "any information relating to an identified or identifiable natural person"
+
+      Look for: identifiers (names, IDs, location data), physical/physiological factors,
+      genetic data, economic factors (financial data, salary), cultural/social identity,
+      and GDPR Special Categories (Article 9) like racial/ethnic origin, political opinions,
+      religious beliefs, health data, or sexual orientation.
+
+      Answer only: Does this document contain personal data? (true/false)
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "boolean"
+      description: "Whether personal data was detected"
+    temperature: 0.1
+    max_tokens: 50
+
+  # Employee data classification
+  - id: employee_data_classifier
+    name: "Employee Data Classifier"
+    description: "Classifies employee-related document types"
+    prompt: |
+      Classify this document into one of the following HR/employee data categories:
+
+      - PERFORMANCE_REVIEW: Performance evaluations, appraisals, feedback
+      - PAYROLL: Salary data, payslips, compensation records
+      - RECRUITMENT: CVs, applications, interview notes
+      - WORKFORCE_DEMOGRAPHICS: Headcount reports, diversity data
+      - EMPLOYMENT_CONTRACT: Contracts, offer letters, terms
+      - DISCIPLINARY: Warnings, grievances, investigations
+      - LEAVE_ABSENCE: Holiday requests, sick leave, absence records
+      - TRAINING: Training records, certifications
+      - PERSONAL_FILE: General employee personal information
+      - NOT_EMPLOYEE_DATA: Not related to employee data
+
+      Answer with only the category name.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["PERFORMANCE_REVIEW", "PAYROLL", "RECRUITMENT",
+             "WORKFORCE_DEMOGRAPHICS", "EMPLOYMENT_CONTRACT",
+             "DISCIPLINARY", "LEAVE_ABSENCE", "TRAINING",
+             "PERSONAL_FILE", "NOT_EMPLOYEE_DATA"]
+    temperature: 0.1
+    max_tokens: 50
+
+  # GDPR lawful basis assessment
+  - id: gdpr_lawful_basis
+    name: "GDPR Lawful Basis Assessment"
+    description: "Suggests applicable GDPR lawful basis for processing"
+    prompt: |
+      Based on the apparent purpose of this document, suggest the most likely
+      GDPR lawful basis (Article 6) for processing:
+
+      - CONSENT: Data subject has given consent
+      - CONTRACT: Necessary for contract performance
+      - LEGAL_OBLIGATION: Required by law
+      - VITAL_INTERESTS: Protect vital interests
+      - PUBLIC_TASK: Public interest or official authority
+      - LEGITIMATE_INTERESTS: Legitimate interests of controller
+
+      Answer with only the lawful basis name.
+
+      Document excerpt:
+      {content}
+    output_schema:
+      type: "string"
+      enum: ["CONSENT", "CONTRACT", "LEGAL_OBLIGATION", "VITAL_INTERESTS",
+             "PUBLIC_TASK", "LEGITIMATE_INTERESTS"]
+    temperature: 0.2
+    max_tokens: 50
+
+# =============================================================================
+# COMPOSITE RULES
+# =============================================================================
+composite_rules:
+
+  # Confirmed employee PII
+  - id: confirmed_employee_pii
+    name: "Confirmed Employee PII"
+    description: "Document confirmed to contain employee personal data"
+    conditions:
+      - any:
+          - regex: "employee_id"
+          - regex: "salary_pattern"
+          - dictionary: "hr_document_types"
+      - any:
+          - regex: "email_pattern"
+          - regex: "dob_eu_pattern"
+          - dictionary: "pii_field_labels"
+    minimum_matches: 2
+    output_label: "GDPR Personal Data"
+    confidence_threshold: 0.85
+
+  # Special category data
+  - id: special_category_data
+    name: "GDPR Special Category"
+    description: "Contains GDPR Article 9 special category data"
+    conditions:
+      - dictionary: "demographic_terms"
+      - any:
+          - regex: "dob_eu_pattern"
+          - dictionary: "pii_field_labels"
+    minimum_matches: 2
+    output_label: "GDPR Special Category"
+    confidence_threshold: 0.8
+
+  # Financial PII
+  - id: financial_pii
+    name: "Financial Personal Data"
+    description: "Contains financial personal data"
+    conditions:
+      - any:
+          - regex: "iban_pattern"
+          - regex: "bic_pattern"
+          - regex: "salary_pattern"
+    minimum_matches: 1
+    output_label: "Financial PII"
+    confidence_threshold: 0.85
+
+# =============================================================================
+# OUTPUT LABELS
+# =============================================================================
+labels:
+  - name: "GDPR Personal Data"
+    color: "#7C3AED"
+    severity: "high"
+    requires_lawful_basis: true
+    subject_rights_applicable: true
+
+  - name: "GDPR Special Category"
+    color: "#DC2626"
+    severity: "critical"
+    requires_explicit_consent: true
+    requires_dpia: true
+
+  - name: "Financial PII"
+    color: "#F97316"
+    severity: "high"
+    requires_encryption: true
+
+  - name: "EU Data"
+    color: "#3B82F6"
+    severity: "medium"
+    gdpr_applicable: true
+
+  - name: "No Personal Data"
+    color: "#22C55E"
+    severity: "none"

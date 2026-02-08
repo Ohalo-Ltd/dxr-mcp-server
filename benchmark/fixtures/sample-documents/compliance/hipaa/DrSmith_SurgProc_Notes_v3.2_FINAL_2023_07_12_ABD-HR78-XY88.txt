@@ -1,0 +1,43 @@
+Surgical Procedure Notes
+
+Patient Name: John Doe  
+Patient ID: 123456  
+Date of Surgery: October 15, 2023  
+Time of Surgery: 10:00 AM  
+Surgeon: Dr. Jane Smith, MD  
+Anesthesiologist: Dr. Peter Johnson, MD  
+Procedure: Laparoscopic Cholecystectomy  
+Location: General Surgery Department, HealthFirst Medical Center  
+Address: 456 Health Street, Townsville, CA 90210  
+
+Pre-operative Assessment:  
+The patient is a 45-year-old male with a history of cholelithiasis and recurrent bouts of biliary colic. The pre-operative assessment was conducted on October 12, 2023. The patient's medical history was reviewed, noting hypertension and hyperlipidemia, both managed with medication. Laboratory tests including complete blood count (CBC), comprehensive metabolic panel (CMP), and liver function tests (LFTs) were performed, revealing no abnormalities. An abdominal ultrasound confirmed the presence of multiple gallstones without signs of acute cholecystitis. The patient was deemed fit for surgery under general anesthesia. Informed consent was obtained after a thorough discussion of the risks and benefits of the procedure. 
+
+Anesthesia:  
+General anesthesia was induced using a combination of Propofol and Fentanyl. The patient was intubated successfully, and anesthesia was maintained with Sevoflurane and nitrous oxide. The patient’s vital signs were continuously monitored throughout the procedure, showing appropriate responses.
+
+Surgical Procedure:  
+At 10:00 AM, the surgical procedure commenced. The patient was positioned supine on the operating table, and the abdomen was prepped and draped in a sterile fashion. A 10 mm trocar was inserted at the umbilicus for the laparoscope, followed by the placement of two additional 5 mm trocars in the right upper quadrant. 
+
+Intraoperative Findings:  
+Visual inspection revealed an enlarged gallbladder distended with bile and multiple cholesterol stones. No signs of inflammation or infection were noted. The cystic duct and cystic artery were identified and clipped using Hem-o-lok clips. The gallbladder was dissected free from the liver bed utilizing electrocautery. Once completely detached, the gallbladder was placed in a specimen bag and removed through the umbilical incision. 
+
+The operative field was irrigated with saline, and hemostasis was thoroughly achieved. The trocars were carefully removed, and the fascial defects were closed with absorbable sutures. The skin incisions were closed with subcuticular sutures.
+
+Complications:  
+The procedure was completed at 11:30 AM with no intraoperative complications. Estimated blood loss was minimal (<50 mL), and there were no adverse reactions to anesthesia. The patient was stable upon extubation and transferred to the post-anesthesia care unit (PACU) for monitoring.
+
+Post-operative Outcomes:  
+The patient was observed in the PACU for 2 hours, during which vital signs remained stable. Post-operative pain was managed with IV analgesics and transitioned to oral medication as tolerated. The patient was able to ambulate independently prior to discharge. 
+
+Discharge Instructions:  
+The patient was provided with detailed post-operative care instructions, including signs of infection to monitor, pain management guidelines, and dietary modifications. Follow-up appointment was scheduled for October 22, 2023, for wound check and further evaluation.
+
+Conclusion:  
+This surgical procedure was performed successfully without complications. The patient is expected to have a full recovery based on intraoperative findings and post-operative progress.
+
+Signature:  
+Dr. Jane Smith, MD  
+Attending Surgeon  
+HealthFirst Medical Center  
+Date: October 15, 2023

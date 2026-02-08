@@ -1,0 +1,140 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "Contract Documents",
+    "description": "Terms indicating contract and agreement documents",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "agreement",
+      "contract",
+      "terms and conditions",
+      "terms of service",
+      "service agreement",
+      "license agreement",
+      "NDA",
+      "non-disclosure",
+      "confidentiality agreement",
+      "lease agreement",
+      "loan agreement",
+      "purchase agreement",
+      "sales agreement",
+      "vendor agreement",
+      "supplier agreement",
+      "partnership agreement",
+      "employment agreement",
+      "consulting agreement",
+      "master services agreement",
+      "MSA",
+      "statement of work",
+      "SOW"
+    ],
+    "dataCategory": {
+      "name": "Legal",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Invoice Documents",
+    "description": "Terms indicating invoice and billing documents",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "invoice",
+      "bill",
+      "billing statement",
+      "payment request",
+      "account statement",
+      "purchase order",
+      "PO",
+      "receipt",
+      "credit note",
+      "debit note",
+      "remittance",
+      "pro forma",
+      "proforma",
+      "quotation",
+      "quote",
+      "estimate"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Financial Documents",
+    "description": "Terms indicating financial reports and statements",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "financial statement",
+      "income statement",
+      "balance sheet",
+      "cash flow",
+      "profit and loss",
+      "P&L",
+      "annual report",
+      "quarterly report",
+      "audit report",
+      "tax return",
+      "budget",
+      "forecast",
+      "financial projection"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "HR/Employee Documents",
+    "description": "Terms indicating HR and employee documents",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "resume",
+      "CV",
+      "curriculum vitae",
+      "cover letter",
+      "job application",
+      "offer letter",
+      "employment contract",
+      "employee handbook",
+      "HR policy",
+      "performance review",
+      "performance evaluation",
+      "termination letter",
+      "exit interview",
+      "onboarding",
+      "training manual"
+    ],
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

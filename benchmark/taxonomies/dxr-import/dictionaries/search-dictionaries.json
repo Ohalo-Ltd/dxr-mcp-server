@@ -1,0 +1,162 @@
+[
+  {
+    "type": "DICTIONARY",
+    "name": "Contract Terms",
+    "description": "Terms indicating contract and agreement documents for search tasks",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "agreement",
+      "contract",
+      "terms and conditions",
+      "terms of service",
+      "service agreement",
+      "license agreement",
+      "NDA",
+      "non-disclosure",
+      "confidentiality agreement",
+      "lease agreement",
+      "loan agreement",
+      "purchase agreement",
+      "sales agreement",
+      "vendor agreement",
+      "supplier agreement",
+      "partnership agreement",
+      "employment agreement",
+      "consulting agreement",
+      "master services agreement",
+      "MSA",
+      "statement of work",
+      "SOW",
+      "memorandum of understanding",
+      "MOU",
+      "amendment",
+      "addendum"
+    ],
+    "dataCategory": {
+      "name": "Legal",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Invoice Terms",
+    "description": "Terms indicating invoice and billing documents for search tasks",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "invoice",
+      "bill",
+      "billing statement",
+      "payment request",
+      "account statement",
+      "purchase order",
+      "PO",
+      "receipt",
+      "credit note",
+      "debit note",
+      "remittance",
+      "pro forma",
+      "proforma",
+      "quotation",
+      "quote",
+      "estimate",
+      "bill to",
+      "ship to",
+      "sold to",
+      "invoice date",
+      "due date",
+      "payment terms"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "Financial Report Terms",
+    "description": "Terms indicating financial reports and statements for search tasks",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "financial statement",
+      "income statement",
+      "balance sheet",
+      "cash flow",
+      "profit and loss",
+      "P&L",
+      "annual report",
+      "quarterly report",
+      "audit report",
+      "tax return",
+      "budget",
+      "forecast",
+      "financial projection",
+      "fiscal year",
+      "revenue",
+      "expenses",
+      "assets",
+      "liabilities",
+      "equity",
+      "amortization",
+      "depreciation"
+    ],
+    "dataCategory": {
+      "name": "Financially Sensitive",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  },
+  {
+    "type": "DICTIONARY",
+    "name": "HR Document Terms",
+    "description": "Terms indicating HR and employee documents for search tasks",
+    "disableCategory": false,
+    "isCaseSensitive": false,
+    "organizationalUnit": {
+      "id": 1
+    },
+    "values": [
+      "resume",
+      "CV",
+      "curriculum vitae",
+      "cover letter",
+      "job application",
+      "offer letter",
+      "employment contract",
+      "employee handbook",
+      "HR policy",
+      "performance review",
+      "performance evaluation",
+      "termination letter",
+      "exit interview",
+      "onboarding",
+      "training manual",
+      "job description",
+      "salary",
+      "compensation",
+      "benefits"
+    ],
+    "dataCategory": {
+      "name": "PII",
+      "organizationalUnit": {
+        "id": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,48 @@
+Patient Name: John Doe  
+Patient ID: 123456  
+Date of Examination: October 10, 2023  
+Referring Physician: Dr. Jane Smith  
+Institution: Radiology Associates of Springfield  
+Report Date: October 11, 2023  
+Exam Type: MRI of the Lumbar Spine  
+
+**Clinical History:**  
+The patient is a 45-year-old male presenting with a 3-month history of lower back pain radiating to the left leg, accompanied by numbness in the left foot. He reports exacerbation with prolonged sitting and standing. Previous conservative management has been unsuccessful.
+
+**Technique:**  
+MRI of the lumbar spine was performed using a 1.5 Tesla magnet with multi-planar imaging sequences, including T1-weighted, T2-weighted, and STIR (Short Tau Inversion Recovery) sequences. 
+
+**Findings:**  
+1. **L1-L2 Intervertebral Disc:** The disc appears normal in height and signal intensity. No focal disc herniation or significant degenerative changes noted.
+   
+2. **L2-L3 Intervertebral Disc:** Mild disc bulging is observed without significant central or foraminal stenosis. 
+
+3. **L3-L4 Intervertebral Disc:** There is a moderate-sized posterior disc herniation, measuring approximately 5 mm in craniocaudal dimension. This results in mild central canal stenosis, with the potential impingement on the descending L4 nerve roots.
+
+4. **L4-L5 Intervertebral Disc:** The disc is degenerated with a decreased height and low signal intensity on T2-weighted images. There is a broad-based disc bulge without significant extrusion or central canal compromise.
+
+5. **L5-S1 Intervertebral Disc:** The disc shows early degenerative changes with a small central protrusion, but no significant impact on neural structures is evident.
+
+6. **Spinal Canal:** The overall spinal canal is moderately narrowed due to the discopathy at L3-L4 and L4-L5 levels but remains patent in other regions.
+
+7. **Paravertebral Soft Tissues:** No abnormal soft tissue masses or edema in the surrounding paravertebral musculature are observed.
+
+8. **Pedicles and Vertebral Bodies:** The vertebral bodies maintain normal height and contour. No evidence of fractures or focal lesions.
+
+**Impression:**  
+1. Moderate-sized posterior disc herniation at L3-L4 level with mild central canal stenosis leading to potential neural compression.
+2. Degenerative disc changes at L4-L5 with associated bulging.
+3. Mild disc protrusion at L5-S1 without significant neural impact.
+
+**Recommendations:**  
+1. Given the presence of the L3-L4 disc herniation, it is recommended that the patient be referred for consultation with a spine specialist to discuss possible surgical options or continued conservative management including physical therapy and pain management.
+2. Follow-up imaging in 6 months to assess the stability of degenerative changes and any progression of symptoms.
+
+**Attachments:** MRI images are included for the L3-L4 and L4-L5 intervertebral discs, annotated to highlight the herniation and degeneration.
+
+Signature:  
+Dr. Alan White, MD  
+Radiologist  
+Radiology Associates of Springfield  
+Contact: (555) 123-4567  
+License Number: 987654321

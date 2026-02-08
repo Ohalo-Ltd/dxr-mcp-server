@@ -1,0 +1,49 @@
+id: "governance-004"
+name: "Ownership Verification"
+description: "Find files without clear ownership"
+category: "governance"
+domain: "Data Ownership"
+difficulty: "easy"
+
+prompt: |
+  Identify any files in the repository that do not have a clear owner
+  assigned. These orphaned files represent a data governance risk and
+  need to be assigned to appropriate owners.
+
+ground_truth:
+  # Note: Ownership metadata depends on source system (Google Drive, etc.)
+  # Files without clear ownership should be flagged
+  # CV templates are good candidates as they may lack explicit ownership
+  expected_files:
+    - id: "Academic CV template.pdf"
+      relevance: 0.8
+      reason: "Template file - may lack specific owner assignment"
+    - id: "Targeted CV template.docx"
+      relevance: 0.8
+      reason: "Template file - may lack specific owner assignment"
+    - id: "College CV template.docx"
+      relevance: 0.8
+      reason: "Template file - may lack specific owner assignment"
+  forbidden_files: []
+  # Lower thresholds since ownership depends on source system configuration
+  minimum_precision: 0.5
+  minimum_recall: 0.5
+
+execution:
+  timeout_seconds: 90
+  max_tool_calls: 15
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - '-owner:*'
+      - 'NOT _exists_:owner'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "ownership"
+  - "orphaned"
+  - "governance"

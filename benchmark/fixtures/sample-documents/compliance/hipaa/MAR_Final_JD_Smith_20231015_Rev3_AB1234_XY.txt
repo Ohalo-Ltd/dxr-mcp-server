@@ -1,0 +1,50 @@
+Medication Administration Record (MAR)
+
+Patient Name: John Doe
+Patient ID: 012345678
+Date of Birth: 01/01/1980
+Admission Date: 10/01/2023
+Unit: 3B
+Attending Physician: Dr. Emily Carter
+Nurse: Sarah Thompson, RN
+Allergies: None
+
+----------------------------------------------------------------------
+| Date       | Medication Name   | Dosage | Route   | Administration Time | Staff Signature | Notes             |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+| 10/01/2023 | Lisinopril         | 10 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Metformin         | 500 mg | Oral    | 08:00               | S. Thompson       | None               |
+|            | Aspirin           | 81 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Atorvastatin      | 20 mg  | Oral    | 18:00               | S. Thompson       | None               |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+| 10/02/2023 | Lisinopril         | 10 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Metformin         | 500 mg | Oral    | 08:00               | S. Thompson       | None               |
+|            | Aspirin           | 81 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Atorvastatin      | 20 mg  | Oral    | 18:00               | S. Thompson       | None               |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+| 10/03/2023 | Lisinopril         | 10 mg  | Oral    | 08:00               | S. Thompson       | Patient reported light dizziness. |
+|            | Metformin         | 500 mg | Oral    | 08:00               | S. Thompson       | None               |
+|            | Aspirin           | 81 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Atorvastatin      | 20 mg  | Oral    | 18:00               | S. Thompson       | None               |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+| 10/04/2023 | Lisinopril         | 10 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Metformin         | 500 mg | Oral    | 08:00               | S. Thompson       | None               |
+|            | Aspirin           | 81 mg  | Oral    | 08:00               | S. Thompson       | Missed dose on 10/03. |
+|            | Atorvastatin      | 20 mg  | Oral    | 18:00               | S. Thompson       | None               |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+| 10/05/2023 | Lisinopril         | 10 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Metformin         | 500 mg | Oral    | 08:00               | S. Thompson       | None               |
+|            | Aspirin           | 81 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Atorvastatin      | 20 mg  | Oral    | 18:00               | S. Thompson       | None               |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+| 10/06/2023 | Lisinopril         | 10 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Metformin         | 500 mg | Oral    | 08:00               | S. Thompson       | None               |
+|            | Aspirin           | 81 mg  | Oral    | 08:00               | S. Thompson       | None               |
+|            | Atorvastatin      | 20 mg  | Oral    | 18:00               | S. Thompson       | None               |
+|------------|-------------------|--------|---------|---------------------|------------------|--------------------|
+
+Signature of Nurse: ______________________ Date: _______________  
+Reviewing Physician: Dr. Emily Carter  
+Signature: __________________________ Date: _______________  
+
+This Medication Administration Record (MAR) is intended to ensure comprehensive documentation of medication administration for patient safety and adherence to prescribed medication regimens. All staff must follow hospital protocols for medication administration and charting.

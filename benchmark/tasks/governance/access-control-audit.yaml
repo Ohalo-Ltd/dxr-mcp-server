@@ -1,0 +1,53 @@
+id: "governance-001"
+name: "Access Control Audit"
+description: "Verify who has access to sensitive files"
+category: "governance"
+domain: "Access Control"
+difficulty: "medium"
+
+prompt: |
+  Audit access controls for files containing sensitive financial data.
+  Identify which users and groups have access to these files and flag
+  any that have overly permissive access (e.g., shared with entire domain).
+
+ground_truth:
+  # Note: Access control metadata depends on DXR indexing configuration
+  expected_files:
+    # PCI files with financial data
+    - id: "credit-card-numbers_extradata.csv"
+      relevance: 1.0
+      reason: "Credit card data - should have restricted access"
+    - id: "CardBase.csv"
+      relevance: 1.0
+      reason: "Payment card database - PCI scope"
+    # Financial statements
+    - id: "2011_audited_financial_statement_msword.doc.docx"
+      relevance: 0.8
+      reason: "Audited financial statement - finance access"
+    # Payroll data
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
+      relevance: 0.8
+      reason: "Payroll data - restricted HR/Finance access"
+  forbidden_files: []
+  minimum_precision: 0.6
+  minimum_recall: 0.7
+
+execution:
+  timeout_seconds: 120
+  max_tool_calls: 20
+  dxr_hints:
+    expected_tools:
+      - "list_file_metadata"
+    expected_queries:
+      - 'labels.name:"Financial Records"'
+      - 'annotators.domain.name:"Financially Sensitive"'
+
+compliance:
+  must_respect_access_controls: true
+  must_not_expose_raw_pii: false
+
+tags:
+  - "access-control"
+  - "audit"
+  - "governance"
+  - "financial"
