@@ -18,7 +18,7 @@ console.log('Environment:');
 console.log('  DXR_API_URL:', dxrConfig.env.DXR_API_URL);
 console.log('  DXR_SKIP_SSL_VERIFY:', dxrConfig.env.DXR_SKIP_SSL_VERIFY);
 console.log('  NODE_TLS_REJECT_UNAUTHORIZED:', dxrConfig.env.NODE_TLS_REJECT_UNAUTHORIZED);
-console.log('  Token:', dxrConfig.env.DXR_API_TOKEN.substring(0, 50) + '...\n');
+console.log('  Token:', dxrConfig.env.DXR_API_TOKEN ? '[SET]' : '[NOT SET]', '\n');
 
 // Test cases that mimic real MCP tool calls
 const testCases = [
