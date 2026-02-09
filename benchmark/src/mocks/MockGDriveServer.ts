@@ -135,12 +135,24 @@ export class MockGDriveServer {
 
   /**
    * Search files by name
+   * Supports multi-word queries - matches if ANY word is found in the filename
    */
   searchByName(nameQuery: string): MockGDriveFile[] {
     const lowerQuery = nameQuery.toLowerCase();
-    return this.files.filter((f) =>
-      f.name.toLowerCase().includes(lowerQuery)
-    );
+    // Split query into individual words and filter out short/common words
+    const searchTerms = lowerQuery
+      .split(/\s+/)
+      .filter((term) => term.length >= 3); // Ignore very short terms
+
+    if (searchTerms.length === 0) {
+      return [];
+    }
+
+    return this.files.filter((f) => {
+      const lowerName = f.name.toLowerCase();
+      // Match if ANY search term is found in the filename
+      return searchTerms.some((term) => lowerName.includes(term));
+    });
   }
 
   /**

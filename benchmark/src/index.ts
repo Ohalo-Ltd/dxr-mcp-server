@@ -16,6 +16,7 @@ import { TaskLoader } from './harness/TaskLoader.js';
 import { MockDXRServer } from './mocks/MockDXRServer.js';
 import { MockGDriveServer } from './mocks/MockGDriveServer.js';
 import { LiveDXRServer } from './live/LiveDXRServer.js';
+import { ClaudeAgent, createGDriveTools, createDXRTools } from './live/ClaudeAgent.js';
 import { generateMarkdownReport } from './reporting/MarkdownReporter.js';
 import { saveReportToJson } from './reporting/JSONReporter.js';
 import type {
@@ -49,6 +50,7 @@ program
   .option('-l, --live', 'Use live servers (requires credentials)')
   .option('-o, --output <path>', 'Output directory', './results')
   .option('--dry-run', 'List tasks without running')
+  .option('-v, --verbose', 'Show detailed agent transcripts')
   .action(async (options) => {
     await runBenchmark(options);
   });
@@ -93,6 +95,7 @@ interface RunOptions {
   live?: boolean;
   output: string;
   dryRun?: boolean;
+  verbose?: boolean;
 }
 
 async function runBenchmark(options: RunOptions): Promise<void> {
@@ -158,7 +161,7 @@ async function runBenchmark(options: RunOptions): Promise<void> {
       gdriveServer = new MockGDriveServer();
 
       console.log(chalk.blue('\nRunning benchmarks in LIVE mode'));
-      console.log(chalk.gray('(DXR uses real API, baseline uses mock data)\n'));
+      console.log(chalk.gray('(DXR uses real API, baseline uses Claude API with GDrive tools)\n'));
     } else {
       // Initialize mock servers
       dxrServer = new MockDXRServer();
@@ -180,11 +183,13 @@ async function runBenchmark(options: RunOptions): Promise<void> {
       try {
         // Run with DXR agent
         const dxrResult = isLiveMode
-          ? await runLiveDXRAgent(task, dxrServer as LiveDXRServer)
+          ? await runLiveDXRAgent(task, dxrServer as LiveDXRServer, options.verbose)
           : await runMockDXRAgent(task, dxrServer as MockDXRServer);
 
-        // Run with baseline agent (mock for now)
-        const baselineResult = await runMockBaselineAgent(task, gdriveServer);
+        // Run with baseline agent
+        const baselineResult = isLiveMode
+          ? await runLiveBaselineAgent(task, gdriveServer, options.verbose)
+          : await runMockBaselineAgent(task, gdriveServer);
 
         // Compare results
         const comparison = compareResults(dxrResult, baselineResult);
@@ -338,85 +343,90 @@ async function runMockDXRAgent(
 }
 
 /**
- * Run live DXR agent - calls real DXR API
+ * Run live DXR agent - uses Claude API with DXR MCP tools
+ * This simulates what Claude Desktop can do with the DXR MCP server
  */
 async function runLiveDXRAgent(
   task: Task,
-  server: LiveDXRServer
+  server: LiveDXRServer,
+  verbose = false
 ): Promise<TaskResult> {
   const startTime = Date.now();
-  const toolCalls: ToolCall[] = [];
-  let filesFound: string[] = [];
 
-  // Step 1: Get classifications (common first step)
-  const classifyStart = Date.now();
-  const classifications = await server.getClassifications();
-  toolCalls.push({
-    name: 'get_classifications',
-    args: {},
-    result: `Found ${classifications.length} classifications`,
-    durationMs: Date.now() - classifyStart,
+  // Create Claude agent with Anthropic API
+  const agent = new ClaudeAgent();
+
+  // Create DXR tools that work with the live server
+  const { tools, handlers } = createDXRTools({
+    getClassifications: () => server.getClassifications(),
+    listFileMetadata: (query, limit, offset) => server.listFileMetadata(query, limit, offset),
   });
 
-  // Step 2: Search for files based on task domain
-  const searchStart = Date.now();
-  let query = '';
+  // Build task prompt for the DXR agent
+  const taskPrompt = buildDXRPrompt(task);
 
-  // Build query based on task hints or domain
-  if (task.execution.dxrHints?.expectedQueries?.[0]) {
-    query = task.execution.dxrHints.expectedQueries[0];
-  } else {
-    // Default queries based on category
-    switch (task.category) {
-      case 'compliance':
-        if (task.domain.includes('HIPAA') || task.domain.includes('PHI')) {
-          query = 'annotators.domain.name:"PHI"';
-        } else if (task.domain.includes('GDPR') || task.domain.includes('PII')) {
-          query = 'annotators.domain.name:"PII"';
-        } else if (task.domain.includes('ITAR')) {
-          query = 'labels.name:"ITAR: Confirmed ITAR Controlled"';
-        } else if (task.domain.includes('PCI')) {
-          query = 'annotators.domain.name:"Financially Sensitive"';
-        }
-        break;
-      case 'search':
-        if (task.domain.includes('Contract')) {
-          query = 'labels.name:"Search: Confirmed Contract"';
-        } else if (task.domain.includes('Invoice')) {
-          query = 'labels.name:"Search: Confirmed Invoice"';
-        }
-        break;
-      case 'governance':
-        query = '_exists_:labels';
-        break;
-    }
-  }
+  // Run the agent with DXR tools
+  const result = await agent.runTask(taskPrompt, {
+    tools,
+    toolHandlers: handlers,
+    systemPrompt: `You are a data governance assistant using the Data X-Ray (DXR) system to find files based on content classification.
 
-  const searchResult = await server.listFileMetadata(query);
-  // Use fileName for matching against ground truth (which uses file names, not IDs)
-  filesFound = searchResult.files.map((f) => f.fileName);
+CRITICAL WORKFLOW:
+1. FIRST: Call get_classifications to understand what annotators and labels exist
+2. THEN: Use list_file_metadata with proper KQL queries based on what you learned
 
-  toolCalls.push({
-    name: 'list_file_metadata',
-    args: { q: query },
-    result: `Found ${searchResult.files.length} files`,
-    durationMs: Date.now() - searchStart,
+Available tools:
+- get_classifications: Get the catalog of all annotators, labels, and extractors (CALL THIS FIRST!)
+- list_file_metadata: Search for files using KQL queries
+
+KQL QUERY SYNTAX (CRITICAL):
+- String values MUST be in double quotes: annotators.name:"Credit card"
+- Use annotators.name for sensitive data types: annotators.name:"SSN"
+- Use annotators.domain.name for domains: annotators.domain.name:"PII"
+- Use labels.name for labels: labels.name:"Confidential"
+- Logical operators are UPPERCASE: AND, OR, NOT
+
+When you find relevant files, list their names clearly in your final response.`,
+    maxTurns: 10,
+    verbose,
   });
 
   const timeToAnswerMs = Date.now() - startTime;
 
-  // Generate agent response
-  const agentResponse = `Based on my search using DXR metadata, I found ${filesFound.length} files matching the criteria "${query}".`;
+  // Convert agent tool calls to our format
+  const toolCalls: ToolCall[] = result.toolCalls.map((tc) => ({
+    name: tc.name,
+    args: tc.args,
+    result: tc.result.slice(0, 200), // Truncate for readability
+    durationMs: tc.durationMs,
+  }));
 
   return scoreTask({
     task,
     agentType: 'dxr',
-    filesFound,
+    filesFound: result.filesFound,
     toolCalls,
-    agentResponse,
+    agentResponse: result.response,
     timeToAnswerMs,
-    modelVersion: 'live-dxr-agent',
+    modelVersion: 'claude-sonnet-4-20250514',
   });
+}
+
+/**
+ * Build a task prompt for the DXR agent
+ */
+function buildDXRPrompt(task: Task): string {
+  return `Task: ${task.name}
+
+Description: ${task.description}
+
+User Request: ${task.prompt}
+
+IMPORTANT: You have access to the Data X-Ray (DXR) system which has indexed files with content classification.
+1. FIRST call get_classifications to see what annotators and labels are available
+2. THEN use list_file_metadata with KQL queries to find files
+
+Please search for and identify all files that match this request. List the file names you find.`;
 }
 
 /**
@@ -475,6 +485,86 @@ async function runMockBaselineAgent(
     timeToAnswerMs,
     modelVersion: 'mock-baseline-agent',
   });
+}
+
+/**
+ * Run live baseline agent - uses Claude API with GDrive-like tools
+ * This simulates what Claude Desktop can do with the Google Drive MCP
+ */
+async function runLiveBaselineAgent(
+  task: Task,
+  server: MockGDriveServer,
+  verbose = false
+): Promise<TaskResult> {
+  const startTime = Date.now();
+
+  // Create Claude agent with Anthropic API
+  const agent = new ClaudeAgent();
+
+  // Create GDrive tools that work with the mock server
+  const { tools, handlers } = createGDriveTools({
+    searchByName: (query: string) => server.searchByName(query),
+    listFilesInFolder: (folderId: string) => server.listFilesInFolder(folderId),
+    getFile: (fileId: string) => server.getFile(fileId),
+    getFileContent: (fileId: string) => server.getFileContent(fileId),
+  });
+
+  // Build task prompt for the baseline agent
+  const taskPrompt = buildBaselinePrompt(task);
+
+  // Run the agent with GDrive tools
+  const result = await agent.runTask(taskPrompt, {
+    tools,
+    toolHandlers: handlers,
+    systemPrompt: `You are a helpful assistant that finds files based on user requests using Google Drive search capabilities.
+
+Available tools:
+- gdrive_search: Search for files by name or keywords
+- gdrive_list_files: List files in a folder
+- gdrive_get_file_info: Get detailed file information
+- gdrive_read_file: Read text file content
+
+Important: You do NOT have access to content classification, sensitivity labels, or compliance metadata. You can only search by file names, types, and basic metadata.
+
+When you find relevant files, list their names clearly in your final response.`,
+    maxTurns: 10,
+    verbose,
+  });
+
+  const timeToAnswerMs = Date.now() - startTime;
+
+  // Convert agent tool calls to our format
+  const toolCalls: ToolCall[] = result.toolCalls.map((tc) => ({
+    name: tc.name,
+    args: tc.args,
+    result: tc.result.slice(0, 200), // Truncate for readability
+    durationMs: tc.durationMs,
+  }));
+
+  return scoreTask({
+    task,
+    agentType: 'baseline',
+    filesFound: result.filesFound,
+    toolCalls,
+    agentResponse: result.response,
+    timeToAnswerMs,
+    modelVersion: 'claude-sonnet-4-20250514',
+  });
+}
+
+/**
+ * Build a task prompt for the baseline agent (no DXR hints)
+ */
+function buildBaselinePrompt(task: Task): string {
+  return `Task: ${task.name}
+
+Description: ${task.description}
+
+User Request: ${task.prompt}
+
+Please search for and identify all files that match this request. List the file names you find.
+
+Note: You only have access to Google Drive search by name and file metadata. You cannot see content classifications or sensitivity labels.`;
 }
 
 /**

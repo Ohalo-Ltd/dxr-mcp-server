@@ -229,20 +229,20 @@ export class LiveDXRServer {
    * Get all classifications
    */
   async getClassifications(): Promise<Classification[]> {
-    const response = await this.request<{ classifications: Classification[] }>(
+    const response = await this.request<{ status: string; data: Classification[] }>(
       '/api/v1/classifications'
     );
-    return response.classifications || [];
+    return response.data || [];
   }
 
   /**
    * Get all redactors
    */
   async getRedactors(): Promise<Redactor[]> {
-    const response = await this.request<{ redactors: Redactor[] }>(
+    const response = await this.request<{ status: string; data: Redactor[] }>(
       '/api/v1/redactors'
     );
-    return response.redactors || [];
+    return response.data || [];
   }
 
   /**
