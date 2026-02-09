@@ -14,9 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:kql": "tsx .claude/test-kql-prompts.ts",
-    "analyze": "tsx .claude/mcp-log-analyzer.ts",
-    "analyze:watch": "tsx .claude/mcp-log-analyzer.ts --watch",
+    "analyze": "tsx scripts/mcp-log-analyzer.ts",
+    "analyze:watch": "tsx scripts/mcp-log-analyzer.ts --watch",
     "prepare": "npm run build"
   },
   "keywords": [
