@@ -19,8 +19,8 @@ export interface PrecisionRecallResult {
  * Normalize file name for comparison by removing extension
  */
 function normalizeFileName(fileName: string): string {
-  // Remove common file extensions for comparison
-  return fileName.replace(/\.(txt|pdf|docx?|xlsx?|csv|json|xml)$/i, '');
+  // Remove common file extensions for comparison (including images)
+  return fileName.replace(/\.(txt|pdf|docx?|xlsx?|csv|json|xml|png|jpe?g|gif|bmp|webp)$/i, '');
 }
 
 /**

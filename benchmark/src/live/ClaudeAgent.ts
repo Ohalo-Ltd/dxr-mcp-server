@@ -31,6 +31,13 @@ export interface AgentConfig {
   verbose?: boolean;
 }
 
+// Simple delay helper for rate limiting
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Track last API call time for rate limiting
+let lastApiCallTime = 0;
+const MIN_DELAY_BETWEEN_CALLS_MS = 3000; // 3 seconds between API calls
+
 /**
  * Claude Agent for benchmark tasks
  */
@@ -43,6 +50,19 @@ export class ClaudeAgent {
       apiKey: apiKey || process.env.ANTHROPIC_API_KEY,
     });
     this.model = model;
+  }
+
+  /**
+   * Rate-limited API call
+   */
+  private async rateLimitedCall<T>(fn: () => Promise<T>): Promise<T> {
+    const now = Date.now();
+    const timeSinceLastCall = now - lastApiCallTime;
+    if (timeSinceLastCall < MIN_DELAY_BETWEEN_CALLS_MS) {
+      await delay(MIN_DELAY_BETWEEN_CALLS_MS - timeSinceLastCall);
+    }
+    lastApiCallTime = Date.now();
+    return fn();
   }
 
   /**
@@ -84,13 +104,15 @@ export class ClaudeAgent {
         console.log('─'.repeat(60));
       }
 
-      const response = await this.client.messages.create({
-        model: this.model,
-        max_tokens: 4096,
-        system: config.systemPrompt || 'You are a helpful assistant that finds files based on user requests. When you find relevant files, list their names clearly.',
-        tools: config.tools,
-        messages,
-      });
+      const response = await this.rateLimitedCall(() =>
+        this.client.messages.create({
+          model: this.model,
+          max_tokens: 4096,
+          system: config.systemPrompt || 'You are a helpful assistant that finds files based on user requests. When you find relevant files, list their names clearly.',
+          tools: config.tools,
+          messages,
+        })
+      );
 
       if (verbose) {
         console.log(`\n🤖 CLAUDE RESPONSE (stop_reason: ${response.stop_reason}):`);
@@ -166,10 +188,11 @@ export class ClaudeAgent {
             });
 
             // Extract file names from search results (both GDrive and DXR tools)
-            if (toolName === 'gdrive_search' || toolName === 'gdrive_list_files' || toolName === 'list_file_metadata') {
-              // Match "- filename.ext (type, size)" and extract just the filename
-              // Use non-greedy match up to common file extensions, then stop at " ("
-              const fileRegex = /- ([^\n]+?\.(?:txt|pdf|docx?|xlsx?|csv|json|xml))\s*\(/gi;
+            if (toolName === 'google_drive_search' || toolName === 'gdrive_search' || toolName === 'gdrive_list_files' || toolName === 'list_file_metadata') {
+              // Match "- filename (type, size)" format from tool results
+              // Files may or may not have extensions (e.g., "CardBase" vs "report.pdf")
+              // Pattern: "- " followed by filename (non-greedy), then " (" for metadata
+              const fileRegex = /^- ([^\n(]+?)\s+\(/gm;
               let match;
               while ((match = fileRegex.exec(result)) !== null) {
                 const fileName = match[1].trim();
@@ -240,141 +263,145 @@ export class ClaudeAgent {
 }
 
 /**
- * Create Google Drive-like tools for baseline agent
- * These simulate what Claude Desktop has with the Google Drive MCP
+ * Create Google Drive tools for baseline agent
+ * These mock the Claude Desktop native Google Drive connector
+ * Tool names and schemas match the official Claude Desktop integration
  */
 export function createGDriveTools(gdriveServer: {
   searchByName: (query: string) => Array<{ id: string; name: string; mimeType: string; size: number }>;
   listFilesInFolder: (folderId: string) => Array<{ id: string; name: string; mimeType: string; size: number }>;
   getFile: (fileId: string) => { id: string; name: string; mimeType: string; size: number; modifiedTime: string } | null;
   getFileContent: (fileId: string) => { content: string; mimeType: string } | null;
+  listFiles: (options?: { query?: string; pageSize?: number; pageToken?: string }) => { files: Array<{ id: string; name: string; mimeType: string; size: number }>; nextPageToken?: string };
 }): { tools: Anthropic.Tool[]; handlers: Record<string, ToolHandler> } {
   const tools: Anthropic.Tool[] = [
     {
-      name: 'gdrive_search',
-      description: 'Search for files in Google Drive by name or content keywords. Returns a list of matching files.',
+      name: 'google_drive_search',
+      description: "Searches a user's Google Drive files for documents matching a query. Uses Google Drive API query syntax.",
       input_schema: {
         type: 'object' as const,
         properties: {
-          query: {
+          api_query: {
             type: 'string',
-            description: 'Search query - can include file names, keywords, or partial matches',
+            description: "Google Drive API query string (e.g., \"name contains 'invoice'\", \"mimeType='application/pdf'\")",
+          },
+          order_by: {
+            type: 'string',
+            description: 'Sort order (e.g., "modifiedTime desc", "name")',
+          },
+          page_size: {
+            type: 'number',
+            description: 'Number of results to return (default: 100)',
+          },
+          page_token: {
+            type: 'string',
+            description: 'Token for pagination',
+          },
+          request_page_token: {
+            type: 'boolean',
+            description: 'Whether to include next page token in response',
           },
         },
-        required: ['query'],
       },
     },
     {
-      name: 'gdrive_list_files',
-      description: 'List files in a specific folder in Google Drive.',
+      name: 'google_drive_fetch',
+      description: 'Fetches the contents of Google Drive document(s) based on a list of provided IDs.',
       input_schema: {
         type: 'object' as const,
         properties: {
-          folder_id: {
-            type: 'string',
-            description: 'The folder ID to list files from. Use "root" for the root folder.',
+          document_ids: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'Array of Google Drive file IDs to fetch',
           },
         },
-        required: ['folder_id'],
-      },
-    },
-    {
-      name: 'gdrive_get_file_info',
-      description: 'Get detailed information about a specific file.',
-      input_schema: {
-        type: 'object' as const,
-        properties: {
-          file_id: {
-            type: 'string',
-            description: 'The file ID to get information for',
-          },
-        },
-        required: ['file_id'],
-      },
-    },
-    {
-      name: 'gdrive_read_file',
-      description: 'Read the content of a text file. Only works for text-based files.',
-      input_schema: {
-        type: 'object' as const,
-        properties: {
-          file_id: {
-            type: 'string',
-            description: 'The file ID to read',
-          },
-        },
-        required: ['file_id'],
       },
     },
   ];
 
   const handlers: Record<string, ToolHandler> = {
-    gdrive_search: async (args) => {
-      const query = args.query as string;
-      const results = gdriveServer.searchByName(query);
+    google_drive_search: async (args) => {
+      const apiQuery = args.api_query as string | undefined;
+      const pageSize = (args.page_size as number) || 100;
+      const pageToken = args.page_token as string | undefined;
 
-      if (results.length === 0) {
-        return `No files found matching "${query}"`;
+      // Extract search term from Google Drive API query syntax
+      let searchTerm = '';
+      if (apiQuery) {
+        // Parse common query patterns:
+        // name contains 'value' -> extract value
+        const nameContains = apiQuery.match(/name\s+contains\s+['"]([^'"]+)['"]/i);
+        if (nameContains) {
+          searchTerm = nameContains[1];
+        }
+        // fullText contains 'value' -> extract value
+        const fullText = apiQuery.match(/fullText\s+contains\s+['"]([^'"]+)['"]/i);
+        if (fullText) {
+          searchTerm = fullText[1];
+        }
+        // If no recognized pattern, use the whole query as a simple search
+        if (!searchTerm) {
+          searchTerm = apiQuery.replace(/['"`]/g, '');
+        }
       }
 
-      const lines = [`Found ${results.length} file(s) matching "${query}":`];
-      for (const file of results.slice(0, 20)) {
+      const result = gdriveServer.listFiles({
+        query: searchTerm ? `name contains '${searchTerm}'` : undefined,
+        pageSize,
+        pageToken,
+      });
+
+      if (result.files.length === 0) {
+        return `No files found${apiQuery ? ` matching query: ${apiQuery}` : ''}`;
+      }
+
+      const lines = [`Found ${result.files.length} file(s)${apiQuery ? ` matching "${apiQuery}"` : ''}:`];
+      for (const file of result.files.slice(0, 20)) {
         lines.push(`- ${file.name} (${file.mimeType}, ${formatSize(file.size)})`);
       }
-      if (results.length > 20) {
-        lines.push(`... and ${results.length - 20} more files`);
+      if (result.files.length > 20) {
+        lines.push(`... and ${result.files.length - 20} more files`);
+      }
+      if (result.nextPageToken) {
+        lines.push(`\nNext page token: ${result.nextPageToken}`);
       }
 
       return lines.join('\n');
     },
 
-    gdrive_list_files: async (args) => {
-      const folderId = args.folder_id as string;
-      const results = gdriveServer.listFilesInFolder(folderId);
+    google_drive_fetch: async (args) => {
+      const documentIds = args.document_ids as string[] | undefined;
 
-      if (results.length === 0) {
-        return `No files found in folder "${folderId}"`;
+      if (!documentIds || documentIds.length === 0) {
+        return 'No document IDs provided';
       }
 
-      const lines = [`Files in folder "${folderId}":`];
-      for (const file of results.slice(0, 20)) {
-        lines.push(`- ${file.name} (${file.mimeType})`);
-      }
-      if (results.length > 20) {
-        lines.push(`... and ${results.length - 20} more files`);
-      }
+      const results: string[] = [];
+      for (const fileId of documentIds.slice(0, 10)) {
+        const file = gdriveServer.getFile(fileId);
+        if (!file) {
+          results.push(`File ${fileId}: Not found`);
+          continue;
+        }
 
-      return lines.join('\n');
-    },
+        const content = gdriveServer.getFileContent(fileId);
+        if (!content) {
+          results.push(`File ${file.name} (${fileId}): Unable to read content`);
+          continue;
+        }
 
-    gdrive_get_file_info: async (args) => {
-      const fileId = args.file_id as string;
-      const file = gdriveServer.getFile(fileId);
-
-      if (!file) {
-        return `File not found: ${fileId}`;
-      }
-
-      return [
-        `File: ${file.name}`,
-        `ID: ${file.id}`,
-        `Type: ${file.mimeType}`,
-        `Size: ${formatSize(file.size)}`,
-        `Modified: ${file.modifiedTime}`,
-      ].join('\n');
-    },
-
-    gdrive_read_file: async (args) => {
-      const fileId = args.file_id as string;
-      const content = gdriveServer.getFileContent(fileId);
-
-      if (!content) {
-        return `Unable to read file: ${fileId}`;
+        // Decode base64 content
+        const text = Buffer.from(content.content, 'base64').toString('utf-8');
+        const truncated = text.slice(0, 1000) + (text.length > 1000 ? '\n... (truncated)' : '');
+        results.push(`\n--- ${file.name} (${fileId}) ---\n${truncated}`);
       }
 
-      // Decode base64 content
-      const text = Buffer.from(content.content, 'base64').toString('utf-8');
-      return text.slice(0, 2000) + (text.length > 2000 ? '\n... (truncated)' : '');
+      if (documentIds.length > 10) {
+        results.push(`\n... and ${documentIds.length - 10} more documents not fetched`);
+      }
+
+      return results.join('\n');
     },
   };
 
@@ -399,8 +426,10 @@ export function createDXRTools(dxrServer: {
       fileName: string;
       mimeType: string;
       size: number;
+      owner?: string;
       annotators?: Array<{ name: string; domain: { name: string } }>;
       labels?: Array<{ name: string }>;
+      entitlements?: { whoCanAccess: Array<{ email?: string; accountType?: string }> };
     }>;
     total: number;
     hasMore: boolean;
@@ -409,17 +438,17 @@ export function createDXRTools(dxrServer: {
   const tools: Anthropic.Tool[] = [
     {
       name: 'get_classifications',
-      description: `List all sensitivity classifications that Data X-Ray can detect.
+      description: `List all sensitivity classifications available in Data X-Ray.
 
-CRITICAL: You MUST call this tool FIRST before searching for files with sensitive data.
-This provides the catalog of available annotators, labels, and extractors.
+Call this FIRST for compliance/governance tasks to learn available LABELS and EXTRACTORS.
+For simple filename searches, you can skip this and use list_file_metadata directly.
 
-Without calling this first, you cannot:
-- Know what annotators exist (Credit Card, SSN, Email, etc.)
-- Know exact annotator names to use in queries
-- Understand what domains are available (PII, Financially Sensitive, etc.)
+CLASSIFICATION HIERARCHY (by confidence):
+1. LABELS (high confidence) - Confirmed classifications like "Search: Confirmed Invoice", "PCI: Confirmed Cardholder Data"
+2. EXTRACTORS (high confidence) - AI pre-cached results for document type, sensitivity, compliance
+3. ANNOTATORS (lower confidence) - Pattern detectors that may have false positives
 
-Returns: Complete catalog of all classification items with names, types, and descriptions.`,
+PREFER labels.name and extractors over annotators.name for precision.`,
       input_schema: {
         type: 'object' as const,
         properties: {},
@@ -427,38 +456,38 @@ Returns: Complete catalog of all classification items with names, types, and des
     },
     {
       name: 'list_file_metadata',
-      description: `Search and list files indexed in Data X-Ray using KQL queries.
+      description: `Search files using KQL queries. Returns metadata, owner, entitlements, and content classifications.
 
-PREREQUISITE: Call get_classifications FIRST to understand what annotators exist.
+QUERY PRIORITY (use in this order for best results):
 
-KQL QUERY SYNTAX (CRITICAL - follow exactly):
-All string values MUST be enclosed in double quotes. Wildcards go INSIDE the quotes.
+1. LABELS + EXTRACTORS (high precision - use these first):
+   labels.name:"Search: Confirmed Invoice"        - Confirmed invoices
+   labels.name:"Search: Confirmed Contract"       - Confirmed contracts
+   labels.name:"PCI: Confirmed Cardholder Data"   - Confirmed credit card data
+   labels.name:"HIPAA: Confirmed PHI Document"    - Confirmed health data
+   labels.name:"Governance: Missing Owner"        - Files without ownership
+   extractors.name:"Document Type Classifier"     - AI document classification
 
-CORRECT examples:
-  fileName:"*.pdf"                          - Files ending in .pdf
-  fileName:"*report*"                       - Files containing "report"
-  annotators.name:"Credit card"             - Files with credit card numbers
-  annotators.domain.name:"PII"              - Files with PII detected
-  labels.name:"Confidential"                - Files with specific label
+2. FILENAME (for name-based searches - CASE SENSITIVE!):
+   fileName:"*invoice*" OR fileName:"*Invoice*"   - Search BOTH cases!
+   fileName:"*JSmith*" OR fileName:"*J_Smith*"    - Files by author name
+   fileName:"*.pdf"                               - All PDF files
+   IMPORTANT: fileName is case-sensitive. Always search multiple case variants.
 
-WRONG (will cause parse errors):
-  fileName:*.pdf                            - WRONG: missing quotes
-  annotators.name:Credit card               - WRONG: missing quotes
+3. ANNOTATORS (use sparingly - higher false positive rate):
+   annotators.name:"Credit card"                  - Pattern detection only
+   AVOID annotators.domain.name - too broad, returns many false positives
 
-LOGICAL operators (must be UPPERCASE):
-  fileName:"*.pdf" AND size > 100000
-  annotators.name:"SSN" OR annotators.name:"Credit card"
+BEST PRACTICE: Combine label + filename (both cases) for comprehensive results:
+   labels.name:"Search: Confirmed Invoice" OR fileName:"*invoice*" OR fileName:"*Invoice*"
 
-FIELDS: fileName, path, size, mimeType, createdAt, lastModifiedAt, datasourceName,
-        labels.name, annotators.name, annotators.domain.name
-
-Returns: List of files with metadata including detected sensitive data.`,
+KQL SYNTAX: All string values MUST be in double quotes. Use AND, OR (uppercase).`,
       input_schema: {
         type: 'object' as const,
         properties: {
           q: {
             type: 'string',
-            description: 'KQL query to filter files. String values MUST be quoted.',
+            description: 'KQL query. PREFER labels.name for precision, use fileName for name searches.',
           },
           limit: {
             type: 'number',
@@ -507,22 +536,56 @@ Returns: List of files with metadata including detected sensitive data.`,
 
       const result = await dxrServer.listFileMetadata(query, limit);
 
-      if (result.files.length === 0) {
+      // Deduplicate files by fileId (API sometimes returns duplicates)
+      const seen = new Set<string>();
+      const uniqueFiles = result.files.filter((file) => {
+        if (seen.has(file.fileId)) return false;
+        seen.add(file.fileId);
+        return true;
+      });
+
+      if (uniqueFiles.length === 0) {
         return `No files found${query ? ` matching query: ${query}` : ''}`;
       }
 
-      const lines = [`Found ${result.total} file(s)${query ? ` matching "${query}"` : ''}:`];
+      const lines = [`Found ${uniqueFiles.length} file(s)${query ? ` matching "${query}"` : ''}:`];
 
-      for (const file of result.files.slice(0, 30)) {
-        const sensitiveInfo = file.annotators?.length
-          ? ` [SENSITIVE: ${file.annotators.map((a) => a.name).join(', ')}]`
-          : '';
-        const labels = file.labels?.length ? ` [Labels: ${file.labels.map((l) => l.name).join(', ')}]` : '';
-        lines.push(`- ${file.fileName} (${file.mimeType}, ${formatSize(file.size)})${sensitiveInfo}${labels}`);
+      for (const file of uniqueFiles.slice(0, 30)) {
+        // Build file info line
+        let line = `- ${file.fileName} (${file.mimeType}, ${formatSize(file.size)})`;
+
+        // Add owner info
+        if (file.owner) {
+          line += ` [Owner: ${file.owner}]`;
+        }
+
+        // Add entitlements/access info
+        if (file.entitlements?.whoCanAccess?.length) {
+          const accessList = file.entitlements.whoCanAccess
+            .slice(0, 3)
+            .map(a => a.email || a.accountType || 'unknown')
+            .join(', ');
+          const more = file.entitlements.whoCanAccess.length > 3
+            ? ` +${file.entitlements.whoCanAccess.length - 3} more`
+            : '';
+          line += ` [Access: ${accessList}${more}]`;
+        }
+
+        // Add labels
+        if (file.labels?.length) {
+          line += ` [Labels: ${file.labels.map((l) => l.name).join(', ')}]`;
+        }
+
+        // Add sensitive content indicators
+        if (file.annotators?.length) {
+          line += ` [Content: ${file.annotators.map((a) => a.name).join(', ')}]`;
+        }
+
+        lines.push(line);
       }
 
-      if (result.files.length > 30) {
-        lines.push(`... and ${result.files.length - 30} more files`);
+      if (uniqueFiles.length > 30) {
+        lines.push(`... and ${uniqueFiles.length - 30} more files`);
       }
 
       if (result.hasMore) {

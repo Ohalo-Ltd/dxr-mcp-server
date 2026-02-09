@@ -11,10 +11,10 @@ prompt: |
 
 ground_truth:
   expected_files:
-    - id: "Sample evaluation agreement.docx"
+    - id: "Sample evaluation agreement"
       relevance: 1.0
       reason: "Evaluation agreement document"
-    - id: "Loan_Agreement_1.docx"
+    - id: "Loan_Agreement_1"
       relevance: 1.0
       reason: "Loan agreement document"
     - id: "interest-free-loan-agreement.pdf"
@@ -31,7 +31,7 @@ execution:
     expected_tools:
       - "list_file_metadata"
     expected_queries:
-      - 'fileName:"agreement"'
+      - 'fileName:"*agreement*" OR fileName:"*Agreement*"'
 
 compliance:
   must_respect_access_controls: true

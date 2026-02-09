@@ -11,20 +11,23 @@ prompt: |
 
 ground_truth:
   expected_files:
-    # Files with JSmith/J Smith in filename
-    - id: "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ.txt"
+    # Files with JSmith/J_Smith/JD_Smith in filename
+    - id: "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ"
       relevance: 1.0
       reason: "Radiology report with JSmith in filename"
-    - id: "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789.txt"
+    - id: "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789"
       relevance: 1.0
       reason: "MAR record with JSmith in filename"
-    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
+    - id: "MAR_Final_JD_Smith_20231015_Rev3_AB1234_XY"
+      relevance: 1.0
+      reason: "MAR record with JD_Smith in filename"
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4"
       relevance: 1.0
       reason: "Payroll summary with JD_Smith in filename"
-    - id: "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt"
+    - id: "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256"
       relevance: 1.0
       reason: "Workforce report with JD_Smith in filename"
-    - id: "CBA_Final_Analysis_v3.2_2023_JSmith_4790_ABC123.txt"
+    - id: "CBA_Final_Analysis_v3.2_2023_JSmith_4790_ABC123"
       relevance: 1.0
       reason: "Analysis document with JSmith in filename"
   forbidden_files: []
@@ -38,7 +41,7 @@ execution:
     expected_tools:
       - "list_file_metadata"
     expected_queries:
-      - 'owner:"Legal"'
+      - 'fileName:"*JSmith*" OR fileName:"*J_Smith*" OR fileName:"*JD_Smith*"'
 
 compliance:
   must_respect_access_controls: true

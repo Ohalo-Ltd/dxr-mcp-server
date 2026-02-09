@@ -32,3 +32,4 @@ Thumbs.db
 # Benchmark results (generated)
 benchmark/results/*.json
 benchmark/results/*.md
+benchmark/results/*.pdf

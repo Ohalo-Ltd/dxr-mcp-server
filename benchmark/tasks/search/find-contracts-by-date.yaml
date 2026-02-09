@@ -12,10 +12,10 @@ prompt: |
 
 ground_truth:
   expected_files:
-    - id: "Sample evaluation agreement.docx"
+    - id: "Sample evaluation agreement"
       relevance: 1.0
       reason: "Evaluation agreement contract"
-    - id: "Loan_Agreement_1.docx"
+    - id: "Loan_Agreement_1"
       relevance: 1.0
       reason: "Loan agreement contract"
     - id: "loan.pdf"

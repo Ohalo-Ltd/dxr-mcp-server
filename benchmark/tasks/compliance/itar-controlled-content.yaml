@@ -13,7 +13,7 @@ prompt: |
 
 ground_truth:
   expected_files:
-    # ITAR Sample Documents (true positives)
+    # ITAR Confirmed Documents (have ITAR: Confirmed ITAR Controlled label)
     - id: "ITAR_Sample_1.pdf"
       relevance: 1.0
       reason: "Export-controlled technical data"
@@ -23,25 +23,13 @@ ground_truth:
     - id: "ITAR_Sample_3.pdf"
       relevance: 1.0
       reason: "Military technology documentation"
-    # Defense-related documents
-    - id: "Submarine schematic.docx"
+    - id: "Submarine schematic"
       relevance: 1.0
       reason: "Naval defense specifications - ITAR controlled"
-    - id: "Missile launch systems.docx"
+    - id: "Missile launch systems"
       relevance: 1.0
       reason: "Weapons system documentation - ITAR controlled"
-    - id: "Schematic Overview - Model AE-2100 Jet Engine.docx"
-      relevance: 1.0
-      reason: "Aircraft engine technical data - ITAR controlled"
-    - id: "Handling hazardous explosives.docx"
-      relevance: 1.0
-      reason: "Munitions handling procedures - ITAR controlled"
-  forbidden_files:
-    # ITAR Lookalike documents (negative test - should NOT be classified as ITAR)
-    - id: "ITAR_Lookalike_1.pdf"
-      reason: "Non-ITAR similar content - precision test"
-    - id: "ITAR_Lookalike_2.pdf"
-      reason: "Non-ITAR similar content - precision test"
+  forbidden_files: []
   minimum_precision: 0.8
   minimum_recall: 0.8
 

@@ -1,38 +1,50 @@
 id: "search-006"
-name: "Recent Modifications"
-description: "Find files modified recently"
+name: "Recent Sensitive Financial Files"
+description: "Find sensitive financial files modified recently"
 category: "search"
-domain: "Recent Files"
-difficulty: "easy"
+domain: "Date + Content Filter"
+difficulty: "medium"
 
 prompt: |
-  Find all files that have been modified in the last 30 days.
-  List them with their last modification dates.
+  Find all files containing sensitive financial data (credit cards, payroll,
+  bank statements, etc.) that have been modified in the last 30 days.
+  List them with their types and any sensitivity indicators.
 
-# Note: This task tests date-based filtering capability.
-# Expected files will depend on when documents were indexed in DXR.
-# The ground_truth below is a placeholder - actual results will vary
-# based on indexing time.
 ground_truth:
   expected_files:
-    # Placeholder - all files were copied on Feb 7, 2025
-    # In live mode, this should return files based on actual modification dates
-    - id: "PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt"
-      relevance: 0.5
-      reason: "Recently indexed file"
+    # PCI-labeled files with financial data
+    - id: "CardBase"
+      relevance: 1.0
+      reason: "PCI confirmed cardholder data - credit card numbers"
+    - id: "credit-card-numbers_extradata"
+      relevance: 1.0
+      reason: "Credit card data file"
+    - id: "credit card screenshot.png"
+      relevance: 1.0
+      reason: "Credit card image - PCI sensitive"
+    # Financial data with governance labels
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4"
+      relevance: 1.0
+      reason: "Payroll data - highly sensitive financial"
+    - id: "2011_audited_financial_statement_msword.doc"
+      relevance: 0.8
+      reason: "Audited financial statement"
+    - id: "Bank-Statement.jpg"
+      relevance: 0.8
+      reason: "Bank statement image"
   forbidden_files: []
-  # Lower thresholds since results depend on timing
-  minimum_precision: 0.3
-  minimum_recall: 0.3
+  minimum_precision: 0.5
+  minimum_recall: 0.7
 
 execution:
-  timeout_seconds: 60
-  max_tool_calls: 10
+  timeout_seconds: 90
+  max_tool_calls: 15
   dxr_hints:
     expected_tools:
       - "list_file_metadata"
     expected_queries:
-      - 'lastModifiedAt > "2024-03-01"'
+      - 'lastModifiedAt > now-30d AND labels.name:"PCI: Confirmed Cardholder Data"'
+      - 'lastModifiedAt > now-30d AND labels.name:"Governance: Highly Sensitive Financial Data"'
 
 compliance:
   must_respect_access_controls: true
@@ -40,5 +52,6 @@ compliance:
 
 tags:
   - "recent"
-  - "modifications"
+  - "financial"
   - "date-filter"
+  - "combined-query"

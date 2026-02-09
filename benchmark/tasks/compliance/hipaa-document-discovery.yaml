@@ -14,41 +14,41 @@ prompt: |
 ground_truth:
   expected_files:
     # Patient Medical Records
-    - id: "PMR_SmithJ_2023_Final_v3_AB1234_XYZ.txt"
+    - id: "PMR_SmithJ_2023_Final_v3_AB1234_XYZ"
       relevance: 1.0
       reason: "Patient medical record with names, diagnoses, treatment plans"
-    - id: "Smith_J_DiabetesMgt_PMR_Final_V3_092023_XYZ123.txt"
+    - id: "Smith_J_DiabetesMgt_PMR_Final_V3_092023_XYZ123"
       relevance: 1.0
       reason: "Diabetes management records with PHI"
-    - id: "Smith_JD_PatientMedRec_v3.2_FINAL_2023-10-15_AB123_XYZ_DR04.txt"
+    - id: "Smith_JD_PatientMedRec_v3.2_FINAL_2023-10-15_AB123_XYZ_DR04"
       relevance: 1.0
       reason: "Complete patient medical record"
     # Radiology Reports
-    - id: "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ.txt"
+    - id: "RadRpt_Final_JSmith_2023_10_25_V1_ABC123_XYZ"
       relevance: 1.0
       reason: "X-ray/MRI results with patient information"
-    - id: "Rpt_2023_FNL_DR_Smith_MRI_Chest_0A1B2C3D.txt"
+    - id: "Rpt_2023_FNL_DR_Smith_MRI_Chest_0A1B2C3D"
       relevance: 1.0
       reason: "MRI chest scan report with patient data"
     # Medication Administration Records
-    - id: "MAR_Final_JD_Smith_20231015_Rev3_AB1234_XY.txt"
+    - id: "MAR_Final_JD_Smith_20231015_Rev3_AB1234_XY"
       relevance: 1.0
       reason: "Medication administration with dosages"
-    - id: "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789.txt"
+    - id: "MAR_2023_Fnl_JSmith_AdmRcrds_abc123_XYZ789"
       relevance: 1.0
       reason: "Patient medication history"
     # Surgical Procedure Notes
-    - id: "SurgProcNote_Final_v3.2_JDoe_20230815_Op12345_ABCtxt_A1B2C3.txt"
+    - id: "SurgProcNote_Final_v3.2_JDoe_20230815_Op12345_ABCtxt_A1B2C3"
       relevance: 1.0
       reason: "Surgical notes with patient details"
-    - id: "DrSmith_SurgProc_Notes_v3.2_FINAL_2023_07_12_ABD-HR78-XY88.txt"
+    - id: "DrSmith_SurgProc_Notes_v3.2_FINAL_2023_07_12_ABD-HR78-XY88"
       relevance: 1.0
       reason: "Operative report with patient information"
     # Insurance Claim Forms
-    - id: "ClaimForm_Final_AB1234_JDoe_Insurance2023_Q2.txt"
+    - id: "ClaimForm_Final_AB1234_JDoe_Insurance2023_Q2"
       relevance: 1.0
       reason: "Insurance claim with health information"
-    - id: "ClaimForm_Final_DG2023_abc123_XYZ_JohnDoe_InsuranceA11.txt"
+    - id: "ClaimForm_Final_DG2023_abc123_XYZ_JohnDoe_InsuranceA11"
       relevance: 1.0
       reason: "Health insurance claim data"
   forbidden_files: []

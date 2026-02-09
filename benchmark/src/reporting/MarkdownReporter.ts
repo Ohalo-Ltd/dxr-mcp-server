@@ -71,8 +71,6 @@ export function generateMarkdownReport(report: ComparisonReport): string {
       lines.push(`| Avg Precision | ${formatPercent(summary.dxr.avgPrecision)} | ${formatPercent(summary.baseline.avgPrecision)} |`);
       lines.push(`| Avg Recall | ${formatPercent(summary.dxr.avgRecall)} | ${formatPercent(summary.baseline.avgRecall)} |`);
       lines.push(`| Avg F1 | ${formatPercent(summary.dxr.avgF1)} | ${formatPercent(summary.baseline.avgF1)} |`);
-      lines.push(`| Tasks Completed | ${summary.dxr.tasksCompleted}/${summary.totalTasks} | ${summary.baseline.tasksCompleted}/${summary.totalTasks} |`);
-      lines.push(`| Compliance Rate | ${formatPercent(summary.dxr.complianceRate)} | ${formatPercent(summary.baseline.complianceRate)} |`);
       lines.push(`| Wins | ${summary.dxrWins} | ${summary.baselineWins} |`);
       lines.push('');
     }
@@ -83,19 +81,20 @@ export function generateMarkdownReport(report: ComparisonReport): string {
   lines.push('');
 
   for (const task of report.taskResults) {
+    // Recalculate winner based purely on F1 (ignore stored winner which used threshold logic)
+    const winner = calculateWinner(task.dxrResult.f1Score, task.baselineResult.f1Score);
+
     lines.push(`### ${task.taskName}`);
     lines.push(`*ID: ${task.taskId} | Category: ${task.category}*`);
     lines.push('');
-    lines.push(`**Winner:** ${task.winner === 'tie' ? 'Tie' : task.winner.toUpperCase()}`);
+    lines.push(`**Winner:** ${winner === 'tie' ? 'Tie' : winner.toUpperCase()}`);
     lines.push('');
     lines.push('| Metric | DXR | Baseline | Delta |');
     lines.push('|--------|-----|----------|-------|');
-    lines.push(`| Completed | ${task.dxrResult.taskCompleted ? '✅' : '❌'} | ${task.baselineResult.taskCompleted ? '✅' : '❌'} | - |`);
     lines.push(`| Precision | ${formatPercent(task.dxrResult.precision)} | ${formatPercent(task.baselineResult.precision)} | ${formatDelta(task.precisionDelta)} |`);
     lines.push(`| Recall | ${formatPercent(task.dxrResult.recall)} | ${formatPercent(task.baselineResult.recall)} | ${formatDelta(task.recallDelta)} |`);
     lines.push(`| F1 | ${formatPercent(task.dxrResult.f1Score)} | ${formatPercent(task.baselineResult.f1Score)} | ${formatDelta(task.f1Delta)} |`);
     lines.push(`| Time | ${formatTime(task.dxrResult.timeToAnswerMs)} | ${formatTime(task.baselineResult.timeToAnswerMs)} | ${formatTimeDelta(task.timeDeltaMs)} |`);
-    lines.push(`| Compliance | ${task.dxrResult.compliancePassed ? '✅' : '❌'} | ${task.baselineResult.compliancePassed ? '✅' : '❌'} | - |`);
     lines.push('');
   }
 
@@ -137,4 +136,15 @@ function capitalizeFirst(str: string): string {
 function calculateAverage(values: number[]): number {
   if (values.length === 0) return 0;
   return values.reduce((a, b) => a + b, 0) / values.length;
+}
+
+/**
+ * Calculate winner based purely on F1 score
+ * DXR wins if F1 is >5% higher, Baseline wins if >5% lower, otherwise Tie
+ */
+function calculateWinner(dxrF1: number, baselineF1: number): 'dxr' | 'baseline' | 'tie' {
+  const f1Delta = dxrF1 - baselineF1;
+  if (f1Delta > 0.05) return 'dxr';
+  if (f1Delta < -0.05) return 'baseline';
+  return 'tie';
 }

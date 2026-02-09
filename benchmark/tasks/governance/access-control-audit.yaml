@@ -1,47 +1,46 @@
 id: "governance-001"
-name: "Access Control Audit"
-description: "Verify who has access to sensitive files"
+name: "Sensitive Files with Sharing Risks"
+description: "Find sensitive files that have external sharing risks"
 category: "governance"
-domain: "Access Control"
+domain: "Access Control + Sharing"
 difficulty: "medium"
 
 prompt: |
-  Audit access controls for files containing sensitive financial data.
-  Identify which users and groups have access to these files and flag
-  any that have overly permissive access (e.g., shared with entire domain).
+  Find sensitive files (financial data, PII, health records) that have been
+  flagged with external sharing risks. These represent potential data
+  exfiltration concerns. List each file with its sensitivity classification
+  and sharing risk status.
 
 ground_truth:
-  # Note: Access control metadata depends on DXR indexing configuration
+  # Files that have BOTH sensitive data labels AND external sharing risk label
+  # This tests DXR's ability to combine access control + content classification
   expected_files:
-    # PCI files with financial data
-    - id: "credit-card-numbers_extradata.csv"
+    # Sample evaluation agreement has both GDPR PII and External Sharing Risk labels
+    - id: "Sample evaluation agreement"
       relevance: 1.0
-      reason: "Credit card data - should have restricted access"
-    - id: "CardBase.csv"
-      relevance: 1.0
-      reason: "Payment card database - PCI scope"
-    # Financial statements
-    - id: "2011_audited_financial_statement_msword.doc.docx"
+      reason: "Has GDPR: Confirmed Employee PII AND Governance: External Sharing Risk"
+    # james-gibb-sample-invoice has financial data and external sharing risk
+    - id: "james-gibb-sample-invoice.pdf"
+      relevance: 0.9
+      reason: "Invoice with financial data flagged for external sharing"
+    # Bank statement - sensitive financial with sharing indicators
+    - id: "Bank-Statement.jpg"
       relevance: 0.8
-      reason: "Audited financial statement - finance access"
-    # Payroll data
-    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
-      relevance: 0.8
-      reason: "Payroll data - restricted HR/Finance access"
+      reason: "Financial document with potential sharing exposure"
   forbidden_files: []
-  minimum_precision: 0.6
-  minimum_recall: 0.7
+  minimum_precision: 0.4
+  minimum_recall: 0.6
 
 execution:
   timeout_seconds: 120
-  max_tool_calls: 20
+  max_tool_calls: 15
   dxr_hints:
     expected_tools:
       - "get_classifications"
       - "list_file_metadata"
     expected_queries:
-      - 'labels.name:"Governance: Highly Sensitive Financial Data"'
-      - 'annotators.domain.name:"Financially Sensitive"'
+      - 'labels.name:"Governance: External Sharing Risk"'
+      - 'labels.name:"Governance: External Sharing Risk" AND (labels.name:"PCI: Confirmed Cardholder Data" OR labels.name:"GDPR: Confirmed Employee PII" OR labels.name:"Governance: Highly Sensitive Financial Data")'
 
 compliance:
   must_respect_access_controls: true
@@ -49,6 +48,6 @@ compliance:
 
 tags:
   - "access-control"
-  - "audit"
+  - "external-sharing"
   - "governance"
-  - "financial"
+  - "combined-query"

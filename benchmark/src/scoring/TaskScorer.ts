@@ -88,6 +88,7 @@ export function scoreTask(input: ScoringInput): TaskResult {
 
 /**
  * Compare two task results and determine a winner
+ * Simple F1-based comparison - higher F1 wins, tie if within 5%
  */
 export function compareResults(
   dxrResult: TaskResult,
@@ -106,53 +107,20 @@ export function compareResults(
   const recallDelta = dxrResult.recall - baselineResult.recall;
   const timeDeltaMs = baselineResult.timeToAnswerMs - dxrResult.timeToAnswerMs;
 
-  // Determine winner based on multiple criteria
-  let dxrPoints = 0;
-  let baselinePoints = 0;
-
-  // F1 Score (most important - 3 points)
-  if (f1Delta > 0.05) dxrPoints += 3;
-  else if (f1Delta < -0.05) baselinePoints += 3;
-
-  // Task completion (2 points)
-  if (dxrResult.taskCompleted && !baselineResult.taskCompleted) dxrPoints += 2;
-  else if (!dxrResult.taskCompleted && baselineResult.taskCompleted)
-    baselinePoints += 2;
-
-  // Compliance (2 points)
-  if (dxrResult.compliancePassed && !baselineResult.compliancePassed)
-    dxrPoints += 2;
-  else if (!dxrResult.compliancePassed && baselineResult.compliancePassed)
-    baselinePoints += 2;
-
-  // Time (1 point, only if difference > 20%)
-  const timeRatio = timeDeltaMs / Math.max(dxrResult.timeToAnswerMs, 1);
-  if (timeRatio > 0.2) dxrPoints += 1;
-  else if (timeRatio < -0.2) baselinePoints += 1;
-
-  // Determine winner and reason
+  // Simple winner determination: higher F1 wins
+  // Tie if within 5% of each other
   let winner: 'dxr' | 'baseline' | 'tie';
   let reason: string;
 
-  if (dxrPoints > baselinePoints) {
+  if (f1Delta > 0.05) {
     winner = 'dxr';
-    reason = generateWinReason('DXR', dxrResult, baselineResult, {
-      f1Delta,
-      precisionDelta,
-      recallDelta,
-      timeDeltaMs,
-    });
-  } else if (baselinePoints > dxrPoints) {
+    reason = `DXR achieved ${(f1Delta * 100).toFixed(1)}% higher F1 score`;
+  } else if (f1Delta < -0.05) {
     winner = 'baseline';
-    reason = generateWinReason('Baseline', baselineResult, dxrResult, {
-      f1Delta: -f1Delta,
-      precisionDelta: -precisionDelta,
-      recallDelta: -recallDelta,
-      timeDeltaMs: -timeDeltaMs,
-    });
+    reason = `Baseline achieved ${(-f1Delta * 100).toFixed(1)}% higher F1 score`;
   } else {
     winner = 'tie';
-    reason = 'Results are comparable between both agents.';
+    reason = `F1 scores within 5% (DXR: ${(dxrResult.f1Score * 100).toFixed(1)}%, Baseline: ${(baselineResult.f1Score * 100).toFixed(1)}%)`;
   }
 
   return {

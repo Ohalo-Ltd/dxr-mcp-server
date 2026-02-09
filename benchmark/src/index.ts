@@ -369,22 +369,41 @@ async function runLiveDXRAgent(
   const result = await agent.runTask(taskPrompt, {
     tools,
     toolHandlers: handlers,
-    systemPrompt: `You are a data governance assistant using the Data X-Ray (DXR) system to find files based on content classification.
+    systemPrompt: `You are a data governance assistant using the Data X-Ray (DXR) system to find files.
 
-CRITICAL WORKFLOW:
-1. FIRST: Call get_classifications to understand what annotators and labels exist
-2. THEN: Use list_file_metadata with proper KQL queries based on what you learned
+QUERY PRIORITY (for best precision):
 
-Available tools:
-- get_classifications: Get the catalog of all annotators, labels, and extractors (CALL THIS FIRST!)
-- list_file_metadata: Search for files using KQL queries
+1. LABELS (highest confidence - PREFER these):
+   labels.name:"Search: Confirmed Invoice"      - Confirmed invoices
+   labels.name:"PCI: Confirmed Cardholder Data" - Confirmed PCI data
+   labels.name:"HIPAA: Confirmed PHI Document"  - Confirmed health data
+   labels.name:"Governance: Missing Owner"      - Files without owner
+   labels.name:"Governance: Highly Sensitive Financial Data" - Financial data
 
-KQL QUERY SYNTAX (CRITICAL):
-- String values MUST be in double quotes: annotators.name:"Credit card"
-- Use annotators.name for sensitive data types: annotators.name:"SSN"
-- Use annotators.domain.name for domains: annotators.domain.name:"PII"
-- Use labels.name for labels: labels.name:"Confidential"
-- Logical operators are UPPERCASE: AND, OR, NOT
+2. EXTRACTORS (high confidence content detection):
+   extractors.name:"Credit Card Extractor"      - Credit card numbers detected
+   extractors.name:"SSN Extractor"              - Social security numbers
+
+3. FILENAME (CASE SENSITIVE - search both cases!):
+   fileName:"*invoice*" OR fileName:"*Invoice*"  - Both cases!
+
+   FOR PERSON NAMES: Search broadly with just the surname to catch all variations:
+   fileName:"*Smith*"  - Catches JSmith, J_Smith, JD_Smith, SmithJ, DrSmith, etc.
+   NOT fileName:"*JSmith*" OR fileName:"*J_Smith*" - Too narrow, misses variations!
+
+4. DATE QUERIES (for recent/modified files):
+   lastModifiedAt > now-30d                     - Modified in last 30 days
+   createdAt >= 2024-01-01T00:00:00Z            - Created after specific date
+   Relative units: s, m, h, d, w, M, y (seconds to years)
+
+5. ANNOTATORS (use sparingly - higher false positive rate):
+   Only use annotators.name if no suitable label/extractor exists
+   NEVER use annotators.domain.name - too broad, causes many false positives
+
+BEST PRACTICE: Combine label + filename (both cases):
+   labels.name:"Search: Confirmed Invoice" OR fileName:"*invoice*" OR fileName:"*Invoice*"
+
+KQL SYNTAX: All strings in double quotes. Use AND, OR, NOT (uppercase). Use parentheses for grouping.
 
 When you find relevant files, list their names clearly in your final response.`,
     maxTurns: 10,
@@ -416,15 +435,35 @@ When you find relevant files, list their names clearly in your final response.`,
  * Build a task prompt for the DXR agent
  */
 function buildDXRPrompt(task: Task): string {
+  // Determine if this is a compliance/governance task or a simple search
+  const isComplianceTask = task.category === 'compliance' || task.category === 'governance';
+  const isSimpleSearch = task.category === 'search';
+
+  let guidance = '';
+  if (isComplianceTask) {
+    guidance = `STRATEGY: This is a ${task.category} task.
+1. FIRST call get_classifications to see available labels and annotators
+2. Use labels.name or annotators queries for precise results
+3. Combine with fileName queries for comprehensive coverage`;
+  } else if (isSimpleSearch) {
+    guidance = `STRATEGY: This is a search task.
+1. Start with fileName:"*keyword*" queries for direct matches
+2. If needed, call get_classifications for content-based filtering
+3. Combine approaches: fileName:"*invoice*" OR labels.name:"Search: Confirmed Invoice"`;
+  }
+
   return `Task: ${task.name}
 
 Description: ${task.description}
 
 User Request: ${task.prompt}
 
-IMPORTANT: You have access to the Data X-Ray (DXR) system which has indexed files with content classification.
-1. FIRST call get_classifications to see what annotators and labels are available
-2. THEN use list_file_metadata with KQL queries to find files
+${guidance}
+
+You have access to the Data X-Ray (DXR) system with:
+- fileName queries: fileName:"*pattern*" for name-based search
+- Content classification: labels.name, annotators.name for content-based search
+- Metadata: owner, entitlements (who can access), file type, size
 
 Please search for and identify all files that match this request. List the file names you find.`;
 }
@@ -502,11 +541,13 @@ async function runLiveBaselineAgent(
   const agent = new ClaudeAgent();
 
   // Create GDrive tools that work with the mock server
+  // These mock the Claude Desktop native Google Drive connector
   const { tools, handlers } = createGDriveTools({
     searchByName: (query: string) => server.searchByName(query),
     listFilesInFolder: (folderId: string) => server.listFilesInFolder(folderId),
     getFile: (fileId: string) => server.getFile(fileId),
     getFileContent: (fileId: string) => server.getFileContent(fileId),
+    listFiles: (options) => server.listFiles(options),
   });
 
   // Build task prompt for the baseline agent
@@ -519,10 +560,8 @@ async function runLiveBaselineAgent(
     systemPrompt: `You are a helpful assistant that finds files based on user requests using Google Drive search capabilities.
 
 Available tools:
-- gdrive_search: Search for files by name or keywords
-- gdrive_list_files: List files in a folder
-- gdrive_get_file_info: Get detailed file information
-- gdrive_read_file: Read text file content
+- google_drive_search: Search for files in Google Drive using API query syntax (e.g., "name contains 'invoice'")
+- google_drive_fetch: Fetch the contents of documents by their IDs
 
 Important: You do NOT have access to content classification, sensitivity labels, or compliance metadata. You can only search by file names, types, and basic metadata.
 

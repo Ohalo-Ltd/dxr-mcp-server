@@ -13,10 +13,10 @@ prompt: |
 
 ground_truth:
   expected_files:
-    - id: "credit-card-numbers_extradata.csv"
+    - id: "credit-card-numbers_extradata"
       relevance: 1.0
-      reason: "CSV containing credit card numbers with metadata"
-    - id: "CardBase.csv"
+      reason: "File containing credit card numbers with metadata"
+    - id: "CardBase"
       relevance: 1.0
       reason: "Payment card database with card numbers"
     - id: "credit card screenshot.png"

@@ -14,37 +14,37 @@ prompt: |
 
 ground_truth:
   expected_files:
-    # Employee Performance Reviews
-    - id: "EmpPerfRev_Final_JD34_2023_Q3_AE2389_XYZ.txt"
+    # Employee Performance Reviews (have GDPR: Confirmed Employee PII label)
+    - id: "EmpPerfRev_Final_JD34_2023_Q3_AE2389_XYZ"
       relevance: 1.0
       reason: "Employee performance evaluation with personal employment data"
-    - id: "EmpPerfRev_JohnDoe_Final_V2_2023_Q3_7634AB.txt"
+    - id: "EmpPerfRev_JohnDoe_Final_V2_2023_Q3_7634AB"
       relevance: 1.0
       reason: "Employee performance evaluation with personal employment data"
     # Payroll Summaries
-    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4.txt"
+    - id: "Payroll_Sum_2023_final_ABC123_JD_Smith_Q4"
       relevance: 1.0
       reason: "Payroll data with salary and bank details"
-    - id: "PS_2023_Fnl_Summary_JDoe_84521_XYZ.txt"
+    - id: "PS_2023_Fnl_Summary_JDoe_84521_XYZ"
       relevance: 1.0
       reason: "Payroll data with employee compensation information"
     # Workforce Demographics
-    - id: "WD_Report_FINAL_2023_ABG_JohnD_XYZ_7431_A1B2C3.txt"
+    - id: "WD_Report_FINAL_2023_ABG_JohnD_XYZ_7431_A1B2C3"
       relevance: 1.0
       reason: "Workforce demographics with age, gender, ethnicity data"
-    - id: "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256.txt"
+    - id: "WFDemoRpt_Final_v3.21_JD_Smith_2023_10_07_AB-RT1256"
       relevance: 1.0
       reason: "Workforce composition and demographic data"
-    # Spreadsheets
-    - id: "personal_data.xlsx"
+    # HR Documents
+    - id: "CAHRC_HR_Manual"
       relevance: 1.0
-      reason: "Personal identifiers spreadsheet"
-    - id: "emails.xlsx"
+      reason: "HR manual with employee policy data"
+    - id: "2011_audited_financial_statement_msword.doc"
       relevance: 0.9
-      reason: "Email addresses - personal contact information"
-    - id: "Employment status.docx"
+      reason: "Financial statement with employee data"
+    - id: "Sample evaluation agreement"
       relevance: 0.9
-      reason: "Employment records with personal data"
+      reason: "Evaluation agreement with personal data"
   forbidden_files: []
   minimum_precision: 0.7
   minimum_recall: 0.8
