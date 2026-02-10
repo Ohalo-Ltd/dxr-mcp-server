@@ -23,7 +23,6 @@ vitest.config.*
 *.md
 docs/
 LICENSE
-claude_desktop_config.example.json
 
 # Build artifacts we don't need
 *.map

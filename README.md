@@ -25,49 +25,32 @@ Enterprise organizations have vast amounts of unstructured data scattered across
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
 - Access to a Data X-Ray instance
 - Data X-Ray API credentials (Bearer token)
 
-### Setup
+### Claude Desktop (Recommended)
 
-1. **Clone or navigate to this directory:**
-   ```bash
-   cd dxr-mcp-server
-   ```
+Install the pre-built extension bundle (`.mcpb` file):
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+1. Download or build the `.mcpb` file (see [Building the Extension](#building-the-extension))
+2. Double-click the `.mcpb` file to open the Claude Desktop install dialog
+3. Enter your Data X-Ray configuration when prompted:
+   - **Data X-Ray URL** - Base URL of your DXR instance (e.g., `https://dxr.yourcompany.com`)
+   - **API Token** - Bearer token for API authentication (stored securely in your OS keychain)
+   - **Skip SSL Verification** - Enable only for development environments with self-signed certificates
 
-3. **Build the project:**
-   ```bash
-   npm run build
-   ```
+The extension will appear in your Claude Desktop connectors panel with the Data X-Ray icon.
 
-## Configuration
+### Claude Code CLI
 
-The server requires two environment variables:
-
-- `DXR_API_URL`: Base URL of your Data X-Ray instance (e.g., `https://dxr.yourcompany.com`)
-- `DXR_API_TOKEN`: Bearer token for API authentication
-
-### Claude Desktop Configuration
-
-Add the server to your Claude Desktop configuration file:
-
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+Add a `.mcp.json` file to your project directory:
 
 ```json
 {
   "mcpServers": {
     "dxr": {
       "command": "node",
-      "args": [
-        "/path/to/dxr-mcp-server/dist/index.js"
-      ],
+      "args": ["/path/to/dxr-mcp-server/dist/index.js"],
       "env": {
         "DXR_API_URL": "https://dxr.yourcompany.com",
         "DXR_API_TOKEN": "your-api-token-here"
@@ -77,30 +60,11 @@ Add the server to your Claude Desktop configuration file:
 }
 ```
 
-### Claude Code CLI Configuration
-
-Add to your `~/.config/claude/config.json`:
-
-```json
-{
-  "mcpServers": {
-    "dxr": {
-      "command": "node",
-      "args": [
-        "/path/to/dxr-mcp-server/dist/index.js"
-      ],
-      "env": {
-        "DXR_API_URL": "https://dxr.yourcompany.com",
-        "DXR_API_TOKEN": "your-api-token-here"
-      }
-    }
-  }
-}
-```
+> **Note:** `.mcp.json` is gitignored by default since it contains credentials.
 
 ## Available Tools
 
-The MCP server provides five tools that Claude can use:
+The MCP server provides six tools that Claude can use:
 
 ### 1. list_file_metadata
 
@@ -122,7 +86,18 @@ List all file metadata from Data X-Ray with optional KQL filtering.
 - Classifications and sensitivity labels
 - Datasource information
 
-### 2. get_file_content
+### 2. get_file_metadata_details
+
+Get complete metadata for one or more files by their IDs, including full classification details.
+
+**Parameters:**
+- `ids` (required): Array of file identifiers from list_file_metadata
+
+**Returns:** Detailed metadata objects including full classification breakdowns
+
+**Use case:** Drill into specific files to see all sensitivity classifications and metadata
+
+### 3. get_file_content
 
 Get the original content of a file by its ID.
 
@@ -133,7 +108,7 @@ Get the original content of a file by its ID.
 
 **Use case:** Retrieve documents for analysis, but be aware of sensitivity!
 
-### 3. get_file_redacted_text
+### 4. get_file_redacted_text
 
 Get text content of a file with sensitive information automatically redacted.
 
@@ -145,7 +120,7 @@ Get text content of a file with sensitive information automatically redacted.
 
 **Use case:** Safely view documents containing PII, PHI, or other sensitive data
 
-### 4. get_classifications
+### 5. get_classifications
 
 Get the catalog of all available classifications in Data X-Ray.
 
@@ -157,7 +132,7 @@ Get the catalog of all available classifications in Data X-Ray.
 
 **Use case:** Understand what types of sensitive information DXR can detect
 
-### 5. get_redactors
+### 6. get_redactors
 
 Get the catalog of all available redactors.
 
@@ -219,6 +194,7 @@ The MCP server wraps these Data X-Ray API v1 endpoints:
 | MCP Tool | DXR API Endpoint | Method |
 |----------|------------------|--------|
 | list_file_metadata | `/api/v1/files` | GET |
+| get_file_metadata_details | `/api/v1/files/{id}` | GET |
 | get_file_content | `/api/v1/files/{id}/content` | GET |
 | get_file_redacted_text | `/api/v1/files/{id}/redacted-text` | GET |
 | get_classifications | `/api/v1/classifications` | GET |
@@ -227,6 +203,18 @@ The MCP server wraps these Data X-Ray API v1 endpoints:
 All API calls use Bearer token authentication and return JSON responses (except file content, which returns binary).
 
 ## Development
+
+### Prerequisites
+
+- Node.js 18.0.0 or higher
+- npm
+
+### Setup
+
+```bash
+npm install
+npm run build
+```
 
 ### Build and Watch
 
@@ -239,16 +227,34 @@ npm run watch  # Rebuild on file changes
 You can test the server using the MCP Inspector:
 
 ```bash
-npx @modelcontextprotocol/inspector node dist/index.js
-```
-
-Set environment variables before running:
-
-```bash
 export DXR_API_URL="https://dxr.yourcompany.com"
 export DXR_API_TOKEN="your-api-token"
 npx @modelcontextprotocol/inspector node dist/index.js
 ```
+
+### Building the Extension
+
+To build the `.mcpb` extension bundle for Claude Desktop:
+
+1. Build the project and prune dev dependencies:
+   ```bash
+   npm run build
+   npm prune --production
+   ```
+
+2. Pack the extension:
+   ```bash
+   npx @anthropic-ai/mcpb pack .
+   ```
+
+3. Restore dev dependencies:
+   ```bash
+   npm install
+   ```
+
+This produces a `dxr-mcp-server-<version>.mcpb` file that can be distributed and installed by double-clicking.
+
+The `.mcpbignore` file controls which files are excluded from the bundle (similar to `.gitignore`).
 
 ## Troubleshooting
 
@@ -276,9 +282,10 @@ When making changes:
 
 1. Update TypeScript types in [src/types.ts](src/types.ts) if API changes
 2. Add new tools following the existing pattern in [src/index.ts](src/index.ts)
-3. Update this README with new tools and usage examples
+3. Update this README and `manifest.json` tools array with new tools
 4. Run `npm run build` to ensure TypeScript compiles
 5. Test with MCP Inspector before deploying
+6. Rebuild the `.mcpb` extension (see [Building the Extension](#building-the-extension))
 
 ## License
 
