@@ -1,0 +1,33 @@
+# Development files
+.claude/
+.git/
+.gitignore
+.env
+.env.*
+.mcp.json
+src/
+scripts/
+coverage/
+*.ts
+tsconfig.json
+
+# Benchmarks and tests
+benchmark/
+tests/
+__tests__/
+*.test.*
+*.spec.*
+vitest.config.*
+
+# Documentation (not needed at runtime)
+*.md
+docs/
+LICENSE
+claude_desktop_config.example.json
+
+# Build artifacts we don't need
+*.map
+*.tsbuildinfo
+
+# Dev dependencies (only runtime deps needed)
+# node_modules is handled by mcpb

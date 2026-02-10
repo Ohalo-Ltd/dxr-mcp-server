@@ -16,6 +16,13 @@ npm-debug.log*
 .env.local
 .env.*.local
 
+# MCP config (contains credentials)
+.mcp.json
+
+# MCPB build output
+*.mcpb
+*.dxt
+
 # OS files
 .DS_Store
 Thumbs.db

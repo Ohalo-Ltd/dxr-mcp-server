@@ -1,0 +1,79 @@
+{
+  "manifest_version": "0.3",
+  "name": "dxr-mcp-server",
+  "display_name": "Data X-Ray",
+  "version": "0.1.0",
+  "description": "Search, classify, and redact sensitive data across your enterprise with Data X-Ray",
+  "long_description": "Connect Claude to your Data X-Ray instance to search indexed files, view sensitivity classifications, retrieve file content, and get privacy-safe redacted versions of documents. Supports KQL queries for powerful file filtering across enterprise-scale deployments.",
+  "author": {
+    "name": "Ohalo",
+    "url": "https://ohalo.co"
+  },
+  "license": "MIT",
+  "keywords": ["data-xray", "dxr", "privacy", "redaction", "classification", "sensitive-data"],
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {
+        "DXR_API_URL": "${user_config.api_url}",
+        "DXR_API_TOKEN": "${user_config.api_token}",
+        "DXR_SKIP_SSL_VERIFY": "${user_config.skip_ssl_verify}"
+      }
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": ["darwin", "win32", "linux"]
+  },
+  "user_config": {
+    "api_url": {
+      "type": "string",
+      "title": "Data X-Ray URL",
+      "description": "Base URL of your Data X-Ray instance (e.g. https://dxr.yourcompany.com)",
+      "required": true
+    },
+    "api_token": {
+      "type": "string",
+      "title": "API Token",
+      "description": "Bearer token for Data X-Ray API authentication. Get this from your DXR administrator.",
+      "required": true,
+      "sensitive": true
+    },
+    "skip_ssl_verify": {
+      "type": "boolean",
+      "title": "Skip SSL Verification",
+      "description": "Disable SSL certificate verification (only for development environments with self-signed certificates)",
+      "default": false
+    }
+  },
+  "tools": [
+    {
+      "name": "list_file_metadata",
+      "description": "Search and list files indexed in Data X-Ray with KQL filtering"
+    },
+    {
+      "name": "get_file_metadata_details",
+      "description": "Get complete metadata for specific files including classifications"
+    },
+    {
+      "name": "get_file_content",
+      "description": "Retrieve original unredacted file content"
+    },
+    {
+      "name": "get_file_redacted_text",
+      "description": "Get privacy-safe redacted versions of documents"
+    },
+    {
+      "name": "get_classifications",
+      "description": "List all sensitivity classifications and annotators"
+    },
+    {
+      "name": "get_redactors",
+      "description": "List available redaction profiles"
+    }
+  ]
+}
