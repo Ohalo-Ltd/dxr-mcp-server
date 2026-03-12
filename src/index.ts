@@ -226,7 +226,8 @@ if (DXR_SKIP_SSL_VERIFY) {
 }
 
 // Security constants
-const REQUEST_TIMEOUT_MS = 30_000; // 30 second timeout
+const REQUEST_TIMEOUT_MS = 30_000; // 30 second timeout for metadata/list endpoints
+const CONTENT_TIMEOUT_MS = 120_000; // 2 minute timeout for content/text extraction (OCR can be slow)
 const MAX_RESPONSE_SIZE_BYTES = 50_000_000; // 50MB max response size
 const MAX_ERROR_LENGTH = 500; // Truncate error messages to prevent info leakage
 
@@ -259,7 +260,8 @@ function getResponseType(endpoint: string): ResponseType {
 // Helper function to make authenticated API requests with proper typing
 async function makeApiRequest<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  timeoutMs: number = REQUEST_TIMEOUT_MS
 ): Promise<T> {
   // Normalize URL to avoid double slashes - remove trailing slash from base URL
   const baseUrl = DXR_API_URL?.endsWith('/') ? DXR_API_URL.slice(0, -1) : DXR_API_URL;
@@ -273,7 +275,7 @@ async function makeApiRequest<T>(
 
   // Set up request timeout
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     // Build headers - don't send Content-Type on GET requests
@@ -300,6 +302,13 @@ async function makeApiRequest<T>(
       const sanitizedError = errorText.substring(0, MAX_ERROR_LENGTH);
       // Log full error to stderr for debugging (not returned to client)
       console.error(`API error [${response.status}]:`, errorText.substring(0, 1000));
+      // Provide helpful messages for common status codes with empty bodies
+      if (response.status === 403 && !errorText.trim()) {
+        throw new Error(
+          `Access denied (403): Your API token may lack permissions for this resource, or the token may have expired. ` +
+          `Check that DXR_API_TOKEN is valid and has the required permissions for this endpoint.`
+        );
+      }
       throw new Error(`API request failed: ${response.status} ${response.statusText}: ${sanitizedError}`);
     }
 
@@ -667,6 +676,17 @@ function validateKQLQuery(query: string): { valid: boolean; errors: string[] } {
     valid: errors.length === 0,
     errors
   };
+}
+
+// Normalize date-only values in KQL queries to full ISO 8601 datetimes.
+// DXR's KQL parser requires full datetime strings (e.g. 2026-03-12T00:00:00Z) when
+// using comparison operators. Date-only strings like 2026-03-12 cause a parse error.
+function normalizeKQLDates(query: string): string {
+  // Match: field > 2026-03-12 (but not 2026-03-12T... which is already complete)
+  return query.replace(
+    /([<>]=?)\s*(\d{4}-\d{2}-\d{2})(?!T|\d)/g,
+    (_, op, date) => `${op} ${date}T00:00:00Z`
+  );
 }
 
 // Define MCP tools with improved descriptions for better discovery and usage
@@ -1066,7 +1086,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // Fetch JSONL data from API
         // API requires a 'q' parameter - use wildcard as default to match all files
-        const kqlQuery = queryParam ? (queryParam as string) : "fileName:\"*\"";
+        // Normalize date-only values to full ISO 8601 datetimes (DXR parser requires T00:00:00Z suffix)
+        const kqlQuery = queryParam
+          ? normalizeKQLDates(queryParam as string)
+          : "fileName:\"*\"";
         const result = await makeApiRequest<FileMetadataListResponse>(
           `/api/v1/files?q=${encodeURIComponent(kqlQuery)}`
         );
@@ -1125,7 +1148,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
         const fileId = validateString(args.id, "id");
         const result = await makeApiRequest<FileContentResponse>(
-          `/api/v1/files/${encodeURIComponent(fileId)}/content`
+          `/api/v1/files/${encodeURIComponent(fileId)}/content`,
+          {},
+          CONTENT_TIMEOUT_MS
         );
 
         const contentType = result.contentType.split(";")[0].trim().toLowerCase();
@@ -1222,9 +1247,36 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           throw new Error("Missing required parameter: id");
         }
         const fileId = validateString(args.id, "id");
-        const result = await makeApiRequest<FileTextResponse>(
-          `/api/v1/files/${encodeURIComponent(fileId)}/text`
-        );
+        let result: FileTextResponse;
+        try {
+          result = await makeApiRequest<FileTextResponse>(
+            `/api/v1/files/${encodeURIComponent(fileId)}/text`,
+            {},
+            CONTENT_TIMEOUT_MS
+          );
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          if (msg.includes("Text extraction failed") || msg.includes("500")) {
+            throw new Error(
+              `Data X-Ray could not extract text from this file (server returned: ${msg}). ` +
+              `This can happen for large files, files requiring OCR, or unsupported formats. ` +
+              `Try get_file_content instead, which downloads the original binary and performs local text extraction.`
+            );
+          }
+          throw err;
+        }
+        if (!result.data.text) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `No text available for this file. Data X-Ray may not have extracted text for it ` +
+                  `(e.g. DISCOVERY-only scan depth, unsupported format, or scanned image PDF). ` +
+                  `Try get_file_content for local binary parsing and text extraction.`,
+              },
+            ],
+          };
+        }
         return {
           content: [
             {
@@ -1242,7 +1294,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const fileId = validateString(args.id, "id");
         const redactorId = validateNumber(args.redactor_id, "redactor_id");
         const result = await makeApiRequest<RedactionResponse>(
-          `/api/v1/files/${encodeURIComponent(fileId)}/redacted-text?redactor_id=${redactorId}`
+          `/api/v1/files/${encodeURIComponent(fileId)}/redacted-text?redactor_id=${redactorId}`,
+          {},
+          CONTENT_TIMEOUT_MS
         );
         return {
           content: [
@@ -1298,7 +1352,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         } else {
           // Fetch from API
           const result = await makeApiRequest<FileContentResponse>(
-            `/api/v1/files/${encodeURIComponent(fileId)}/content`
+            `/api/v1/files/${encodeURIComponent(fileId)}/content`,
+            {},
+            CONTENT_TIMEOUT_MS
           );
           const filenameMatch = result.contentDisposition?.match(/filename="?([^";\n]+)"?/);
           filename = filenameMatch?.[1] || `file_${fileId}.pdf`;
