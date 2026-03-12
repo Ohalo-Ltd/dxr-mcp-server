@@ -64,81 +64,98 @@ Add a `.mcp.json` file to your project directory:
 
 ## Available Tools
 
-The MCP server provides six tools that Claude can use:
+The MCP server provides eight tools that Claude can use:
 
 ### 1. list_file_metadata
 
-List all file metadata from Data X-Ray with optional KQL filtering.
+Search and list file metadata from Data X-Ray with KQL filtering. Returns lightweight summaries with aggregate statistics to minimize context usage.
 
 **Parameters:**
 - `q` (optional): KQL query string to filter results
+- `limit` (optional): Number of files to return (default 50, max 500)
+- `offset` (optional): Number of files to skip for pagination
 
 **Example queries:**
-- `fileName:"Invoice"` - Find files with "Invoice" in the name
-- `size > 100000` - Find files larger than 100KB
-- `fileName:"Invoice" AND size > 100000` - Combine conditions
-- `classifications.type:ANNOTATOR` - Find files with specific classification types
+- `fileName:"*.pdf" AND size > 1000000` - PDFs larger than 1MB
+- `annotators.name:"Credit card"` - Files with credit card data detected
+- `datasource.name:"Finance*" AND lastModifiedAt > now-30d` - Recent finance files
+- `entitlements.whoCanAccess: { accountType:"GROUP" AND name:"Everyone" }` - Publicly accessible files
 
-**Returns:** Array of file metadata objects including:
-- File ID, name, path, size
-- MIME type
-- Created/updated timestamps
-- Classifications and sensitivity labels
-- Datasource information
+**Returns:** Aggregate statistics (count, size, file types, sensitive data counts) plus lightweight file summaries with pagination info.
 
 ### 2. get_file_metadata_details
 
-Get complete metadata for one or more files by their IDs, including full classification details.
-
-**Parameters:**
-- `ids` (required): Array of file identifiers from list_file_metadata
-
-**Returns:** Detailed metadata objects including full classification breakdowns
-
-**Use case:** Drill into specific files to see all sensitivity classifications and metadata
-
-### 3. get_file_content
-
-Get the original content of a file by its ID.
+Get complete metadata for a specific file by ID.
 
 **Parameters:**
 - `id` (required): File identifier from list_file_metadata
 
-**Returns:** Base64-encoded file content with MIME type and filename
+**Returns:** Full metadata including datasource info, entitlements, labels, DLP labels, annotators with matched phrases, owner/creator/modifier accounts, extracted metadata, and GPS coordinates if available.
 
-**Use case:** Retrieve documents for analysis, but be aware of sensitivity!
+### 3. get_file_content
 
-### 4. get_file_redacted_text
+Get the original content of a file in its native format.
 
-Get text content of a file with sensitive information automatically redacted.
+**Parameters:**
+- `id` (required): File identifier from list_file_metadata
+
+**Returns:** Text files are decoded and returned as readable text. Images are returned as viewable images. PDFs have text extracted automatically. Other binary files are saved to `/tmp/dxr-files/` for further processing.
+
+**Use case:** Default tool for viewing file contents. Prefer this over `get_file_text` when you need the original file, images, or higher-fidelity parsing.
+
+### 4. get_file_text
+
+Get the plain text extracted by Data X-Ray from a file. Simpler and faster than `get_file_content` when you only need text.
+
+**Parameters:**
+- `id` (required): File identifier from list_file_metadata
+
+**Returns:** Plain text content as extracted by Data X-Ray.
+
+**Note:** This is a beta endpoint. Returns empty text if DXR has not extracted text for the file (e.g. discovery-only scan, unsupported format, scanned image PDF).
+
+### 5. get_file_redacted_text
+
+Get plain text content of a file with sensitive information replaced by `[REDACTED]`.
 
 **Parameters:**
 - `id` (required): File identifier
 - `redactor_id` (required): Redactor ID from get_redactors
 
-**Returns:** Text content with `[REDACTED]` placeholders replacing sensitive information
+**Returns:** Plain text with `[REDACTED]` placeholders replacing sensitive information.
 
-**Use case:** Safely view documents containing PII, PHI, or other sensitive data
+**Use case:** Use only when explicitly requested or when there is a specific privacy requirement. For normal file viewing, use `get_file_content`.
 
-### 5. get_classifications
+### 6. get_classifications
 
 Get the catalog of all available classifications in Data X-Ray.
 
-**Returns:** Array of classification objects including:
-- Classification ID, name, type, subtype
-- Description
-- Links to view in DXR UI
-- Created/updated timestamps
+**Returns:** Array of annotators, labels, and extractors with IDs, names, types, subtypes, descriptions, and links to the DXR UI.
 
-**Use case:** Understand what types of sensitive information DXR can detect
+**Use case:** Call this first before searching for files with sensitive data — you need the exact annotator names to use in KQL queries.
 
-### 6. get_redactors
+### 7. get_redactors
 
 Get the catalog of all available redactors.
 
-**Returns:** Array of redactor objects with IDs, names, and timestamps
+**Returns:** Array of redactor objects with IDs, names, and timestamps.
 
-**Use case:** Find the appropriate redactor for get_file_redacted_text
+**Use case:** Get a `redactor_id` to pass to `get_file_redacted_text`.
+
+### 8. render_pdf_pages
+
+Render specific pages of a PDF as high-resolution images for visual analysis.
+
+**Parameters:**
+- `id` (required): File identifier (must be a PDF)
+- `pages` (required): Array of 1-indexed page numbers to render
+- `scale` (optional): Render scale factor (default 2)
+
+**Returns:** One image content block per rendered page.
+
+**Use case:** When text extraction misses structure — tables, charts, scanned pages, forms, handwritten content.
+
+**Note:** Requires `@napi-rs/canvas`. Works in Claude Code; may not be available in Claude Desktop MCPB sandbox.
 
 ## Usage Examples
 
@@ -150,8 +167,8 @@ Here are some example conversations you can have with Claude once the MCP server
 User: "Show me all documents that contain credit card information"
 
 Claude uses:
-1. get_classifications() to find the credit card classification
-2. list_file_metadata(q: "classifications.name:\"Credit Card\"") to find matching files
+1. get_classifications() to get the catalog and find the exact annotator name
+2. list_file_metadata(q: 'annotators.name:"Credit card"') to find matching files
 3. Returns a summary of documents with credit card data
 ```
 
@@ -183,8 +200,19 @@ Claude uses:
 User: "Find all PDF files larger than 10MB"
 
 Claude uses:
-1. list_file_metadata(q: "mimeType:\"application/pdf\" AND size > 10485760")
+1. list_file_metadata(q: 'mimeType:"application/pdf" AND size > 10485760')
 2. Returns a list of large PDF files with metadata
+```
+
+### Example 5: Reading a Document
+
+```
+User: "What's in the file with ID xyz789?"
+
+Claude uses:
+1. get_file_text(id: "xyz789") for a quick text read (beta, simpler)
+   OR get_file_content(id: "xyz789") for the original file (handles images, PDFs)
+2. Returns the document content
 ```
 
 ## API Endpoint Mapping
@@ -193,14 +221,15 @@ The MCP server wraps these Data X-Ray API v1 endpoints:
 
 | MCP Tool | DXR API Endpoint | Method |
 |----------|------------------|--------|
-| list_file_metadata | `/api/v1/files` | GET |
-| get_file_metadata_details | `/api/v1/files/{id}` | GET |
-| get_file_content | `/api/v1/files/{id}/content` | GET |
+| list_file_metadata | `/api/v1/files` | GET (JSONL stream) |
+| get_file_metadata_details | `/api/v1/files?q=fileId:"..."` | GET (JSONL stream) |
+| get_file_content | `/api/v1/files/{id}/content` | GET (binary) |
+| get_file_text | `/api/v1/files/{id}/text` | GET (JSON, beta) |
 | get_file_redacted_text | `/api/v1/files/{id}/redacted-text` | GET |
 | get_classifications | `/api/v1/classifications` | GET |
 | get_redactors | `/api/v1/redactors` | GET |
 
-All API calls use Bearer token authentication and return JSON responses (except file content, which returns binary).
+All API calls use Bearer token authentication. The `/api/v1/files` endpoint returns newline-delimited JSON (JSONL); all other endpoints return JSON or binary.
 
 ## Development
 
