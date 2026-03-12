@@ -172,6 +172,13 @@ export interface FileContentResponse {
   contentDisposition: string;
 }
 
+export interface FileTextResponse {
+  status: "ok";
+  data: {
+    text: string;
+  };
+}
+
 // ============================================
 // Redaction Types
 // ============================================

@@ -27,7 +27,8 @@
   "author": "Ohalo",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.26.0"
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "pdfjs-dist": "^5.4.624"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
