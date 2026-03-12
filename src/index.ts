@@ -900,27 +900,24 @@ Returns: Plain text content extracted from the file by Data X-Ray.`,
   },
   {
     name: "get_file_redacted_text",
-    description: `Get a privacy-safe plain-text version of a file with sensitive information replaced by [REDACTED].
+    description: `Get a plain-text version of a file with sensitive information replaced by [REDACTED] markers.
 
-IMPORTANT: This returns plain text that has been generically parsed by Data X-Ray. Document structure like tables, columns, and formatting may be lost in this conversion. If the user needs high-fidelity parsing or custom text extraction, use get_file_content instead to retrieve the original file.
+⚠️ ONLY use this tool when the user has EXPLICITLY asked for redaction — e.g. "show me the redacted version", "hide the sensitive data", "mask the PII", or "I need a sanitized copy". Do NOT use this as a fallback when other tools fail.
 
-WHEN TO USE:
-- User EXPLICITLY asks for "redacted", "sanitized", or "privacy-safe" version
-- User specifically says "hide sensitive data" or "mask PII"
-- Legal/compliance requirement to protect sensitive information
-- A quick plain-text view is acceptable and redaction is needed
+WRONG — do NOT use this tool for:
+- "Show me the file" / "What's in this document?" → use get_file_content
+- get_file_text failed or returned empty → use get_file_content instead
+- The file has sensitive data detected (user still needs to see it) → use get_file_content
+- Any general file reading or analysis where user didn't ask for redaction
 
-DO NOT USE for:
-- Normal file viewing (use get_file_content instead)
-- Just because a file has sensitive data detected (user may need to see it)
-- General "show me the file" requests (use get_file_content)
-- When the user needs to preserve document structure for custom parsing or chunking
+CORRECT — use this tool only when:
+- User explicitly says "redacted", "sanitized", "privacy-safe", "hide PII", "mask sensitive data"
 
 PREREQUISITE:
 1. Get file ID from list_file_metadata
 2. Get redactor_id from get_redactors (call it first if you don't have one)
 
-Returns: Plain text content with sensitive data replaced by [REDACTED] markers. Note: this is a generic text extraction — original document formatting is not preserved.`,
+Returns: Plain text with sensitive data replaced by [REDACTED]. Document structure (tables, columns, formatting) is not preserved.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -1236,7 +1233,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text" as const,
-              text: `Binary file saved locally for processing.\n\nFilename: ${filename}\nContent-Type: ${contentType}\nSize: ${fileSizeBytes} bytes\nLocal path: ${localPath}\n\nThe file has been saved to disk. You can run Python or other scripts to parse it (e.g. pdfplumber for PDFs, openpyxl for Excel files, python-docx for Word docs). Alternatively, use get_file_redacted_text with a redactor_id to get a plain-text extraction from Data X-Ray.`,
+              text: `Binary file saved locally for processing.\n\nFilename: ${filename}\nContent-Type: ${contentType}\nSize: ${fileSizeBytes} bytes\nLocal path: ${localPath}\n\nThe file has been saved to disk. You can run Python or other scripts to parse it (e.g. pdfplumber for PDFs, openpyxl for Excel files, python-docx for Word docs). Alternatively, use get_file_text to get Data X-Ray's pre-extracted plain text for this file.`,
             },
           ],
         };
@@ -1298,11 +1295,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           {},
           CONTENT_TIMEOUT_MS
         );
+        if (!result.data.redactedText) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `No redacted text available for this file. Data X-Ray may not have extracted text for it ` +
+                  `(e.g. DISCOVERY-only scan depth, unsupported format, or scanned image PDF). ` +
+                  `Try get_file_content for local binary parsing and text extraction.`,
+              },
+            ],
+          };
+        }
         return {
           content: [
             {
-              type: "text",
-              text: JSON.stringify(result, null, 2),
+              type: "text" as const,
+              text: result.data.redactedText,
             },
           ],
         };
