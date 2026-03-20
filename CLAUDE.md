@@ -59,12 +59,6 @@ Required:
 - `DXR_API_URL` - Data X-Ray API base URL
 - `DXR_API_TOKEN` - Authentication token
 
-## Environment Variables
-
-Required:
-- `DXR_API_URL` - Data X-Ray API base URL
-- `DXR_API_TOKEN` - Authentication token
-
 Optional:
 - `DXR_SKIP_SSL_VERIFY` - Set to `true` to skip SSL certificate verification (dev only, for self-signed certs)
 
@@ -75,7 +69,6 @@ Optional:
 | `list_file_metadata` | Search files with KQL queries; returns summaries + aggregate stats |
 | `get_file_metadata_details` | Full metadata for a specific file by ID |
 | `get_file_content` | Retrieve original file (text decoded, images viewable, PDFs text-extracted) |
-| `get_file_text` | DXR's pre-extracted plain text for a file (beta, simpler than get_file_content) |
 | `get_file_redacted_text` | Redacted plain text with `[REDACTED]` markers |
 | `get_classifications` | Catalog of annotators, labels, and extractors |
 | `get_redactors` | List redaction profiles (needed for get_file_redacted_text) |

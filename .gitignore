@@ -36,7 +36,5 @@ Thumbs.db
 # Claude Code scratch/helper files
 .claude/
 
-# Benchmark results (generated)
-benchmark/results/*.json
-benchmark/results/*.md
-benchmark/results/*.pdf
+# Benchmark
+benchmark/

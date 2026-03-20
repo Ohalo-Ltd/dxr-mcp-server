@@ -189,15 +189,16 @@ import {
 import {
   FileMetadataListResponse,
   FileContentResponse,
-  FileTextResponse,
   RedactionResponse,
   ClassificationCatalog,
   RedactorCatalog,
+  FullFileMetadata,
+  FullFileMetadataResponse,
+} from "./types.js";
+import type {
   FileMetadataSummaryResponse,
   FileSummary,
   FileListStats,
-  FullFileMetadata,
-  FullFileMetadataResponse,
 } from "./types.js";
 
 // Read version from package.json
@@ -232,9 +233,16 @@ const MAX_RESPONSE_SIZE_BYTES = 50_000_000; // 50MB max response size
 const MAX_ERROR_LENGTH = 500; // Truncate error messages to prevent info leakage
 
 // Pagination constants
-const DEFAULT_LIMIT = 50; // Default number of files to return
+const DEFAULT_LIMIT = 20; // Default number of files to return (keep small — enriched stats provide the overview)
 const MAX_LIMIT = 500; // Maximum files per request
 const DEFAULT_OFFSET = 0; // Default starting position
+
+// JSONL streaming constants
+const JSONL_CHUNK_TIMEOUT_MS = 30_000; // 30s between chunks — resets on each received chunk
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minute cache for query results
+
+// Session cache for file listing queries (avoids re-fetching for pagination)
+const fileListCache = new Map<string, { data: FullFileMetadata[], timestamp: number, partial: boolean }>();
 
 // Parse and validate the configured API URL at startup
 const ALLOWED_API_HOST = new URL(DXR_API_URL).host;
@@ -359,6 +367,150 @@ async function makeApiRequest<T>(
   }
 }
 
+// Race a promise against a timeout
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      (err) => { clearTimeout(timer); reject(err); }
+    );
+  });
+}
+
+/**
+ * Stream JSONL file listing from DXR API with per-chunk timeout and session caching.
+ *
+ * Unlike makeApiRequest (which buffers the entire response body before processing),
+ * this function:
+ * - Processes JSONL lines incrementally as they arrive
+ * - Uses activity-based timeout (resets on each chunk) instead of a fixed total timeout
+ * - Caches results for fast pagination within the same session
+ * - Returns partial results if the stream is interrupted mid-flight
+ */
+async function streamFileList(kqlQuery: string): Promise<{ data: FullFileMetadata[], partial: boolean }> {
+  // Check cache first
+  const cached = fileListCache.get(kqlQuery);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    console.error(`[DXR] Cache hit for query (${cached.data.length} files): ${kqlQuery.substring(0, 100)}`);
+    return { data: cached.data, partial: cached.partial };
+  }
+
+  const baseUrl = DXR_API_URL?.endsWith('/') ? DXR_API_URL.slice(0, -1) : DXR_API_URL;
+  const url = `${baseUrl}/api/v1/files?q=${encodeURIComponent(kqlQuery)}`;
+
+  // SSRF prevention
+  const parsedUrl = new URL(url);
+  if (parsedUrl.host !== ALLOWED_API_HOST) {
+    throw new Error("Invalid API endpoint: request blocked for security");
+  }
+
+  // Connection timeout — 30s to establish connection and get response headers
+  const connectController = new AbortController();
+  const connectTimeout = setTimeout(() => connectController.abort(), REQUEST_TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: { "Authorization": `Bearer ${DXR_API_TOKEN}` },
+      signal: connectController.signal,
+    });
+  } finally {
+    clearTimeout(connectTimeout);
+  }
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    const sanitizedError = errorText.substring(0, MAX_ERROR_LENGTH);
+    console.error(`API error [${response.status}]:`, errorText.substring(0, 1000));
+    if (response.status === 504) {
+      throw new Error(
+        `DXR API timed out (504). The query may be too broad for this instance. ` +
+        `Try a more specific query using annotator names or domains from the classification catalog, ` +
+        `or narrow with additional filters (date range, datasource, file type).`
+      );
+    }
+    if (response.status === 403 && !errorText.trim()) {
+      throw new Error(
+        `Access denied (403): Your API token may lack permissions for this resource, or the token may have expired. ` +
+        `Check that DXR_API_TOKEN is valid and has the required permissions for this endpoint.`
+      );
+    }
+    throw new Error(`API request failed: ${response.status} ${response.statusText}: ${sanitizedError}`);
+  }
+
+  if (!response.body) {
+    throw new Error("No response body for JSONL stream");
+  }
+
+  // Stream JSONL with per-chunk timeout (resets on each received chunk)
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  const results: FullFileMetadata[] = [];
+  let buffer = '';
+  let totalBytes = 0;
+  let partial = false;
+
+  try {
+    while (true) {
+      let readResult: { done: boolean; value?: Uint8Array };
+      try {
+        readResult = await withTimeout(
+          reader.read(),
+          JSONL_CHUNK_TIMEOUT_MS,
+          `JSONL stream stalled: no data received for ${JSONL_CHUNK_TIMEOUT_MS / 1000}s`
+        );
+      } catch (err) {
+        // Timeout or read error — cancel the underlying stream
+        try { reader.cancel(); } catch { /* ignore cancel errors */ }
+        throw err;
+      }
+
+      const { done, value } = readResult;
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      totalBytes += chunk.length;
+
+      if (totalBytes > MAX_RESPONSE_SIZE_BYTES) {
+        try { reader.cancel(); } catch { /* ignore */ }
+        throw new Error("Response too large: exceeds maximum allowed size");
+      }
+
+      buffer += chunk;
+      const lines = buffer.split('\n');
+      buffer = lines.pop()!; // Keep incomplete last line in buffer
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed) {
+          results.push(JSON.parse(trimmed));
+        }
+      }
+    }
+
+    // Process remaining buffer
+    const remaining = buffer.trim();
+    if (remaining) {
+      results.push(JSON.parse(remaining));
+    }
+  } catch (err) {
+    // If we got partial results before the interruption, use them
+    if (results.length > 0) {
+      console.error(`[DXR] JSONL stream interrupted after ${results.length} files (${(totalBytes / 1024).toFixed(1)}KB): ${err}`);
+      partial = true;
+    } else {
+      throw err;
+    }
+  }
+
+  // Cache results for fast pagination
+  fileListCache.set(kqlQuery, { data: results, timestamp: Date.now(), partial });
+
+  console.error(`[DXR] Streamed ${results.length} files (${(totalBytes / 1024).toFixed(1)}KB)${partial ? ' [partial — stream interrupted]' : ''}`);
+  return { data: results, partial };
+}
+
 // Validation helpers
 function validateString(value: unknown, paramName: string): string {
   if (typeof value !== "string" || value.trim().length === 0) {
@@ -378,7 +530,7 @@ function validateNumber(value: unknown, paramName: string): number {
 function convertToFileSummary(file: FullFileMetadata): FileSummary {
   const hasSensitiveData = (file.annotators?.length ?? 0) > 0;
   const sensitiveDataCount = file.annotators?.length ?? 0;
-  const hasLabels = (file.labels?.length ?? 0) > 0 || (file.dlpLabels?.length ?? 0) > 0;
+  const hasLabels = file.labels.length > 0 || (file.dlpLabels?.length ?? 0) > 0;
 
   // Generate DXR link (view file in DXR interface)
   const baseUrl = DXR_API_URL?.endsWith('/') ? DXR_API_URL.slice(0, -1) : DXR_API_URL;
@@ -386,8 +538,8 @@ function convertToFileSummary(file: FullFileMetadata): FileSummary {
 
   // Generate native storage link based on connector type
   let nativeLink: string | undefined;
-  const connectorType = file.datasource?.connector?.type;
-  const siteUrl = file.datasource?.connector?.siteUrl;
+  const connectorType = file.datasource.connector.type;
+  const siteUrl = file.datasource.connector.siteUrl;
 
   if (connectorType && file.fileName) {
     // Google Drive - create search link to find the file
@@ -415,21 +567,23 @@ function convertToFileSummary(file: FullFileMetadata): FileSummary {
   return {
     fileId: file.fileId,
     fileName: file.fileName,
-    path: file.path,
+    path: file.path ?? "",
     size: file.size,
-    mimeType: file.mimeType,
-    createdAt: file.createdAt,
-    lastModifiedAt: file.lastModifiedAt,
+    mimeType: file.mimeType ?? "application/octet-stream",
+    createdAt: file.createdAt ?? "",
+    lastModifiedAt: file.lastModifiedAt ?? "",
     hasSensitiveData,
     sensitiveDataCount,
     hasLabels,
-    datasourceName: file.datasource?.name,
+    datasourceName: file.datasource.name,
     dxrLink,
     nativeLink,
   };
 }
 
-// Helper to generate aggregate stats from file list
+// Helper to generate enriched aggregate stats from file list.
+// Computes distributions of annotators, domains, labels, and datasources
+// across ALL results — gives Claude a "data map" without per-file inspection.
 function generateFileListStats(files: FullFileMetadata[]): FileListStats {
   const mimeTypes: Record<string, number> = {};
   let filesWithSensitiveData = 0;
@@ -438,33 +592,83 @@ function generateFileListStats(files: FullFileMetadata[]): FileListStats {
   let earliest: string | undefined;
   let latest: string | undefined;
 
+  // Distribution trackers
+  const annotatorCounts = new Map<string, { domain: string; count: number }>();
+  const domainCounts = new Map<string, number>();
+  const labelCounts = new Map<string, number>();
+  const datasourceCounts = new Map<string, number>();
+
   for (const file of files) {
     // Count mime types
     if (file.mimeType) {
       mimeTypes[file.mimeType] = (mimeTypes[file.mimeType] || 0) + 1;
     }
 
-    // Count sensitive files
-    if ((file.annotators?.length ?? 0) > 0) {
+    // Count sensitive files + track annotator/domain distributions
+    if (file.annotators && file.annotators.length > 0) {
       filesWithSensitiveData++;
+      for (const ann of file.annotators) {
+        const existing = annotatorCounts.get(ann.name);
+        annotatorCounts.set(ann.name, {
+          domain: ann.domain.name,
+          count: (existing?.count ?? 0) + 1,
+        });
+        domainCounts.set(ann.domain.name, (domainCounts.get(ann.domain.name) ?? 0) + 1);
+      }
     }
 
-    // Count labeled files
-    if ((file.labels?.length ?? 0) > 0 || (file.dlpLabels?.length ?? 0) > 0) {
+    // Count labeled files + track label distribution
+    if (file.labels.length > 0 || (file.dlpLabels?.length ?? 0) > 0) {
       filesWithLabels++;
+      for (const label of file.labels) {
+        labelCounts.set(label.name, (labelCounts.get(label.name) ?? 0) + 1);
+      }
+      if (file.dlpLabels) {
+        for (const dlp of file.dlpLabels) {
+          const name = dlp.name ?? `${dlp.dlpSystem}:${dlp.id}`;
+          labelCounts.set(name, (labelCounts.get(name) ?? 0) + 1);
+        }
+      }
     }
+
+    // Track datasource distribution
+    datasourceCounts.set(file.datasource.name, (datasourceCounts.get(file.datasource.name) ?? 0) + 1);
 
     // Sum total size
     totalSize += file.size;
 
     // Track date range
-    if (!earliest || file.createdAt < earliest) {
-      earliest = file.createdAt;
-    }
-    if (!latest || file.createdAt > latest) {
-      latest = file.createdAt;
+    if (file.createdAt) {
+      if (!earliest || file.createdAt < earliest) {
+        earliest = file.createdAt;
+      }
+      if (!latest || file.createdAt > latest) {
+        latest = file.createdAt;
+      }
     }
   }
+
+  // Build sorted distributions (top N by file count)
+  const TOP_N = 10;
+
+  const topAnnotators = [...annotatorCounts.entries()]
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, TOP_N)
+    .map(([name, { domain, count }]) => ({ name, domain, fileCount: count }));
+
+  const topDomains = [...domainCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_N)
+    .map(([name, count]) => ({ name, fileCount: count }));
+
+  const topLabels = [...labelCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_N)
+    .map(([name, count]) => ({ name, fileCount: count }));
+
+  const datasources = [...datasourceCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({ name, fileCount: count }));
 
   return {
     totalFiles: files.length,
@@ -473,36 +677,71 @@ function generateFileListStats(files: FullFileMetadata[]): FileListStats {
     filesWithLabels,
     mimeTypes,
     dateRange: earliest && latest ? { earliest, latest } : undefined,
+    // Only include distributions when there's data
+    ...(topAnnotators.length > 0 && { topAnnotators }),
+    ...(topDomains.length > 0 && { topDomains }),
+    ...(topLabels.length > 0 && { topLabels }),
+    ...(datasources.length > 1 && { datasources }), // Skip if only one datasource (obvious)
   };
 }
 
-// Helper to create paginated summary response
+// Response budget: target max ~8KB of JSON to preserve Claude's context window.
+// Enriched stats provide the overview; file summaries are for drill-down.
+const RESPONSE_BUDGET_BYTES = 8_192;
+
+// Helper to create paginated summary response with response budget management.
+// If the requested page would exceed the budget, it returns fewer file summaries
+// while keeping the full enriched stats (which are more valuable per byte).
 function createSummaryResponse(
   allFiles: FullFileMetadata[],
   offset: number,
   limit: number
 ): FileMetadataSummaryResponse {
-  // Generate stats from ALL files (not just the page)
+  // Generate enriched stats from ALL files (not just the page)
   const stats = generateFileListStats(allFiles);
 
   // Apply pagination
   const paginatedFiles = allFiles.slice(offset, offset + limit);
-  const files = paginatedFiles.map(convertToFileSummary);
+  let files = paginatedFiles.map(convertToFileSummary);
 
-  return {
+  // Build the response and check budget
+  const buildResponse = (fileSummaries: FileSummary[]): FileMetadataSummaryResponse => ({
     status: "ok",
     stats: {
       ...stats,
-      totalFiles: allFiles.length, // Total count across all pages
+      totalFiles: allFiles.length,
     },
-    files,
+    files: fileSummaries,
     pagination: {
       offset,
-      limit,
-      returnedCount: files.length,
-      hasMore: offset + limit < allFiles.length,
+      limit: fileSummaries.length, // Reflect actual returned count
+      returnedCount: fileSummaries.length,
+      hasMore: offset + fileSummaries.length < allFiles.length,
     },
-  };
+  });
+
+  let response = buildResponse(files);
+  let responseSize = JSON.stringify(response).length;
+
+  // If over budget, progressively reduce file count (keep at least 5)
+  if (responseSize > RESPONSE_BUDGET_BYTES && files.length > 5) {
+    // Binary search for the right file count
+    let lo = 5;
+    let hi = files.length;
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2);
+      const candidate = buildResponse(files.slice(0, mid));
+      if (JSON.stringify(candidate).length <= RESPONSE_BUDGET_BYTES) {
+        lo = mid;
+      } else {
+        hi = mid - 1;
+      }
+    }
+    files = files.slice(0, lo);
+    response = buildResponse(files);
+  }
+
+  return response;
 }
 
 // KQL query validation helper
@@ -693,98 +932,81 @@ function normalizeKQLDates(query: string): string {
 const tools: Tool[] = [
   {
     name: "list_file_metadata",
-    description: `Search and list files indexed in Data X-Ray with lightweight summaries to minimize context usage.
+    description: `Search and list files indexed in Data X-Ray. Returns lightweight summaries with aggregate stats.
 
-🚨 PREREQUISITE: If this conversation involves sensitive data, PII, or data classification, you MUST call get_classifications FIRST before using this tool. You cannot search for sensitive data types without knowing what annotators exist.
+🚨 PREREQUISITE: You MUST call get_classifications FIRST before using this tool. The classification catalog gives you the exact annotator names, domains, labels, and extractors you need to build precise queries. Do not skip this step.
 
-WHEN TO USE:
-- User asks "what files do you have?" or "find documents about X" (call get_classifications FIRST)
-- User wants to search for files by name, type, size, or date
-- User asks about sensitive documents or classified files (call get_classifications FIRST)
-- Starting point for any file-related workflow
+SEARCH STRATEGY — use the most precise approach available (best to worst):
+1. CLASSIFICATION-BASED (best): Use annotator names/domains from get_classifications catalog
+   annotators.name:"Credit card"                              - Files containing credit card numbers
+   annotators.name:"Social Security number" AND annotators.uniquePhrases > 3  - Files with many SSNs
+   annotators.domain.name:"PII"                               - All files with any PII detected
+   annotators.domain.name:"Health Information"                 - All files with health data
+   labels.name:"Confidential"                                 - Files tagged confidential
+   _exists_:annotators                                        - All files with any sensitive data
 
-CRITICAL: Before searching for files with sensitive data:
-1. FIRST: Call get_classifications to get the catalog of annotators
-2. THEN: Use this tool with annotators.name:"exact name from catalog"
-3. Without step 1, you don't know what annotators exist or their exact names
+2. EXTRACTED METADATA (precise): Use extractor names from the catalog
+   extractedMetadata.name:"Contract Type" AND extractedMetadata.value:"Annual*"
+   extractedMetadata.name:"Classification" AND extractedMetadata.value:"Confidential"
+
+3. STRUCTURAL (good): Filter by datasource, path, permissions, ownership
+   datasource.name:"Finance Department SharePoint"
+   path:"*Documents/HR/*"
+   entitlements.whoCanAccess: { accountType:"GROUP" AND name:"Everyone" }
+   owner.email:"*@example.com"
+
+4. FILE PROPERTIES (basic fallback): Only when the above don't apply
+   fileName:"*report*"                                        - Files containing "report" in name
+   mimeType:"application/pdf"                                 - PDF files only
+   size > 1000000                                             - Files over 1MB
+   createdAt > now-7d                                         - Files created in last 7 days
+
+Combine strategies for precision:
+   annotators.domain.name:"Financially Sensitive" AND datasource.name:"HR*"
+   annotators.name:"Email address" AND fileName:"*.xlsx"
+   labels.name:"Restricted" AND lastModifiedAt > now-30d
 
 WHAT IT RETURNS:
-- Aggregate statistics (total count, size, file types, sensitive data counts)
-- Lightweight file summaries with essential fields only (fileId, fileName, path, size, mimeType, dates, sensitivity flags)
-- Clickable links: dxrLink (view in DXR) and nativeLink (open in SharePoint/Google Drive/etc. if available)
-- Pagination info to retrieve more results
-
-PAGINATION:
-- Default: Returns first 50 files
-- Use 'limit' to control page size (max 500)
-- Use 'offset' to skip to a specific position
-- Check 'pagination.hasMore' to see if more results exist
+- Enriched aggregate stats across ALL matching files (not just the current page):
+  - Total count, size, file type breakdown, date range
+  - topAnnotators: most common sensitive data types with file counts and domains
+  - topDomains: most common annotator domains (PII, Financial, Health, etc.)
+  - topLabels: most common classification labels
+  - datasources: which datasources the results come from
+- Lightweight file summaries for the current page (fileId, fileName, path, size, mimeType, dates, sensitivity flags)
+- Clickable links: dxrLink (view in DXR) and nativeLink (open in native storage)
+- Pagination info (check pagination.hasMore for more results)
+- Response is budget-managed (~8KB max) to preserve context. Use the enriched stats to understand the full result set, then drill into specific files.
 
 NEXT STEPS:
-- To get full details for specific files, use get_file_metadata_details with fileId
-- To view file content, use get_file_content or get_file_redacted_text with fileId
+- Use the stats.topAnnotators and stats.topDomains to understand what sensitive data exists across results
+- get_file_metadata_details with fileId → full details for specific files (annotators with locations, entitlements, labels)
+- get_file_content with fileId → view file contents
+- get_file_redacted_text with fileId + redactor_id → redacted version (only if user asks)
+- Paginate with offset to see more files if needed
 
-KQL QUERY SYNTAX (CRITICAL - follow exactly):
-All string values MUST be enclosed in double quotes. Wildcards go INSIDE the quotes.
+KQL SYNTAX RULES:
+- All string values MUST be in double quotes: fileName:"*.pdf" (correct), fileName:*.pdf (WRONG)
+- Wildcards go INSIDE quotes: fileName:"*report*"
+- Logical operators MUST be UPPERCASE: AND, OR, NOT
+- Parentheses for grouping: (fileName:"*.doc" OR fileName:"*.docx") AND size > 100000
+- No free-text search: "John Smith" is WRONG, use fileName:"*John*" or annotators.annotations.phrase:"*John*"
 
-CORRECT examples:
-  fileName:"*.pdf"                          - Files ending in .pdf
-  fileName:"*report*"                       - Files containing "report"
-  fileName:"*CV*" OR fileName:"*resume*"    - Files with CV or resume
-  mimeType:"application/pdf"                - PDF files only
-  path:"*Documents/HR/*"                    - Files in HR folder
-  datasourceName:"SharePoint*"              - Files from SharePoint sources
-  labels.name:"Confidential"                - Files with specific label
+NUMERIC/DATE fields (no quotes):
+  size > 1000000 | createdAt >= 2024-01-01 | lastModifiedAt > now-7d | annotators.uniquePhrases > 5
 
-WRONG (will cause parse errors):
-  fileName:*.pdf                            - WRONG: missing quotes
-  fileName:report                           - WRONG: missing quotes
-  fileName:*CV*                             - WRONG: missing quotes
-
-NOT SUPPORTED (KQL does not have free-text search):
-  "John Smith"                              - WRONG: no field specified
-  CV resume                                 - WRONG: free text without field
-  Mariana Greenway                          - WRONG: to search for a name, use fileName:"*Mariana*"
-
-NUMERIC/DATE fields (no quotes needed):
-  size > 1000000                            - Files over 1MB
-  size >= 500000 AND size <= 2000000        - Files between 500KB and 2MB
-  createdAt >= 2024-01-01                   - Files created since Jan 2024
-  createdAt > now-7d                        - Files created in last 7 days
-  lastModifiedAt < now-30d                  - Files not modified in 30 days
-
-LOGICAL operators (must be UPPERCASE):
-  fileName:"*.pdf" AND size > 100000
-  fileName:"*report*" OR fileName:"*summary*"
-  NOT path:"*temp*"
-  (fileName:"*.doc" OR fileName:"*.docx") AND datasourceName:"HR*"
-
-SENSITIVE DATA queries:
-  _exists_:annotators                       - Files with any sensitive data detected
-  annotators.name:"Credit card"             - Files with credit card numbers
-  annotators.name:"Credit card" AND annotators.uniquePhrases > 5  - Files with many matches
-  annotators.domain.name:"PII"              - Files with PII detected
-
-ENTITLEMENT queries (object matching with curly braces):
-  entitlements.whoCanAccess: { accountType:"GROUP" AND name:"Everyone" }   - Files accessible by Everyone
-  entitlements.whoCanAccess: { email:"*@example.com" }                     - Files accessible by domain
-
-EXTRACTED METADATA queries:
-  extractedMetadata.name:"Classification" AND extractedMetadata.value:"Confidential"
-  extractedMetadata.name:"Contract Type" AND extractedMetadata.value:"Annual*"
+ENTITLEMENT queries (object matching):
+  entitlements.whoCanAccess: { accountType:"GROUP" AND name:"Everyone" }
+  entitlements.whoCanAccess: { email:"*@example.com" }
 
 DATASOURCE queries:
-  datasource.name:"Finance Department SharePoint"
-  datasource.id:"c3d4e5f6-*"
-  datasource.connector.type:"SHAREPOINT_ONLINE_GRAPH_API"
-  Known connector types: BOX, ONEDRIVE_GRAPH_API, SHAREPOINT_ONLINE_GRAPH_API, SHAREPOINT_2016_2019_REST_API,
+  datasource.name:"..." | datasource.connector.type:"SHAREPOINT_ONLINE_GRAPH_API"
+  Connector types: BOX, ONEDRIVE_GRAPH_API, SHAREPOINT_ONLINE_GRAPH_API, SHAREPOINT_2016_2019_REST_API,
     AMAZON_S3, AZURE_BLOB_STORAGE, GOOGLE_DRIVE_GOOGLE_WORKSPACE, GOOGLE_SHARED_DRIVE_GOOGLE_WORKSPACE,
     GOOGLE_CLOUD_STORAGE, NETWORK_DRIVE_SMB, NETWORK_DRIVE_SSH, NETWORK_DRIVE_SMB_LEGACY,
-    FOLDER_PATH, CONTENT_SUITE, FILE_UPLOAD, ON_DEMAND_CLASSIFIER, PLUG
+    FOLDER_PATH, CONTENT_SUITE, FILE_UPLOAD, ON_DEMAND_CLASSIFIER
 
-FIELDS (common): fileName, path, size, mimeType, contentSha256, scanDepth, createdAt, lastModifiedAt, datasource.name, datasource.id, datasource.connector.type, labels.name, dlpLabels.name, dlpLabels.dlpSystem, dlpLabels.type, annotators.name, annotators.domain.name, annotators.uniquePhrases, entitlements.whoCanAccess.{name,email,accountType}, owner.name, owner.email, createdBy.name, modifiedBy.name, extractedMetadata.name, extractedMetadata.value, extractedMetadata.type, metadataExtractionStatus, coordinates.lat, coordinates.lon
-
-Returns: Summary response with stats, lightweight file list, and pagination info.`,
+ALL QUERYABLE FIELDS: fileName, path, size, mimeType, contentSha256, scanDepth, createdAt, lastModifiedAt, datasource.name, datasource.id, datasource.connector.type, labels.name, dlpLabels.name, dlpLabels.dlpSystem, dlpLabels.type, annotators.name, annotators.domain.name, annotators.uniquePhrases, annotators.annotations.phrase, entitlements.whoCanAccess.{name,email,accountType}, owner.name, owner.email, createdBy.name, modifiedBy.name, extractedMetadata.name, extractedMetadata.value, extractedMetadata.type, metadataExtractionStatus, coordinates.lat, coordinates.lon`,
     inputSchema: {
       type: "object",
       properties: {
@@ -850,43 +1072,13 @@ WHEN TO USE (most common):
 - User needs to do custom parsing, chunking, or structured extraction from a file - USE THIS
 - User wants the original file format preserved (e.g. tables, formatting, layout) - USE THIS
 
-NOTE: get_file_redacted_text returns a plain-text version that has been generically parsed by Data X-Ray, which may lose document structure (tables, columns, formatting). Use THIS tool when you need the original file for higher-fidelity parsing or custom text extraction.
+NOTE: get_file_redacted_text returns a plain-text version with sensitive data masked, which may lose document structure (tables, columns, formatting). Use THIS tool when you need the original file for higher-fidelity parsing or custom text extraction.
 
 DO NOT use get_file_redacted_text unless the user explicitly asks for redaction or there's a specific privacy concern.
 
 PREREQUISITE: You need a file ID from list_file_metadata first.
 
 Returns: Text files are decoded and returned as readable text. Images are returned as viewable images. PDFs have text extracted automatically and returned directly. All binary files are also saved to /tmp/dxr-files/ and the local path is returned for further processing with scripts if needed (e.g. pdfplumber, openpyxl, python-docx).`,
-    inputSchema: {
-      type: "object",
-      properties: {
-        id: {
-          type: "string",
-          description: "File ID from list_file_metadata results",
-        },
-      },
-      required: ["id"],
-    },
-  },
-  {
-    name: "get_file_text",
-    description: `Get the plain text extracted by Data X-Ray from a file. This is a lightweight alternative to get_file_content when you only need text.
-
-WHEN TO USE:
-- User wants to read or search the text of a document without downloading the full binary
-- Faster and simpler than get_file_content for text-based analysis (no binary decoding, no PDF parsing)
-- Good for office documents (Word, Excel, PowerPoint), PDFs, and other text-extractable formats
-
-COMPARED TO OTHER TOOLS:
-- get_file_content: returns original binary (handles images, does its own PDF text extraction) — use when you need the original file, images, or higher-fidelity parsing
-- get_file_text: returns DXR's pre-extracted text — simpler, faster, no binary handling
-- get_file_redacted_text: same as get_file_text but sensitive data is replaced with [REDACTED]
-
-NOTE: This is a beta endpoint. Returns empty or missing text if DXR has not extracted text for the file (e.g. DISCOVERY-only scan depth, unsupported format, or scanned image PDF with no OCR).
-
-PREREQUISITE: You need a file ID from list_file_metadata.
-
-Returns: Plain text content extracted from the file by Data X-Ray.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -906,7 +1098,6 @@ Returns: Plain text content extracted from the file by Data X-Ray.`,
 
 WRONG — do NOT use this tool for:
 - "Show me the file" / "What's in this document?" → use get_file_content
-- get_file_text failed or returned empty → use get_file_content instead
 - The file has sensitive data detected (user still needs to see it) → use get_file_content
 - Any general file reading or analysis where user didn't ask for redaction
 
@@ -935,33 +1126,34 @@ Returns: Plain text with sensitive data replaced by [REDACTED]. Document structu
   },
   {
     name: "get_classifications",
-    description: `List all sensitivity classifications that Data X-Ray can detect. This provides the catalog of available annotators, labels, and extractors.
+    description: `Load the full catalog of everything Data X-Ray can detect. This is your search vocabulary — it tells you every annotator, domain, label, and extractor available, with their exact names.
 
-🚨 CRITICAL REQUIREMENT: You MUST call this tool FIRST at the start of ANY conversation about files or sensitive data. Without this context, you cannot know what types of sensitive data exist in the system or how to search for them.
+🚨 ALWAYS CALL THIS FIRST — before list_file_metadata, before any file search. This is not optional and not conditional. Every conversation that touches files or data starts here.
 
-MANDATORY - Call this IMMEDIATELY when:
-- Starting a conversation about files (call this FIRST, before list_file_metadata)
-- User asks ANY question about sensitive data, PII, PHI, financial data, etc.
-- User asks "what files do you have" or "find documents" (call this FIRST to understand context)
-- User mentions any data type (credit cards, SSN, emails, etc.) - you need to know exact names
+WHY THIS MATTERS:
+Data X-Ray doesn't just index filenames — it classifies file CONTENTS. The classification catalog tells you what was found: credit card numbers, social security numbers, medical diagnoses, financial data, contract clauses, and hundreds more. Without this catalog, you're limited to guessing filenames. With it, you can query by what's INSIDE the files.
 
-PROVIDES ESSENTIAL CONTEXT:
-Without calling this first, you cannot:
-- Know what annotators exist (Credit Card, SSN, Email, etc.)
-- Know exact annotator names to use in queries
-- Understand what domains are available (PII, Financially Sensitive, etc.)
-- Search for files with specific sensitive data types
-- Explain what sensitive data was detected in files
+EXAMPLE — the difference this makes:
+- Without catalog: fileName:"*employee*" → finds files named "employee" but misses "Staff_Records.xlsx" that contains SSNs
+- With catalog: You learn annotator "Social Security number" exists in domain "PII", then query annotators.name:"Social Security number" → finds ALL files containing SSNs regardless of filename
 
-WORKFLOW:
-1. FIRST: Call get_classifications (get the catalog)
-2. THEN: Use list_file_metadata with annotators.name:"..." queries based on what you learned
+WHAT YOU GET BACK:
+- Annotators: Pattern detectors (regex, dictionary, NER) — e.g. "Credit card", "Email address", "IBAN"
+  Each belongs to a domain (e.g. "PII", "Financially Sensitive", "Health Information")
+- Labels: Classification tags applied to files (manual or smart)
+- Extractors: AI-powered metadata extractors (e.g. contract type, document classification)
 
-Returns: Complete catalog of all classification items:
-- Annotators (regex, dictionary, NER) with names, types, subtypes, and domains
-- Labels (manual and smart tags)
-- Extractors (metadata extraction rules)
-Each includes: id, name, type, subtype, description, createdAt, updatedAt, link`,
+HOW TO USE THE CATALOG:
+1. Call this tool FIRST
+2. Scan annotator names and domains to understand what data types exist
+3. Build precise KQL queries for list_file_metadata using exact names from the catalog:
+   - annotators.name:"Credit card" → files containing credit card numbers
+   - annotators.domain.name:"PII" → all files with any PII
+   - labels.name:"Confidential" → files tagged confidential
+   - extractedMetadata.name:"Contract Type" → files with extracted contract metadata
+4. Combine with other fields for precision: annotators.name:"Email address" AND datasource.name:"HR*"
+
+Returns: Array of classification items, each with: id, name, type (ANNOTATOR | ANNOTATOR_DOMAIN | LABEL | EXTRACTOR), subtype, description, createdAt, updatedAt, link, searchLink`,
     inputSchema: {
       type: "object",
       properties: {},
@@ -1027,6 +1219,9 @@ Returns: List of redactors with IDs and names. Use the ID with get_file_redacted
   },
 ];
 
+// Session state: track whether get_classifications has been called
+let classificationsCatalogLoaded = false;
+
 // Create the MCP server
 const server = new Server(
   {
@@ -1052,6 +1247,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     switch (name) {
       case "list_file_metadata": {
+        // Enforce prerequisite: get_classifications must be called first
+        if (!classificationsCatalogLoaded) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  error: "PREREQUISITE NOT MET: You must call get_classifications first before searching files.",
+                  reason: "The classification catalog tells you the exact annotator names, domains, labels, and extractors available in this Data X-Ray instance. Without it, you can only guess at filenames — but Data X-Ray's power is searching by what's INSIDE files (sensitive data types, classifications, extracted metadata), not just file names.",
+                  action: "Call get_classifications now, then use the annotator names and domains from the catalog to build precise queries.",
+                  example: "After loading the catalog, instead of fileName:\"*board*\", try: annotators.domain.name:\"PII\" or labels.name:\"Confidential\" or extractedMetadata.name:\"Document Type\""
+                }, null, 2),
+              },
+            ],
+            isError: true,
+          };
+        }
+
         // Validate query parameter if provided
         const queryParam = args?.q;
         if (queryParam !== undefined) {
@@ -1081,28 +1294,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           throw new Error("Invalid offset: must be non-negative");
         }
 
-        // Fetch JSONL data from API
+        // Stream JSONL from API with per-chunk timeout and session caching
         // API requires a 'q' parameter - use wildcard as default to match all files
         // Normalize date-only values to full ISO 8601 datetimes (DXR parser requires T00:00:00Z suffix)
         const kqlQuery = queryParam
           ? normalizeKQLDates(queryParam as string)
           : "fileName:\"*\"";
-        const result = await makeApiRequest<FileMetadataListResponse>(
-          `/api/v1/files?q=${encodeURIComponent(kqlQuery)}`
-        );
+        const { data: files, partial } = await streamFileList(kqlQuery);
 
         // Convert to summary response with pagination
         const summaryResponse = createSummaryResponse(
-          result.data as unknown as FullFileMetadata[],
+          files,
           offset,
           limit
         );
+
+        // Add warning if results are partial (stream was interrupted)
+        const responsePayload: Record<string, unknown> = { ...summaryResponse };
+        if (partial) {
+          responsePayload.warning =
+            `Results may be incomplete — the JSONL stream was interrupted after receiving ${files.length} files. ` +
+            `Try a more specific query to reduce the result set.`;
+        }
 
         return {
           content: [
             {
               type: "text",
-              text: JSON.stringify(summaryResponse, null, 2),
+              text: JSON.stringify(responsePayload, null, 2),
             },
           ],
         };
@@ -1124,7 +1343,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         // Return the first (and should be only) result
-        const fileMetadata = result.data[0] as unknown as FullFileMetadata;
+        const fileMetadata = result.data[0];
 
         return {
           content: [
@@ -1233,52 +1452,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: "text" as const,
-              text: `Binary file saved locally for processing.\n\nFilename: ${filename}\nContent-Type: ${contentType}\nSize: ${fileSizeBytes} bytes\nLocal path: ${localPath}\n\nThe file has been saved to disk. You can run Python or other scripts to parse it (e.g. pdfplumber for PDFs, openpyxl for Excel files, python-docx for Word docs). Alternatively, use get_file_text to get Data X-Ray's pre-extracted plain text for this file.`,
-            },
-          ],
-        };
-      }
-
-      case "get_file_text": {
-        if (!args?.id) {
-          throw new Error("Missing required parameter: id");
-        }
-        const fileId = validateString(args.id, "id");
-        let result: FileTextResponse;
-        try {
-          result = await makeApiRequest<FileTextResponse>(
-            `/api/v1/files/${encodeURIComponent(fileId)}/text`,
-            {},
-            CONTENT_TIMEOUT_MS
-          );
-        } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
-          if (msg.includes("Text extraction failed") || msg.includes("500")) {
-            throw new Error(
-              `Data X-Ray could not extract text from this file (server returned: ${msg}). ` +
-              `This can happen for large files, files requiring OCR, or unsupported formats. ` +
-              `Try get_file_content instead, which downloads the original binary and performs local text extraction.`
-            );
-          }
-          throw err;
-        }
-        if (!result.data.text) {
-          return {
-            content: [
-              {
-                type: "text" as const,
-                text: `No text available for this file. Data X-Ray may not have extracted text for it ` +
-                  `(e.g. DISCOVERY-only scan depth, unsupported format, or scanned image PDF). ` +
-                  `Try get_file_content for local binary parsing and text extraction.`,
-              },
-            ],
-          };
-        }
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: result.data.text,
+              text: `Binary file saved locally for processing.\n\nFilename: ${filename}\nContent-Type: ${contentType}\nSize: ${fileSizeBytes} bytes\nLocal path: ${localPath}\n\nThe file has been saved to disk. You can run Python or other scripts to parse it (e.g. pdfplumber for PDFs, openpyxl for Excel files, python-docx for Word docs).`,
             },
           ],
         };
@@ -1321,6 +1495,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const result = await makeApiRequest<ClassificationCatalog>(
           "/api/v1/classifications"
         );
+        classificationsCatalogLoaded = true;
         return {
           content: [
             {

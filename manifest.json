@@ -64,10 +64,6 @@
       "description": "Retrieve original unredacted file content"
     },
     {
-      "name": "get_file_text",
-      "description": "Get plain text extracted by Data X-Ray from a file (beta)"
-    },
-    {
       "name": "get_file_redacted_text",
       "description": "Get privacy-safe redacted versions of documents"
     },
